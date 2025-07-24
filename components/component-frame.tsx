@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
-import { OpenInV0Button } from "@/components/open-in-v0-button";
+import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
+
+const BASE_URL = "https://ds.asanshay.com/r/";
 
 export default function ComponentFrame({
   children,
@@ -16,13 +18,26 @@ export default function ComponentFrame({
 }) {
   return (
     <div
-      className={cn("flex flex-col gap-4 border rounded-lg p-4 min-h-[450px] relative", className)}
+      className={cn(
+        "flex flex-col gap-4 border rounded-3xl p-6 min-h-[450px] relative bg-card shadow-xl shadow-gray-300/20",
+        className
+      )}
     >
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm text-muted-foreground sm:pl-3">{title}</h2>
-        <OpenInV0Button name={componentName} className="w-fit" />
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col">
+          <h2 className="text-2xl font-semibold">{title}</h2>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        </div>
+        <ScriptCopyBtn
+          className=""
+          commandMap={{
+            npm: `npx shadcn@latest add ${BASE_URL}${componentName}`,
+            yarn: `yarn shadcn@latest add ${BASE_URL}${componentName}`,
+            pnpm: `pnpx shadcn@latest add ${BASE_URL}${componentName}`,
+            bun: `bunx shadcn@latest add ${BASE_URL}${componentName}`,
+          }}
+        />
       </div>
-      {description && <p className="text-sm text-muted-foreground sm:pl-3">{description}</p>}
       <div className="flex items-center justify-center min-h-[400px] relative">{children}</div>
     </div>
   );
