@@ -33,7 +33,7 @@ export default function ComponentFrame({
           commandMap={{
             npm: `npx shadcn@latest add ${BASE_URL}${componentName}`,
             yarn: `yarn shadcn@latest add ${BASE_URL}${componentName}`,
-            pnpm: `pnpx shadcn@latest add ${BASE_URL}${componentName}`,
+            pnpm: `pnpm dlx shadcn@latest add ${BASE_URL}${componentName}`,
             bun: `bunx shadcn@latest add ${BASE_URL}${componentName}`,
           }}
         />

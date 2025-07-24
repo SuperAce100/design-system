@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "acme",
-  "homepage": "https://acme.com",
+  "name": "asanshay-ds",
+  "homepage": "https://ds.asanshay.com",
   "items": [
     {
       "name": "hello-world",
