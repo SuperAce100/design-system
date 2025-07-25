@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/50 text-primary-foreground shadow-md transition-all duration-200 hover:bg-white hover:shadow-lg active:bg-primary active:shadow-none",
+          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/50 text-primary-foreground shadow-none transition-all duration-200 hover:bg-white hover:shadow-lg active:bg-primary active:shadow-none",
         fancy:
           "border border-primary bg-primary/30 bg-radial-[at_50%_25%] from-primary/40 to-primary text-primary-foreground shadow-md inset-shadow-sm inset-shadow-white/50 transition-all duration-200 hover:-translate-y-px hover:bg-white hover:shadow-lg hover:inset-shadow-white active:translate-y-px active:bg-primary/30 active:shadow-none active:inset-shadow-white/20",
         destructive:
@@ -26,7 +26,7 @@ const buttonVariants = cva(
       size: {
         default: "px-4 py-2",
         xs: "px-2 py-1.5 rounded-lg [&_svg:not([class*='size-'])]:size-3 text-xs",
-        sm: "px-3 py-1.5 text-sm",
+        sm: "px-3 py-1.5 text-sm rounded-lg",
         lg: "px-5 py-2 text-lg",
         xl: "px-6 py-3 [&_svg:not([class*='size-'])]:size-5 text-xl",
         icon: "size-8 rounded-lg [&_svg:not([class*='size-'])]:size-4",
