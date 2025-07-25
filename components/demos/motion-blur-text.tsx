@@ -1,4 +1,4 @@
-import MotionBlurText from "@/registry/new-york/motion-blur-text/motion-blur-text";
+import MotionBlurText from "@/registry/new-york/blocks/motion-blur-text/motion-blur-text";
 
 export default function MotionBlurTextDemo() {
   return (
