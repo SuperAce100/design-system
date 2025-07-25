@@ -9,6 +9,7 @@ import ButtonDemo from "@/components/demos/button-demo";
 import RevealDemo from "@/components/demos/reveal-demo";
 import CardDemo from "@/components/demos/card-demo";
 import DescriptionListDemo from "@/components/demos/description-list-demo";
+import PageHeaderDemo from "@/components/demos/page-header-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -57,6 +58,15 @@ export default function Home() {
         >
           <DescriptionListDemo />
         </ComponentFrame>
+
+        <ComponentFrame
+          title="Page Header"
+          componentName="page-header"
+          description="A page header component with a fancy look."
+        >
+          <PageHeaderDemo />
+        </ComponentFrame>
+
         <ComponentFrame
           title="Hello World"
           componentName="hello-world"
