@@ -11,6 +11,7 @@ import CardDemo from "@/components/demos/card-demo";
 import DescriptionListDemo from "@/components/demos/description-list-demo";
 import PageHeaderDemo from "@/components/demos/page-header-demo";
 import MotionBlurTextDemo from "@/components/demos/motion-blur-text";
+import CodeBlockDemo from "@/components/demos/code-block-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -77,35 +78,11 @@ export default function Home() {
         </ComponentFrame>
 
         <ComponentFrame
-          title="Hello World"
-          componentName="hello-world"
-          description="A simple hello world component"
+          title="Code Block"
+          componentName="code-block"
+          description="A code block component with a fancy look."
         >
-          <HelloWorld />
-        </ComponentFrame>
-
-        <ComponentFrame
-          title="Contact Form"
-          componentName="example-form"
-          description="A contact form with Zod validation"
-        >
-          <ExampleForm />
-        </ComponentFrame>
-
-        <ComponentFrame
-          title="Complex Component"
-          componentName="complex-component"
-          description="A complex component showing hooks, libs and components."
-        >
-          <PokemonPage />
-        </ComponentFrame>
-
-        <ComponentFrame
-          title="Login Form"
-          componentName="example-with-css"
-          description="A login form with a CSS file"
-        >
-          <ExampleCard />
+          <CodeBlockDemo />
         </ComponentFrame>
       </main>
     </div>
