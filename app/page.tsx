@@ -6,6 +6,7 @@ import { ExampleCard } from "@/registry/new-york/blocks/example-with-css/example
 import ComponentFrame from "@/components/component-frame";
 import BadgeDemo from "@/components/demos/badge-demo";
 import ButtonDemo from "@/components/demos/button-demo";
+import RevealDemo from "@/components/demos/reveal-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -32,6 +33,13 @@ export default function Home() {
           description="A simple button component with a fancy look."
         >
           <ButtonDemo />
+        </ComponentFrame>
+        <ComponentFrame
+          title="Reveal"
+          componentName="reveal"
+          description="A simple reveal component with a fancy look."
+        >
+          <RevealDemo />
         </ComponentFrame>
         <ComponentFrame
           title="Hello World"
