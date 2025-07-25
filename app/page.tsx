@@ -8,6 +8,7 @@ import BadgeDemo from "@/components/demos/badge-demo";
 import ButtonDemo from "@/components/demos/button-demo";
 import RevealDemo from "@/components/demos/reveal-demo";
 import CardDemo from "@/components/demos/card-demo";
+import DescriptionListDemo from "@/components/demos/description-list-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -48,6 +49,13 @@ export default function Home() {
           description="A simple card component with a fancy look."
         >
           <CardDemo />
+        </ComponentFrame>
+        <ComponentFrame
+          title="Description List"
+          componentName="description-list"
+          description="A simple description list component with a fancy look."
+        >
+          <DescriptionListDemo />
         </ComponentFrame>
         <ComponentFrame
           title="Hello World"
