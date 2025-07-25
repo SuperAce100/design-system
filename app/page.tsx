@@ -10,6 +10,7 @@ import RevealDemo from "@/components/demos/reveal-demo";
 import CardDemo from "@/components/demos/card-demo";
 import DescriptionListDemo from "@/components/demos/description-list-demo";
 import PageHeaderDemo from "@/components/demos/page-header-demo";
+import MotionBlurTextDemo from "@/components/demos/motion-blur-text";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -65,6 +66,14 @@ export default function Home() {
           description="A page header component with a fancy look."
         >
           <PageHeaderDemo />
+        </ComponentFrame>
+
+        <ComponentFrame
+          title="Motion Blur Text"
+          componentName="motion-blur-text"
+          description="A motion blur text component with a fancy look."
+        >
+          <MotionBlurTextDemo />
         </ComponentFrame>
 
         <ComponentFrame
