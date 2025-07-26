@@ -8,11 +8,13 @@ export default function ComponentFrame({
   className,
   title,
   description,
+  id,
   componentName,
 }: {
   children: React.ReactNode;
   title: string;
   description?: string;
+  id?: string;
   componentName: string;
   className?: string;
 }) {
@@ -22,6 +24,7 @@ export default function ComponentFrame({
         "flex flex-col gap-4 border rounded-3xl p-6 min-h-[450px] relative bg-card shadow-xl shadow-gray-300/20",
         className
       )}
+      id={id}
     >
       <div className="flex items-start justify-between">
         <div className="flex flex-col">

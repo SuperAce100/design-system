@@ -88,7 +88,7 @@ export function CodeBlock({
           }`}
         />
       </Button>
-      {title && <h3 className="text-sm text-muted-foreground font-mono">{title}</h3>}
+      {title && <h3 className="text-sm text-muted-foreground tracking-tight font-mono">{title}</h3>}
       <SyntaxHighlighter
         language={language}
         style={customSyntaxTheme}

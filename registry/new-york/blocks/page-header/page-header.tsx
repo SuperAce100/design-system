@@ -12,7 +12,7 @@ export function PageHeader({
   const titleClassName = description ? "text-4xl" : "text-5xl";
   return (
     <header className="flex flex-row items-end gap-2 transition-all w-full mt-2 pt-6 px-6 h-full">
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         <h1 className={cn("font-semibold tracking-tight mt-2", titleClassName)}>{title}</h1>
         {description && <p className="text-muted-foreground text-sm">{description}</p>}
       </div>
