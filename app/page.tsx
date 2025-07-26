@@ -14,6 +14,7 @@ import MotionBlurTextDemo from "@/components/demos/motion-blur-text";
 import CodeBlockDemo from "@/components/demos/code-block-demo";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import Link from "next/link";
+import MarkdownDemo from "@/components/demos/markdown-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -65,6 +66,12 @@ const components = [
     name: "Code Block",
     description: "A code block with syntax highlighting and quick copying.",
     demo: <CodeBlockDemo />,
+  },
+  {
+    id: "markdown",
+    name: "Markdown",
+    description: "A markdown component with syntax highlighting and quick copying.",
+    demo: <MarkdownDemo />,
   },
 ];
 
