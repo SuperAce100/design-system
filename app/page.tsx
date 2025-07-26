@@ -16,6 +16,8 @@ import { Button } from "@/registry/new-york/blocks/button/button";
 import Link from "next/link";
 import MarkdownDemo from "@/components/demos/markdown-demo";
 import InputDemo from "@/components/demos/input-demo";
+import TextareaDemo from "@/components/demos/textarea-demo";
+import ChatInputDemo from "@/components/demos/chat-input-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -25,6 +27,18 @@ const components = [
     name: "Input",
     description: "A simple input component with a placeholder.",
     demo: <InputDemo />,
+  },
+  {
+    id: "textarea",
+    name: "Textarea",
+    description: "A simple textarea component with a placeholder.",
+    demo: <TextareaDemo />,
+  },
+  {
+    id: "chat-input",
+    name: "Chat Input",
+    description: "A simple chat input component with a placeholder.",
+    demo: <ChatInputDemo />,
   },
   {
     id: "badge",
