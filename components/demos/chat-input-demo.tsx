@@ -4,8 +4,17 @@ import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
 import { useState } from "react";
 
 const models = [
-  { id: "gpt-4o", name: "GPT-4o", description: "GPT-4o" },
-  { id: "claude-3-7-sonnet", name: "Claude 3.7 Sonnet", description: "Claude 3.7 Sonnet" },
+  { id: "gpt-4.1", name: "GPT-4.1", description: "OpenAI's most powerful non-thinking model." },
+  {
+    id: "o3",
+    name: "o3",
+    description: "OpenAI's most powerful model. Feel the AGI.",
+  },
+  {
+    id: "claude-3-7-sonnet",
+    name: "Claude Sonnet 4",
+    description: "Great for coding, writing, and structured tasks",
+  },
   {
     id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",

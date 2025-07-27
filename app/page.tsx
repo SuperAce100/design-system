@@ -18,10 +18,17 @@ import MarkdownDemo from "@/components/demos/markdown-demo";
 import InputDemo from "@/components/demos/input-demo";
 import TextareaDemo from "@/components/demos/textarea-demo";
 import ChatInputDemo from "@/components/demos/chat-input-demo";
+import SelectDemo from "@/components/demos/select-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
 const components = [
+  {
+    id: "select",
+    name: "Select",
+    description: "A simple select component with a placeholder.",
+    demo: <SelectDemo />,
+  },
   {
     id: "input",
     name: "Input",

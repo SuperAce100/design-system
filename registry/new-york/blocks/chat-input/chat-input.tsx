@@ -63,7 +63,7 @@ export default function ChatInput({
       </Button>
       <div className="flex items-center gap-2 absolute bottom-0 left-0">
         <Select value={model} onValueChange={(value) => onModelChange(value)}>
-          <SelectTrigger className="w-[200px] shadow-none pl-4 focus-visible:ring-0 border-none bg-transparent text-xs text-muted-foreground">
+          <SelectTrigger className="w-[200px] shadow-none pl-4 hover:bg-none focus-visible:ring-0 border-none bg-transparent text-xs text-muted-foreground">
             <SelectValue>
               {models.find((m) => m.id === model)?.name || "Select a model"}
             </SelectValue>
