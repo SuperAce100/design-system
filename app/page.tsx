@@ -19,6 +19,7 @@ import InputDemo from "@/components/demos/input-demo";
 import TextareaDemo from "@/components/demos/textarea-demo";
 import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
+import ChatMessageDemo from "@/components/demos/chat-message-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
@@ -46,6 +47,12 @@ const components = [
     name: "Chat Input",
     description: "A simple chat input component with a placeholder.",
     demo: <ChatInputDemo />,
+  },
+  {
+    id: "chat-message",
+    name: "Chat Message",
+    description: "A simple chat message component with a placeholder.",
+    demo: <ChatMessageDemo />,
   },
   {
     id: "badge",

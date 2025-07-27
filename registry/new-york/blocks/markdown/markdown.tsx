@@ -8,10 +8,10 @@ const components: Components = {
   // Text components
   p: ({ children }) => <p className="text-base mb-3 last:mb-0">{children}</p>,
   h1: ({ children }) => (
-    <h1 className="text-4xl font-semibold tracking-tight mt-6 mb-4">{children}</h1>
+    <h1 className="text-4xl font-semibold tracking-tight mb-4 mt-2">{children}</h1>
   ),
   h2: ({ children }) => (
-    <h2 className="text-3xl font-semibold tracking-tight mt-5 mb-3 border-b border-border pb-2">
+    <h2 className="text-3xl font-semibold tracking-tight mt-4 mb-2 border-b border-border pb-2">
       {children}
     </h2>
   ),
