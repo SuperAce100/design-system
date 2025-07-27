@@ -36,7 +36,7 @@ export default function ChatInputDemo() {
   };
   return (
     <ChatInput
-      title="Chat Input"
+      title="Chat about anything"
       placeholder="Type something..."
       models={models}
       allowFileUpload={false}
