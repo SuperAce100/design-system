@@ -8,7 +8,6 @@
       "type": "registry:component",
       "title": "Hello World",
       "description": "A simple hello world component",
-      "registryDependencies": ["button"],
       "files": [
         {
           "path": "registry/new-york/blocks/hello-world/hello-world.tsx",
@@ -73,6 +72,240 @@
         {
           "path": "registry/new-york/blocks/example-with-css/example-card.css",
           "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "jsx-preview",
+      "type": "registry:component",
+      "title": "JSX Preview",
+      "description": "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/jsx-preview/jsx-preview.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:component",
+      "title": "Select",
+      "description": "A lightly skinned select component.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/select/select.tsx",
+          "type": "registry:component",
+          "target": "components/ui/select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:component",
+      "title": "Input",
+      "description": "A simple input component with a tactile feel.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/input/input.tsx",
+          "type": "registry:component",
+          "target": "components/ui/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:component",
+      "title": "Textarea",
+      "description": "An input that can increase in height to accommodate more text.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/textarea/textarea.tsx",
+          "type": "registry:component",
+          "target": "components/ui/textarea.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-input",
+      "type": "registry:component",
+      "title": "Chat Input",
+      "description": "A chat input component for a nice chatbot experience. Ready for useChat().",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/chat-input/chat-input.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/select/select.tsx",
+          "type": "registry:component",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/textarea/textarea.tsx",
+          "type": "registry:component",
+          "target": "components/ui/textarea.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-message",
+      "type": "registry:component",
+      "title": "Chat Message",
+      "description": "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/chat-message/chat-message.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/markdown/markdown.tsx",
+          "type": "registry:component",
+          "target": "components/ui/markdown.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/code-block/code-block.tsx",
+          "type": "registry:component",
+          "target": "components/ui/code-block.tsx"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:component",
+      "title": "Badge",
+      "description": "A clean set of badge components with an edible look.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/badge/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:component",
+      "title": "Button",
+      "description": "A button component that *feels* good to use.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reveal",
+      "type": "registry:component",
+      "title": "Reveal",
+      "description": "A simple wrapper that reveals content when it scrolls into view.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/reveal/reveal.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:component",
+      "title": "Card",
+      "description": "A variety of clean cards, from minimal to flashy.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/card/card.tsx",
+          "type": "registry:component",
+          "target": "components/ui/card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:component",
+      "title": "Description List",
+      "description": "Quickly display a json object in an aesthetically pleasing way.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/description-list/description-list.tsx",
+          "type": "registry:component",
+          "target": "components/ui/description-list.tsx"
+        }
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:component",
+      "title": "Page Header",
+      "description": "A clean page header so your pages look consistent.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/page-header/page-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "motion-blur-text",
+      "type": "registry:component",
+      "title": "Motion Blur Text",
+      "description": "A cool motion blur text effect.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/motion-blur-text/motion-blur-text.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:component",
+      "title": "Code Block",
+      "description": "A code block with syntax highlighting and quick copying.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/code-block/code-block.tsx",
+          "type": "registry:component",
+          "target": "components/ui/code-block.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "markdown",
+      "type": "registry:component",
+      "title": "Markdown",
+      "description": "A markdown component with a clean look and no-frills parsing.",
+      "files": [
+        {
+          "path": "registry/new-york/blocks/markdown/markdown.tsx",
+          "type": "registry:component",
+          "target": "components/ui/markdown.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/code-block/code-block.tsx",
+          "type": "registry:component",
+          "target": "components/ui/code-block.tsx"
         }
       ]
     }
