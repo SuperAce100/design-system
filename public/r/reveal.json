@@ -4,6 +4,9 @@
   "type": "registry:component",
   "title": "Reveal",
   "description": "A simple wrapper that reveals content when it scrolls into view.",
+  "dependencies": [
+    "motion"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/reveal/reveal.tsx",

@@ -4,6 +4,12 @@
   "type": "registry:component",
   "title": "Chat Input",
   "description": "A chat input component for a nice chatbot experience. Ready for useChat().",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "@radix-ui/react-select",
+    "class-variance-authority",
+    "lucide-react"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/chat-input/chat-input.tsx",

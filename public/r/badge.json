@@ -4,6 +4,10 @@
   "type": "registry:component",
   "title": "Badge",
   "description": "A clean set of badge components with an edible look.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/badge/badge.tsx",

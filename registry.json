@@ -80,6 +80,7 @@
       "type": "registry:component",
       "title": "JSX Preview",
       "description": "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
+      "dependencies": ["react-jsx-parser", "lucide-react"],
       "files": [
         {
           "path": "registry/new-york/blocks/jsx-preview/jsx-preview.tsx",
@@ -92,6 +93,7 @@
       "type": "registry:component",
       "title": "Select",
       "description": "A lightly skinned select component.",
+      "dependencies": ["@radix-ui/react-select", "lucide-react"],
       "files": [
         {
           "path": "registry/new-york/blocks/select/select.tsx",
@@ -105,6 +107,7 @@
       "type": "registry:component",
       "title": "Input",
       "description": "A simple input component with a tactile feel.",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/input/input.tsx",
@@ -118,6 +121,7 @@
       "type": "registry:component",
       "title": "Textarea",
       "description": "An input that can increase in height to accommodate more text.",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/textarea/textarea.tsx",
@@ -131,6 +135,12 @@
       "type": "registry:component",
       "title": "Chat Input",
       "description": "A chat input component for a nice chatbot experience. Ready for useChat().",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "@radix-ui/react-select",
+        "class-variance-authority",
+        "lucide-react"
+      ],
       "files": [
         {
           "path": "registry/new-york/blocks/chat-input/chat-input.tsx",
@@ -158,6 +168,14 @@
       "type": "registry:component",
       "title": "Chat Message",
       "description": "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react",
+        "react-markdown",
+        "remark-gfm",
+        "react-syntax-highlighter"
+      ],
       "files": [
         {
           "path": "registry/new-york/blocks/chat-message/chat-message.tsx",
@@ -185,6 +203,7 @@
       "type": "registry:component",
       "title": "Badge",
       "description": "A clean set of badge components with an edible look.",
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "files": [
         {
           "path": "registry/new-york/blocks/badge/badge.tsx",
@@ -198,6 +217,7 @@
       "type": "registry:component",
       "title": "Button",
       "description": "A button component that *feels* good to use.",
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
       "files": [
         {
           "path": "registry/new-york/blocks/button/button.tsx",
@@ -211,6 +231,7 @@
       "type": "registry:component",
       "title": "Reveal",
       "description": "A simple wrapper that reveals content when it scrolls into view.",
+      "dependencies": ["motion"],
       "files": [
         {
           "path": "registry/new-york/blocks/reveal/reveal.tsx",
@@ -223,6 +244,7 @@
       "type": "registry:component",
       "title": "Card",
       "description": "A variety of clean cards, from minimal to flashy.",
+      "dependencies": ["class-variance-authority"],
       "files": [
         {
           "path": "registry/new-york/blocks/card/card.tsx",
@@ -236,6 +258,7 @@
       "type": "registry:component",
       "title": "Description List",
       "description": "Quickly display a json object in an aesthetically pleasing way.",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/description-list/description-list.tsx",
@@ -249,6 +272,7 @@
       "type": "registry:component",
       "title": "Page Header",
       "description": "A clean page header so your pages look consistent.",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/page-header/page-header.tsx",
@@ -261,6 +285,7 @@
       "type": "registry:component",
       "title": "Motion Blur Text",
       "description": "A cool motion blur text effect.",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/motion-blur-text/motion-blur-text.tsx",
@@ -273,6 +298,12 @@
       "type": "registry:component",
       "title": "Code Block",
       "description": "A code block with syntax highlighting and quick copying.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react",
+        "react-syntax-highlighter"
+      ],
       "files": [
         {
           "path": "registry/new-york/blocks/code-block/code-block.tsx",
@@ -291,6 +322,14 @@
       "type": "registry:component",
       "title": "Markdown",
       "description": "A markdown component with a clean look and no-frills parsing.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react",
+        "react-syntax-highlighter",
+        "react-markdown",
+        "remark-gfm"
+      ],
       "files": [
         {
           "path": "registry/new-york/blocks/markdown/markdown.tsx",

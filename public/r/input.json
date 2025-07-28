@@ -4,6 +4,7 @@
   "type": "registry:component",
   "title": "Input",
   "description": "A simple input component with a tactile feel.",
+  "dependencies": [],
   "files": [
     {
       "path": "registry/new-york/blocks/input/input.tsx",

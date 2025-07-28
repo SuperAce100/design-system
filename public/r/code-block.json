@@ -4,6 +4,12 @@
   "type": "registry:component",
   "title": "Code Block",
   "description": "A code block with syntax highlighting and quick copying.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority",
+    "lucide-react",
+    "react-syntax-highlighter"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/code-block/code-block.tsx",

@@ -4,6 +4,14 @@
   "type": "registry:component",
   "title": "Markdown",
   "description": "A markdown component with a clean look and no-frills parsing.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority",
+    "lucide-react",
+    "react-syntax-highlighter",
+    "react-markdown",
+    "remark-gfm"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/markdown/markdown.tsx",

@@ -4,6 +4,10 @@
   "type": "registry:component",
   "title": "Select",
   "description": "A lightly skinned select component.",
+  "dependencies": [
+    "@radix-ui/react-select",
+    "lucide-react"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/select/select.tsx",

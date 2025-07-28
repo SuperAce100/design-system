@@ -4,6 +4,7 @@
   "type": "registry:component",
   "title": "Description List",
   "description": "Quickly display a json object in an aesthetically pleasing way.",
+  "dependencies": [],
   "files": [
     {
       "path": "registry/new-york/blocks/description-list/description-list.tsx",

@@ -4,6 +4,14 @@
   "type": "registry:component",
   "title": "Chat Message",
   "description": "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+  "dependencies": [
+    "@radix-ui/react-slot",
+    "class-variance-authority",
+    "lucide-react",
+    "react-markdown",
+    "remark-gfm",
+    "react-syntax-highlighter"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/chat-message/chat-message.tsx",

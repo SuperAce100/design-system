@@ -4,6 +4,7 @@
   "type": "registry:component",
   "title": "Page Header",
   "description": "A clean page header so your pages look consistent.",
+  "dependencies": [],
   "files": [
     {
       "path": "registry/new-york/blocks/page-header/page-header.tsx",

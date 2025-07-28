@@ -4,6 +4,7 @@
   "type": "registry:component",
   "title": "Motion Blur Text",
   "description": "A cool motion blur text effect.",
+  "dependencies": [],
   "files": [
     {
       "path": "registry/new-york/blocks/motion-blur-text/motion-blur-text.tsx",

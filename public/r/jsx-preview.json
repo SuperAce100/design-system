@@ -4,6 +4,10 @@
   "type": "registry:component",
   "title": "JSX Preview",
   "description": "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
+  "dependencies": [
+    "react-jsx-parser",
+    "lucide-react"
+  ],
   "files": [
     {
       "path": "registry/new-york/blocks/jsx-preview/jsx-preview.tsx",

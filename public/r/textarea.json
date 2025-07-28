@@ -4,6 +4,7 @@
   "type": "registry:component",
   "title": "Textarea",
   "description": "An input that can increase in height to accommodate more text.",
+  "dependencies": [],
   "files": [
     {
       "path": "registry/new-york/blocks/textarea/textarea.tsx",
