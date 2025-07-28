@@ -123,10 +123,10 @@ export default function Home() {
   return (
     <div className="max-w-3xl mx-auto flex flex-col min-h-svh px-4 py-8 gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-4xl font-semibold tracking-tight">Asanshay's Components</h1>
-        <p className="text-muted-foreground">
-          A set of components I've collected over dozens of React projects. Designed to be flexible,
-          LLM-friendly, and functional while still being beautiful.
+        <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay's Components</h1>
+        <p className="text-muted-foreground text-lg">
+          A set of components I've built. Designed to be flexible, LLM-friendly, and functional
+          while still being beautiful.
         </p>
         <div className="flex gap-2 flex-row flex-wrap items-end">
           {components.map((component) => (
