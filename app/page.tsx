@@ -117,33 +117,48 @@ const components = [
 
 export default function Home() {
   return (
-    <div className="max-w-3xl mx-auto flex flex-col min-h-svh px-4 py-8 gap-8">
-      <header className="flex flex-col gap-2">
+    <div className="max-w-4xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
+      <header className="flex flex-col gap-2 px-2">
         <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay&apos;s Components</h1>
         <p className="text-muted-foreground text-lg">
           A set of components I&apos;ve built. Designed to be flexible, LLM-friendly, and functional
-          while still being beautiful.
+          while still being beautiful. Just init with{" "}
+          <a
+            href="https://ui.shadcn.com/docs/installation"
+            className="underline underline-offset-2 hover:text-foreground transition-all duration-200"
+          >
+            shadcn
+          </a>{" "}
+          and add the components you need.
         </p>
-        <div className="flex gap-2 flex-row flex-wrap items-end">
+      </header>
+      <main className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative min-h-0 overflow-hidden">
+        <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
           {components.map((component) => (
-            <Button variant="link" size="xs" asChild key={component.id}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+              asChild
+              key={component.id}
+            >
               <Link href={`#${component.id}`}>{component.name}</Link>
             </Button>
           ))}
         </div>
-      </header>
-      <main className="flex flex-col flex-1 gap-8">
-        {components.map((component) => (
-          <ComponentFrame
-            key={component.id}
-            title={component.name}
-            id={component.id}
-            componentName={component.id}
-            description={component.description}
-          >
-            {component.demo}
-          </ComponentFrame>
-        ))}
+        <div className="flex flex-col flex-1 gap-8 col-span-3 overflow-y-auto scroll-smooth">
+          {components.map((component) => (
+            <ComponentFrame
+              key={component.id}
+              title={component.name}
+              id={component.id}
+              componentName={component.id}
+              description={component.description}
+            >
+              {component.demo}
+            </ComponentFrame>
+          ))}
+        </div>
       </main>
     </div>
   );
