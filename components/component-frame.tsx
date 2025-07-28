@@ -57,10 +57,10 @@ export default function ComponentFrame({
           <ScriptCopyBtn
             className=""
             commandMap={{
-              npm: `npx shadcn@latest add ${BASE_URL}${componentName}`,
-              yarn: `yarn shadcn@latest add ${BASE_URL}${componentName}`,
-              pnpm: `pnpm dlx shadcn@latest add ${BASE_URL}${componentName}`,
-              bun: `bunx shadcn@latest add ${BASE_URL}${componentName}`,
+              npm: `npx shadcn@latest add ${BASE_URL}${componentName}.json`,
+              yarn: `yarn shadcn@latest add ${BASE_URL}${componentName}.json`,
+              pnpm: `pnpm dlx shadcn@latest add ${BASE_URL}${componentName}.json`,
+              bun: `bunx shadcn@latest add ${BASE_URL}${componentName}.json`,
             }}
           />
           {code && (
