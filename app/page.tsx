@@ -1,8 +1,4 @@
 import * as React from "react";
-import { HelloWorld } from "@/registry/new-york/blocks/hello-world/hello-world";
-import { ExampleForm } from "@/registry/new-york/blocks/example-form/example-form";
-import PokemonPage from "@/registry/new-york/blocks/complex-component/page";
-import { ExampleCard } from "@/registry/new-york/blocks/example-with-css/example-card";
 import ComponentFrame from "@/components/component-frame";
 import BadgeDemo from "@/components/demos/badge-demo";
 import ButtonDemo from "@/components/demos/button-demo";
@@ -123,9 +119,9 @@ export default function Home() {
   return (
     <div className="max-w-3xl mx-auto flex flex-col min-h-svh px-4 py-8 gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay's Components</h1>
+        <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay&apos;s Components</h1>
         <p className="text-muted-foreground text-lg">
-          A set of components I've built. Designed to be flexible, LLM-friendly, and functional
+          A set of components I&apos;ve built. Designed to be flexible, LLM-friendly, and functional
           while still being beautiful.
         </p>
         <div className="flex gap-2 flex-row flex-wrap items-end">

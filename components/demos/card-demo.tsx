@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/registry/new-york/blocks/card/card";
-import { Button } from "@/registry/new-york/blocks/button/button";
+import { Card, CardTitle, CardDescription } from "@/registry/new-york/blocks/card/card";
 
 export default function CardDemo() {
   return (

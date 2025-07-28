@@ -1,5 +1,4 @@
 import { Button } from "@/registry/new-york/blocks/button/button";
-import { Plus } from "lucide-react";
 
 export default function ButtonDemo() {
   return (
