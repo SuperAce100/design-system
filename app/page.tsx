@@ -20,44 +20,53 @@ import TextareaDemo from "@/components/demos/textarea-demo";
 import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
+import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 // This page displays items from the custom registry.
 // You are free to implement this with your own design as needed.
 
 const components = [
   {
+    id: "jsx-preview",
+    name: "JSX Preview",
+    description:
+      "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
+    demo: <JSXPreviewDemo />,
+  },
+  {
     id: "select",
     name: "Select",
-    description: "A simple select component with a placeholder.",
+    description: "A lightly skinned select component.",
     demo: <SelectDemo />,
   },
   {
     id: "input",
     name: "Input",
-    description: "A simple input component with a placeholder.",
+    description: "A simple input component with a tactile feel.",
     demo: <InputDemo />,
   },
   {
     id: "textarea",
     name: "Textarea",
-    description: "A simple textarea component with a placeholder.",
+    description: "An input that can increase in height to accommodate more text.",
     demo: <TextareaDemo />,
   },
   {
     id: "chat-input",
     name: "Chat Input",
-    description: "A simple chat input component with a placeholder.",
+    description: "A chat input component for a nice chatbot experience. Ready for useChat().",
     demo: <ChatInputDemo />,
   },
   {
     id: "chat-message",
     name: "Chat Message",
-    description: "A simple chat message component with a placeholder.",
+    description:
+      "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
     demo: <ChatMessageDemo />,
   },
   {
     id: "badge",
     name: "Badge",
-    description: "A simple badge component with an edible look.",
+    description: "A clean set of badge components with an edible look.",
     demo: <BadgeDemo />,
   },
   {
@@ -105,7 +114,7 @@ const components = [
   {
     id: "markdown",
     name: "Markdown",
-    description: "A markdown component with syntax highlighting and quick copying.",
+    description: "A markdown component with a clean look and no-frills parsing.",
     demo: <MarkdownDemo />,
   },
 ];
@@ -114,7 +123,7 @@ export default function Home() {
   return (
     <div className="max-w-3xl mx-auto flex flex-col min-h-svh px-4 py-8 gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-4xl font-medium tracking-tight">Asanshay's Components</h1>
+        <h1 className="text-4xl font-semibold tracking-tight">Asanshay's Components</h1>
         <p className="text-muted-foreground">
           A set of components I've collected over dozens of React projects. Designed to be flexible,
           LLM-friendly, and functional while still being beautiful.
