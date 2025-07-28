@@ -17,8 +17,6 @@ import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
-// This page displays items from the custom registry.
-// You are free to implement this with your own design as needed.
 
 const components = [
   {
