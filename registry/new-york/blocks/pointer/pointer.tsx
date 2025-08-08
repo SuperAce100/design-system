@@ -68,14 +68,12 @@ export function Pointer({ x, y, thoughts, clampToLayer = true, className, ...pro
 
       {/* Thoughts bubble (anchored near bottom-right of the cursor) */}
       <div
-        className={`absolute z-[5] w-fit max-w-md select-text top-6 left-6 transition-opacity duration-300 ease-out rounded-xl border border-border bg-card text-card-foreground shadow-md px-3 py-2 text-xs ${
+        className={`absolute z-[5] select-text top-6 left-6 inline-flex items-center rounded-xl border border-border bg-card text-card-foreground shadow-md px-3 py-1.5 text-xs whitespace-nowrap transition-opacity duration-200 ease-out ${
           showThoughts ? "opacity-100" : "opacity-0"
         }`}
         aria-hidden={!showThoughts}
       >
-        <div className=" animate-pulse">
-          {thoughts}
-        </div>
+        {thoughts}
       </div>
     </div>
   );

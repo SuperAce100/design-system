@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Asanshay Design System",
+  title: "Asanshay's Components",
   description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
 };
 
