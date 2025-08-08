@@ -4,6 +4,19 @@
   "homepage": "https://ds.asanshay.com",
   "items": [
     {
+      "name": "pointer",
+      "type": "registry:component",
+      "title": "Pointer",
+      "description": "A controllable on-screen pointer that moves to coordinates and shows thoughts.",
+      "dependencies": ["lucide-react"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/pointer/pointer.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "window",
       "type": "registry:component",
       "title": "Window",

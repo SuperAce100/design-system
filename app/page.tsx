@@ -18,6 +18,7 @@ import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
+import PointerDemo from "@/components/demos/pointer-demo";
 
 const components = [
   {
@@ -27,6 +28,13 @@ const components = [
     description:
       "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
     demo: <JSXPreviewDemo />,
+  },
+  {
+    id: "pointer",
+    name: "Pointer",
+    section: "AI",
+    description: "A controllable on-screen pointer that moves to coordinates and shows thoughts.",
+    demo: <PointerDemo />,
   },
   {
     id: "window",
