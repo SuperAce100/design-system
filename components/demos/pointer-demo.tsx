@@ -5,44 +5,29 @@ import { Pointer, PointerLayer, usePointer } from "@/registry/new-york/blocks/po
 import { Button } from "@/registry/new-york/blocks/button/button";
 
 export default function PointerDemo() {
-  const { x, y, thoughts, status, moveTo } = usePointer({ x: 24, y: 24 });
+  const { x, y, thoughts, moveTo } = usePointer({ x: 24, y: 24 });
 
   const randomMove = React.useCallback(() => {
     const container = document.querySelector("[data-pointer-layer]") as HTMLElement | null;
     const rect = container?.getBoundingClientRect();
     const nx = rect ? Math.floor(Math.random() * Math.max(0, rect.width - 24)) : Math.floor(Math.random() * 280);
     const ny = rect ? Math.floor(Math.random() * Math.max(0, rect.height - 24)) : Math.floor(Math.random() * 160);
-    const thoughts = [
-      "Thinking...",
-      "Analyzing UI",
-      "Planning step",
-      "Navigating",
-      "Scanning",
-    ];
+    const thoughts = ["On it", "Navigating", "Working", "Moving", "Queued"];
     const pick = thoughts[Math.floor(Math.random() * thoughts.length)];
-    moveTo({ x: nx, y: ny, thoughts: pick, status: "moving" });
-    window.setTimeout(() => moveTo({ x: nx, y: ny, status: "idle" }), 350);
+    moveTo({ x: nx, y: ny, thoughts: pick });
   }, [moveTo]);
 
   return (
     <div className="flex flex-col gap-4 w-full h-full">
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={randomMove}>Random move</Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => moveTo({ x: 24, y: 24, thoughts: "Reset position", status: "moving" })}
-        >
+        <Button size="sm" variant="outline" onClick={() => moveTo({ x: 24, y: 24, thoughts: "Reset position" })}>
           Reset
         </Button>
-        <Button size="sm" variant="secondary" onClick={() => moveTo({ x, y, status: "thinking", thoughts: "Thinking..." })}>Think</Button>
       </div>
 
       <PointerLayer className="relative w-full h-[300px] border border-dashed rounded-2xl" data-pointer-layer>
-        <div className="absolute inset-0 grid place-items-center pointer-events-none">
-          <span className="text-xs text-muted-foreground">Layer (click buttons to move the pointer)</span>
-        </div>
-        <Pointer x={x} y={y} thoughts={thoughts ?? undefined} status={status} />
+        <Pointer x={x} y={y} thoughts={thoughts ?? undefined} />
       </PointerLayer>
     </div>
   );
