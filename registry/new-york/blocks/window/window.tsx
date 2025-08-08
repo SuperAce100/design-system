@@ -7,12 +7,16 @@ type Bounds = { width: number; height: number } | null;
 
 const WindowContainerContext = React.createContext<{
   getRect: () => DOMRect | null;
+  bumpZ: () => number;
+  topZ: number;
 } | null>(null);
 
 export interface WindowContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function WindowContainer({ className, children, ...props }: WindowContainerProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const zCounterRef = React.useRef<number>(10);
+  const [topZ, setTopZ] = React.useState<number>(zCounterRef.current);
 
   const getRect = React.useCallback((): DOMRect | null => {
     const el = containerRef.current;
@@ -20,8 +24,14 @@ export function WindowContainer({ className, children, ...props }: WindowContain
     return el.getBoundingClientRect();
   }, []);
 
+  const bumpZ = React.useCallback((): number => {
+    zCounterRef.current = zCounterRef.current + 1;
+    setTopZ(zCounterRef.current);
+    return zCounterRef.current;
+  }, []);
+
   return (
-    <WindowContainerContext.Provider value={{ getRect }}>
+    <WindowContainerContext.Provider value={{ getRect, bumpZ, topZ }}>
       <div
         ref={containerRef}
         data-window-container
@@ -37,6 +47,11 @@ export function WindowContainer({ className, children, ...props }: WindowContain
 function useContainerBounds() {
   const ctx = React.useContext(WindowContainerContext);
   return ctx?.getRect ?? (() => null);
+}
+
+function useZOrder() {
+  const ctx = React.useContext(WindowContainerContext);
+  return { bumpZ: ctx?.bumpZ ?? (() => 1), topZ: ctx?.topZ ?? 1 };
 }
 
 export interface WindowProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -63,6 +78,7 @@ export function Window({
   ...props
 }: WindowProps) {
   const getRect = useContainerBounds();
+  const { bumpZ, topZ } = useZOrder();
 
   const [position, setPosition] = React.useState({ x: initialX, y: initialY });
   const [size, setSize] = React.useState({ width: initialWidth, height: initialHeight });
@@ -90,6 +106,8 @@ export function Window({
   const prevHeightForMinimizeRef = React.useRef<number | null>(null);
   const [animateNext, setAnimateNext] = React.useState(false);
   const isInteracting = isDragging || Boolean(isResizing);
+  const [zIndex, setZIndex] = React.useState<number>(() => bumpZ());
+  const isFocused = zIndex === topZ;
 
   React.useEffect(() => {
     if (!animateNext) return;
@@ -116,6 +134,7 @@ export function Window({
     // Avoid starting a drag if this pointerdown is part of a double-click (handled separately)
     if ((e as any).detail >= 2) return;
     setIsDragging(true);
+    setZIndex(bumpZ());
     const rect = getRect();
     const localX = rect ? e.clientX - rect.left : e.clientX;
     const localY = rect ? e.clientY - rect.top : e.clientY;
@@ -140,6 +159,7 @@ export function Window({
     (e.target as Element).setPointerCapture?.(e.pointerId);
     setAnimateNext(false);
     setIsResizing(direction);
+    setZIndex(bumpZ());
   };
 
   React.useEffect(() => {
@@ -220,8 +240,9 @@ export function Window({
         isDragging && "cursor-grabbing",
         className
       )}
-      style={{ left: position.x, top: position.y, width: size.width, height: size.height }}
+      style={{ left: position.x, top: position.y, width: size.width, height: size.height, zIndex }}
       {...props}
+      onPointerDown={() => setZIndex(bumpZ())}
     >
       <div
         className={cn(
@@ -305,7 +326,7 @@ export function Window({
             aria-label="Maximize window"
           />
         </div>
-        <span className="text-xs font-medium truncate tracking-wide px-2 flex-1 min-w-0 text-center mr-12">{title}</span>
+        <span className={cn("text-xs truncate tracking-wide px-2 flex-1 min-w-0 text-center mr-12", isFocused ? "font-bold" : "font-medium")}>{title}</span>
       </div>
       <div className="w-full h-[calc(100%-2.25rem)] p-3 overflow-auto">{children}</div>
       {/* Resize handles */}
