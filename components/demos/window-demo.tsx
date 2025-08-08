@@ -10,7 +10,7 @@ export default function WindowDemo() {
   ]);
 
   return (
-    <div className="w-full h-[380px]">
+    <div className="w-full h-full">
       <WindowContainer className="w-full h-full border border-border border-dashed rounded-2xl">
         {windows.map((w) => (
           <Window

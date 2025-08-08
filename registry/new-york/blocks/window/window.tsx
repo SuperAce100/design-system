@@ -88,6 +88,14 @@ export function Window({
     null
   );
   const prevHeightForMinimizeRef = React.useRef<number | null>(null);
+  const [animateNext, setAnimateNext] = React.useState(false);
+  const isInteracting = isDragging || Boolean(isResizing);
+
+  React.useEffect(() => {
+    if (!animateNext) return;
+    const id = window.setTimeout(() => setAnimateNext(false), 320);
+    return () => window.clearTimeout(id);
+  }, [animateNext]);
 
   const clampToBounds = React.useCallback(
     (x: number, y: number, width: number, height: number) => {
@@ -105,6 +113,8 @@ export function Window({
 
   const onHeaderPointerDown = (e: React.PointerEvent) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
+    // Avoid starting a drag if this pointerdown is part of a double-click (handled separately)
+    if ((e as any).detail >= 2) return;
     setIsDragging(true);
     const rect = getRect();
     const localX = rect ? e.clientX - rect.left : e.clientX;
@@ -128,6 +138,7 @@ export function Window({
       | "bottom-left"
   ) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
+    setAnimateNext(false);
     setIsResizing(direction);
   };
 
@@ -204,7 +215,8 @@ export function Window({
     hidden ? null : (
     <div
       className={cn(
-        "absolute select-none rounded-xl border border-border bg-white shadow-md shadow-border/60 overflow-hidden",
+        "absolute select-none rounded-xl border border-border bg-white shadow-lg shadow-border/60 overflow-hidden",
+        animateNext && !isInteracting && "transition-all duration-300 ease-out",
         isDragging && "cursor-grabbing",
         className
       )}
@@ -216,6 +228,26 @@ export function Window({
           "flex items-center justify-between px-3 py-2 bg-muted text-muted-foreground cursor-grab active:cursor-grabbing"
         )}
         onPointerDown={onHeaderPointerDown}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          const rect = getRect();
+          if (!rect) return;
+          setAnimateNext(true);
+          if (!isMaximized) {
+            prevForMaximizeRef.current = { x: position.x, y: position.y, width: size.width, height: size.height };
+            setPosition({ x: 0, y: 0 });
+            setSize({ width: rect.width, height: rect.height });
+            setIsMaximized(true);
+            setIsMinimized(false);
+          } else {
+            const prev = prevForMaximizeRef.current;
+            if (prev) {
+              setPosition({ x: prev.x, y: prev.y });
+              setSize({ width: prev.width, height: prev.height });
+            }
+            setIsMaximized(false);
+          }
+        }}
         aria-label="Drag window"
       >
         <div className="flex items-center gap-1.5 cursor-default" onPointerDown={(e) => e.stopPropagation()}>
@@ -232,6 +264,7 @@ export function Window({
           <button
             type="button"
             onClick={() => {
+              setAnimateNext(true);
               if (!isMinimized) {
                 prevHeightForMinimizeRef.current = size.height;
                 setSize((s) => ({ ...s, height: HEADER_HEIGHT_PX }));
@@ -249,6 +282,7 @@ export function Window({
           <button
             type="button"
             onClick={() => {
+              setAnimateNext(true);
               const rect = getRect();
               if (!rect) return;
               if (!isMaximized) {
