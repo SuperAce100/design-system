@@ -7,6 +7,7 @@ import CardDemo from "@/components/demos/card-demo";
 import DescriptionListDemo from "@/components/demos/description-list-demo";
 import PageHeaderDemo from "@/components/demos/page-header-demo";
 import MotionBlurTextDemo from "@/components/demos/motion-blur-text";
+import WindowDemo from "@/components/demos/window-demo";
 import CodeBlockDemo from "@/components/demos/code-block-demo";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import Link from "next/link";
@@ -26,6 +27,13 @@ const components = [
     description:
       "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
     demo: <JSXPreviewDemo />,
+  },
+  {
+    id: "window",
+    name: "Window",
+    section: "Primitives",
+    description: "A draggable, resizable window inside a container.",
+    demo: <WindowDemo />,
   },
   {
     id: "select",

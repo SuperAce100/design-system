@@ -4,6 +4,19 @@
   "homepage": "https://ds.asanshay.com",
   "items": [
     {
+      "name": "window",
+      "type": "registry:component",
+      "title": "Window",
+      "description": "A draggable, resizable window inside a container.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/window/window.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "jsx-preview",
       "type": "registry:component",
       "title": "JSX Preview",
