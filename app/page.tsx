@@ -21,27 +21,41 @@ import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
 
 const components = [
-  {
-    id: "jsx-preview",
-    name: "JSX Preview",
-    section: "AI",
-    description:
-      "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
-    demo: <JSXPreviewDemo />,
-  },
-  {
-    id: "pointer",
-    name: "Pointer",
-    section: "AI",
-    description: "A controllable on-screen pointer that moves to coordinates and shows thoughts.",
-    demo: <PointerDemo />,
-  },
+  
   {
     id: "window",
     name: "Window",
     section: "Primitives",
     description: "A draggable, resizable window inside a container.",
     demo: <WindowDemo />,
+  },
+  {
+    id: "badge",
+    name: "Badge",
+    section: "Primitives",
+    description: "A clean set of badge components with an edible look.",
+    demo: <BadgeDemo />,
+  },
+  {
+    id: "button",
+    name: "Button",
+    section: "Primitives",
+    description: "A button component that *feels* good to use.",
+    demo: <ButtonDemo />,
+  },
+  {
+    id: "code-block",
+    name: "Code Block",
+    section: "Primitives",
+    description: "A code block with syntax highlighting and quick copying.",
+    demo: <CodeBlockDemo />,
+  },
+  {
+    id: "markdown",
+    name: "Markdown",
+    section: "Primitives",
+    description: "A markdown component with a clean look and no-frills parsing.",
+    demo: <MarkdownDemo />,
   },
   {
     id: "select",
@@ -65,42 +79,6 @@ const components = [
     demo: <TextareaDemo />,
   },
   {
-    id: "chat-input",
-    name: "Chat Input",
-    section: "AI",
-    description: "A chat input component for a nice chatbot experience. Ready for useChat().",
-    demo: <ChatInputDemo />,
-  },
-  {
-    id: "chat-message",
-    name: "Chat Message",
-    section: "AI",
-    description:
-      "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
-    demo: <ChatMessageDemo />,
-  },
-  {
-    id: "badge",
-    name: "Badge",
-    section: "Primitives",
-    description: "A clean set of badge components with an edible look.",
-    demo: <BadgeDemo />,
-  },
-  {
-    id: "button",
-    name: "Button",
-    section: "Primitives",
-    description: "A button component that *feels* good to use.",
-    demo: <ButtonDemo />,
-  },
-  {
-    id: "reveal",
-    name: "Reveal",
-    section: "Effects",
-    description: "A simple wrapper that reveals content when it scrolls into view.",
-    demo: <RevealDemo />,
-  },
-  {
     id: "card",
     name: "Card",
     section: "Primitives",
@@ -121,6 +99,46 @@ const components = [
     description: "A clean page header so your pages look consistent.",
     demo: <PageHeaderDemo />,
   },
+  
+  {
+    id: "chat-input",
+    name: "Chat Input",
+    section: "AI",
+    description: "A chat input component for a nice chatbot experience. Ready for useChat().",
+    demo: <ChatInputDemo />,
+  },
+  {
+    id: "chat-message",
+    name: "Chat Message",
+    section: "AI",
+    description:
+      "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+    demo: <ChatMessageDemo />,
+  },
+  {
+    id: "jsx-preview",
+    name: "JSX Preview",
+    section: "AI",
+    description:
+      "A preview of a JSX component rendered from a string. Useful for LLM-generated UIs.",
+    demo: <JSXPreviewDemo />,
+  },
+  {
+    id: "pointer",
+    name: "Pointer",
+    section: "AI",
+    description: "A controllable on-screen pointer that moves to coordinates and shows thoughts.",
+    demo: <PointerDemo />,
+  },
+  
+  {
+    id: "reveal",
+    name: "Reveal",
+    section: "Effects",
+    description: "A simple wrapper that reveals content when it scrolls into view.",
+    demo: <RevealDemo />,
+  },
+  
   {
     id: "motion-blur-text",
     name: "Motion Blur Text",
@@ -128,20 +146,7 @@ const components = [
     description: "A cool motion blur text effect.",
     demo: <MotionBlurTextDemo />,
   },
-  {
-    id: "code-block",
-    name: "Code Block",
-    section: "Primitives",
-    description: "A code block with syntax highlighting and quick copying.",
-    demo: <CodeBlockDemo />,
-  },
-  {
-    id: "markdown",
-    name: "Markdown",
-    section: "Primitives",
-    description: "A markdown component with a clean look and no-frills parsing.",
-    demo: <MarkdownDemo />,
-  },
+  
 ];
 
 // Order in which sections should appear in the sidebar
