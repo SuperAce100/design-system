@@ -47,6 +47,7 @@ export interface WindowProps extends React.HTMLAttributes<HTMLDivElement> {
   initialHeight?: number;
   minWidth?: number;
   minHeight?: number;
+  onClose?: () => void;
 }
 
 export function Window({
@@ -66,8 +67,27 @@ export function Window({
   const [position, setPosition] = React.useState({ x: initialX, y: initialY });
   const [size, setSize] = React.useState({ width: initialWidth, height: initialHeight });
   const [isDragging, setIsDragging] = React.useState(false);
-  const [isResizing, setIsResizing] = React.useState<null | "right" | "bottom" | "corner">(null);
+  const [isResizing, setIsResizing] = React.useState<
+    | null
+    | "right"
+    | "left"
+    | "top"
+    | "bottom"
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left"
+  >(null);
   const dragOffsetRef = React.useRef({ dx: 0, dy: 0 });
+  const HEADER_HEIGHT_PX = 36; // 2.25rem at 16px base
+
+  const [hidden, setHidden] = React.useState(false);
+  const [isMinimized, setIsMinimized] = React.useState(false);
+  const [isMaximized, setIsMaximized] = React.useState(false);
+  const prevForMaximizeRef = React.useRef<{ x: number; y: number; width: number; height: number } | null>(
+    null
+  );
+  const prevHeightForMinimizeRef = React.useRef<number | null>(null);
 
   const clampToBounds = React.useCallback(
     (x: number, y: number, width: number, height: number) => {
@@ -97,7 +117,15 @@ export function Window({
 
   const onResizePointerDown = (
     e: React.PointerEvent,
-    direction: "right" | "bottom" | "corner"
+    direction:
+      | "right"
+      | "left"
+      | "top"
+      | "bottom"
+      | "top-right"
+      | "top-left"
+      | "bottom-right"
+      | "bottom-left"
   ) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
     setIsResizing(direction);
@@ -115,16 +143,32 @@ export function Window({
         setPosition(clamped);
       } else if (isResizing) {
         if (!rect) return;
-        if (isResizing === "right" || isResizing === "corner") {
+        if (isResizing === "right" || isResizing === "bottom-right" || isResizing === "top-right") {
           const maxWidth = Math.max(minWidth, rect.width - position.x);
           const desired = localX - position.x; // width based on pointer
           const newWidth = Math.max(minWidth, Math.min(maxWidth, desired));
           setSize((s) => ({ ...s, width: newWidth }));
         }
-        if (isResizing === "bottom" || isResizing === "corner") {
+        if (isResizing === "left" || isResizing === "bottom-left" || isResizing === "top-left") {
+          const minX = 0;
+          const maxX = position.x + size.width - minWidth;
+          const newX = Math.max(minX, Math.min(maxX, localX));
+          const newWidth = Math.max(minWidth, size.width + (position.x - newX));
+          setPosition((p) => ({ ...p, x: newX }));
+          setSize((s) => ({ ...s, width: newWidth }));
+        }
+        if (isResizing === "bottom" || isResizing === "bottom-right" || isResizing === "bottom-left") {
           const maxHeight = Math.max(minHeight, rect.height - position.y);
           const desired = localY - position.y; // height based on pointer
           const newHeight = Math.max(minHeight, Math.min(maxHeight, desired));
+          setSize((s) => ({ ...s, height: newHeight }));
+        }
+        if (isResizing === "top" || isResizing === "top-right" || isResizing === "top-left") {
+          const minY = 0;
+          const maxY = position.y + size.height - minHeight;
+          const newY = Math.max(minY, Math.min(maxY, localY));
+          const newHeight = Math.max(minHeight, size.height + (position.y - newY));
+          setPosition((p) => ({ ...p, y: newY }));
           setSize((s) => ({ ...s, height: newHeight }));
         }
       }
@@ -157,6 +201,7 @@ export function Window({
   }, [clampToBounds, size.width, size.height]);
 
   return (
+    hidden ? null : (
     <div
       className={cn(
         "absolute select-none rounded-xl border border-border bg-white shadow-md shadow-border/60 overflow-hidden",
@@ -173,12 +218,60 @@ export function Window({
         onPointerDown={onHeaderPointerDown}
         aria-label="Drag window"
       >
-        <span className="text-xs font-medium truncate">{title}</span>
-        <div className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-red-400" />
-          <span className="size-2 rounded-full bg-yellow-400" />
-          <span className="size-2 rounded-full bg-green-400" />
+        <div className="flex items-center gap-1.5 cursor-default" onPointerDown={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof props.onClose === "function") props.onClose();
+              else setHidden(true);
+            }}
+            title="Close"
+            className="size-3 rounded-full bg-red-500 hover:brightness-90 active:brightness-95 transition-all"
+            aria-label="Close window"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (!isMinimized) {
+                prevHeightForMinimizeRef.current = size.height;
+                setSize((s) => ({ ...s, height: HEADER_HEIGHT_PX }));
+                setIsMinimized(true);
+              } else {
+                const prev = prevHeightForMinimizeRef.current ?? initialHeight;
+                setSize((s) => ({ ...s, height: prev }));
+                setIsMinimized(false);
+              }
+            }}
+            title="Minimize"
+            className="size-3 rounded-full bg-yellow-400 hover:brightness-90 active:brightness-95 transition-all"
+            aria-label="Minimize window"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const rect = getRect();
+              if (!rect) return;
+              if (!isMaximized) {
+                prevForMaximizeRef.current = { x: position.x, y: position.y, width: size.width, height: size.height };
+                setPosition({ x: 0, y: 0 });
+                setSize({ width: rect.width, height: rect.height });
+                setIsMaximized(true);
+                setIsMinimized(false);
+              } else {
+                const prev = prevForMaximizeRef.current;
+                if (prev) {
+                  setPosition({ x: prev.x, y: prev.y });
+                  setSize({ width: prev.width, height: prev.height });
+                }
+                setIsMaximized(false);
+              }
+            }}
+            title="Maximize"
+            className="size-3 rounded-full bg-green-500 hover:brightness-90 active:brightness-95 transition-all"
+            aria-label="Maximize window"
+          />
         </div>
+        <span className="text-xs font-medium truncate tracking-wide px-2 flex-1 min-w-0 text-center mr-12">{title}</span>
       </div>
       <div className="w-full h-[calc(100%-2.25rem)] p-3 overflow-auto">{children}</div>
       {/* Resize handles */}
@@ -188,16 +281,42 @@ export function Window({
         aria-label="Resize right"
       />
       <div
+        className="absolute left-0 top-0 h-full w-1 cursor-ew-resize"
+        onPointerDown={(e) => onResizePointerDown(e, "left")}
+        aria-label="Resize left"
+      />
+      <div
         className="absolute left-0 bottom-0 w-full h-1 cursor-ns-resize"
         onPointerDown={(e) => onResizePointerDown(e, "bottom")}
         aria-label="Resize bottom"
       />
       <div
+        className="absolute left-0 top-0 w-full h-1 cursor-ns-resize"
+        onPointerDown={(e) => onResizePointerDown(e, "top")}
+        aria-label="Resize top"
+      />
+      <div
         className="absolute right-0 bottom-0 size-3 cursor-nwse-resize"
-        onPointerDown={(e) => onResizePointerDown(e, "corner")}
+        onPointerDown={(e) => onResizePointerDown(e, "bottom-right")}
+        aria-label="Resize corner"
+      />
+      <div
+        className="absolute left-0 bottom-0 size-3 cursor-nesw-resize"
+        onPointerDown={(e) => onResizePointerDown(e, "bottom-left")}
+        aria-label="Resize corner"
+      />
+      <div
+        className="absolute right-0 top-0 size-3 cursor-nesw-resize"
+        onPointerDown={(e) => onResizePointerDown(e, "top-right")}
+        aria-label="Resize corner"
+      />
+      <div
+        className="absolute left-0 top-0 size-3 cursor-nwse-resize"
+        onPointerDown={(e) => onResizePointerDown(e, "top-left")}
         aria-label="Resize corner"
       />
     </div>
+    )
   );
 }
 
