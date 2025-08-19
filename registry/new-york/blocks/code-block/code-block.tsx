@@ -5,8 +5,9 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { Check, Copy } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneLight, a11yDark as oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { cva } from "class-variance-authority";
+import { useTheme } from "next-themes";
 
 const customSyntaxTheme = {
   ...oneLight,
@@ -21,6 +22,27 @@ const customSyntaxTheme = {
   },
   'code[class*="language-"]': {
     ...oneLight['code[class*="language-"]'],
+    background: "none",
+    fontFamily: "Geist Mono, monospace",
+    textShadow: "none",
+    fontSize: "13px",
+    padding: 0,
+  },
+};
+
+const customDarkSyntaxTheme = {
+  ...oneDark,
+  'pre[class*="language-"]': {
+    ...oneDark['pre[class*="language-"]'],
+    background: "hsl(var(--muted))",
+    borderRadius: "0.5rem",
+    fontFamily: "Geist Mono, monospace",
+    textShadow: "none",
+    padding: 0,
+    margin: 0,
+  },
+  'code[class*="language-"]': {
+    ...oneDark['code[class*="language-"]'],
     background: "none",
     fontFamily: "Geist Mono, monospace",
     textShadow: "none",
@@ -61,6 +83,7 @@ export function CodeBlock({
   variant = "default",
   ...props
 }: CodeBlockProps) {
+  const { theme: themeName } = useTheme();
   const codeClassNames = cn("w-full overflow-x-auto text-[13px] font-mono");
   const [copied, setCopied] = useState(false);
   return (
@@ -91,7 +114,7 @@ export function CodeBlock({
       {title && <h3 className="text-sm text-muted-foreground tracking-tight font-mono">{title}</h3>}
       <SyntaxHighlighter
         language={language}
-        style={customSyntaxTheme}
+        style={themeName === "dark" ? customDarkSyntaxTheme : customSyntaxTheme}
         PreTag="div"
         className={codeClassNames}
       >
