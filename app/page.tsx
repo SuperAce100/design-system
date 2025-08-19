@@ -19,7 +19,7 @@ import SelectDemo from "@/components/demos/select-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import ModeToggle from "@/components/ui/mode-toggle";
 
 const components = [
   {
@@ -165,7 +165,10 @@ export default function Home() {
   return (
     <div className="max-w-4xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
       <header className="flex flex-col gap-2 px-3">
-        <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay&apos;s Components</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay&apos;s Components</h1>
+          <ModeToggle />
+        </div>
         <p className="text-muted-foreground text-lg">
           A set of components I&apos;ve built. Designed to be flexible, LLM-friendly, and functional
           while still being beautiful. Just init with{" "}
@@ -177,7 +180,6 @@ export default function Home() {
           </a>{" "}
           and add the components you need.
         </p>
-        <ModeToggle />
       </header>
       <main className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative min-h-0 overflow-hidden">
         <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">

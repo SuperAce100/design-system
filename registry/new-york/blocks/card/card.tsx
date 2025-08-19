@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 const cardVariants = cva("text-card-foreground rounded-3xl p-6 flex flex-col gap-2", {
   variants: {
     variant: {
-      default: "bg-white border border-border shadow-sm shadow-border/60",
-      raised: "bg-white border border-border shadow-xl shadow-border/60 -translate-y-0.5",
+      default: "bg-card border border-border shadow-sm light:shadow-border/60",
+      raised: "bg-card border border-border shadow-xl light:shadow-border/60 -translate-y-0.5",
       flat: "bg-muted",
       outline: "border border-border",
       fancy_light:
-        "border border-primary/30 bg-transparent bg-radial-[at_70%_25%] from-transparent to-primary/20 shadow-lg inset-shadow-sm shadow-border/60 inset-shadow-white/80 transition-all duration-500 hover:bg-primary/10",
+        "border border-primary/30 bg-transparent bg-radial-[at_70%_25%] from-transparent to-primary/20 shadow-lg inset-shadow-sm light:shadow-border/60  inset-shadow-white/80 transition-all duration-500 hover:bg-primary/10",
     },
   },
   defaultVariants: {
