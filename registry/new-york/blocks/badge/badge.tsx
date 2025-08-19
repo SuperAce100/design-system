@@ -7,34 +7,48 @@ import { cn } from "@/lib/utils";
 type Color = "emerald" | "red" | "amber" | "sky" | "indigo" | "orange" | "primary";
 
 const colorVariantsFancy = {
-  primary: "border-primary/10 from-primary/10 to-primary/50 hover:bg-primary/10 text-primary/80",
+  primary:
+    "border-primary/10 from-primary/10 to-primary/50 hover:bg-primary/10 text-primary/80  dark:from-primary/30 dark:hover:bg-primary/10",
   emerald:
-    "border-emerald-300 from-emerald-200/20 to-emerald-300 hover:bg-emerald-100 text-emerald-600",
-  red: "border-red-300 from-red-200/50 to-red-400/80 hover:bg-red-100 text-red-600",
-  amber: "border-amber-300 from-amber-200/20 to-amber-200 hover:bg-amber-100 text-amber-600",
-  sky: "border-sky-300 from-sky-200/20 to-sky-300 hover:bg-sky-100 text-sky-600",
-  indigo: "border-indigo-300 from-indigo-200/20 to-indigo-300 hover:bg-indigo-100 text-indigo-600",
-  orange: "border-orange-300 from-orange-200/20 to-orange-300 hover:bg-orange-100 text-orange-600",
+    "border-emerald-300 from-emerald-200/20 to-emerald-300  hover:bg-emerald-100 text-emerald-600  dark:hover:bg-emerald/10 dark:from-emerald-700/50 dark:text-emerald-400",
+  red: "border-red-300 from-red-200/50 to-red-400/80 hover:bg-red-100 text-red-600 dark:hover:bg-red/30 dark:from-red-700/20 dark:to-transparent dark:text-red-400",
+  amber:
+    "border-amber-300 from-amber-200/20 to-amber-200 hover:bg-amber-100 text-amber-600 dark:hover:bg-amber/30 dark:from-amber-700/50 dark:text-amber-400",
+  sky: "border-sky-300 from-sky-200/20 to-sky-300 hover:bg-sky-100 text-sky-600 dark:hover:bg-sky/30 dark:from-sky-700/50 dark:text-sky-400",
+  indigo:
+    "border-indigo-300 from-indigo-200/20 to-indigo-300 hover:bg-indigo-100 text-indigo-600 dark:hover:bg-indigo/30 dark:from-indigo-700/50 dark:text-indigo-400",
+  orange:
+    "border-orange-300 from-orange-200/20 to-orange-300 hover:bg-orange-100 text-orange-600 dark:hover:bg-orange/30 dark:from-orange-700/50 dark:text-orange-400",
 };
 
 const colorVariantsRegular = {
-  primary: "bg-primary/10 hover:bg-primary/20 text-primary/80",
-  emerald: "bg-emerald-100 hover:bg-emerald-200 text-emerald-600",
-  red: "bg-red-100 hover:bg-red-200 text-red-600",
-  amber: "bg-amber-100 hover:bg-amber-200 text-amber-600",
-  sky: "bg-sky-100 hover:bg-sky-200 text-sky-600",
-  indigo: "bg-indigo-100 hover:bg-indigo-200 text-indigo-600",
-  orange: "bg-orange-100 hover:bg-orange-200 text-orange-600",
+  primary:
+    "bg-primary/10 hover:bg-primary/20 text-primary/80 dark:bg-primary/10 dark:hover:bg-primary/10",
+  emerald:
+    "bg-emerald-100 hover:bg-emerald-200 text-emerald-600 dark:bg-emerald-600/10 dark:hover:bg-emerald-600/30 dark:text-emerald-400",
+  red: "bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-600/10 dark:hover:bg-red-600/30 dark:text-red-400",
+  amber:
+    "bg-amber-100 hover:bg-amber-200 text-amber-600 dark:bg-amber-500/10 dark:hover:bg-amber-600/30 dark:text-amber-400",
+  sky: "bg-sky-100 hover:bg-sky-200 text-sky-600 dark:bg-sky-500/10 dark:hover:bg-sky-600/30 dark:text-sky-400",
+  indigo:
+    "bg-indigo-100 hover:bg-indigo-200 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-600/30 dark:text-indigo-400",
+  orange:
+    "bg-orange-100 hover:bg-orange-200 text-orange-600 dark:bg-orange-500/10 dark:hover:bg-orange-600/30 dark:text-orange-400",
 };
 
 const colorVariantsOutline = {
-  primary: "hover:bg-primary/10 hover:border-primary/80 [&>svg]:text-primary",
-  emerald: "hover:bg-emerald-100 hover:border-emerald-300 [&>svg]:text-emerald-400",
-  red: "hover:bg-red-100 hover:border-red-300 [&>svg]:text-red-400",
-  amber: "hover:bg-amber-100 hover:border-amber-300 [&>svg]:text-amber-400",
-  sky: "hover:bg-sky-100 hover:border-sky-300 [&>svg]:text-sky-400",
-  indigo: "hover:bg-indigo-100 hover:border-indigo-300 [&>svg]:text-indigo-400",
-  orange: "hover:bg-orange-100 hover:border-orange-300 [&>svg]:text-orange-400",
+  primary:
+    "hover:bg-primary/10 hover:border-primary/80 [&>svg]:text-primary dark:hover:bg-primary/10 dark:hover:border-primary/80",
+  emerald:
+    "hover:bg-emerald-100 hover:border-emerald-300 [&>svg]:text-emerald-400 dark:hover:bg-emerald-600/10 dark:hover:border-emerald-300",
+  red: "hover:bg-red-100 hover:border-red-300 [&>svg]:text-red-400 dark:hover:bg-red-600/10 dark:hover:border-red-300",
+  amber:
+    "hover:bg-amber-100 hover:border-amber-300 [&>svg]:text-amber-400 dark:hover:bg-amber-600/10 dark:hover:border-amber-300",
+  sky: "hover:bg-sky-100 hover:border-sky-300 [&>svg]:text-sky-400 dark:hover:bg-sky-600/10 dark:hover:border-sky-300",
+  indigo:
+    "hover:bg-indigo-100 hover:border-indigo-300 [&>svg]:text-indigo-400 dark:hover:bg-indigo-600/10 dark:hover:border-indigo-300",
+  orange:
+    "hover:bg-orange-100 hover:border-orange-300 [&>svg]:text-orange-400 dark:hover:bg-orange-600/10 dark:hover:border-orange-300",
 };
 
 const badgeVariants = cva(
@@ -51,7 +65,7 @@ const badgeVariants = cva(
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:bg-border/50",
         fancy:
-          "bg-white bg-radial-[at_40%_30%] shadow-md inset-shadow-sm shadow-slate-400/10 inset-shadow-white/70 hover:scale-105 hover:rotate-2",
+          "bg-white dark:border-card dark:bg-background bg-radial-[at_40%_30%] shadow-md inset-shadow-sm dark:shadow-none shadow-slate-400/10 inset-shadow-white/70 hover:scale-105 hover:rotate-2 dark:inset-shadow-white/50 dark:inset-shadow-xs dark:to-transparent ",
       },
     },
     defaultVariants: {
