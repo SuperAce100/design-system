@@ -19,9 +19,9 @@ import SelectDemo from "@/components/demos/select-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const components = [
-  
   {
     id: "window",
     name: "Window",
@@ -99,7 +99,7 @@ const components = [
     description: "A clean page header so your pages look consistent.",
     demo: <PageHeaderDemo />,
   },
-  
+
   {
     id: "chat-input",
     name: "Chat Input",
@@ -130,7 +130,7 @@ const components = [
     description: "A controllable on-screen pointer that moves to coordinates and shows thoughts.",
     demo: <PointerDemo />,
   },
-  
+
   {
     id: "reveal",
     name: "Reveal",
@@ -138,7 +138,7 @@ const components = [
     description: "A simple wrapper that reveals content when it scrolls into view.",
     demo: <RevealDemo />,
   },
-  
+
   {
     id: "motion-blur-text",
     name: "Motion Blur Text",
@@ -146,7 +146,6 @@ const components = [
     description: "A cool motion blur text effect.",
     demo: <MotionBlurTextDemo />,
   },
-  
 ];
 
 // Order in which sections should appear in the sidebar
@@ -178,6 +177,7 @@ export default function Home() {
           </a>{" "}
           and add the components you need.
         </p>
+        <ModeToggle />
       </header>
       <main className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative min-h-0 overflow-hidden">
         <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
