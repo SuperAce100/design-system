@@ -100,9 +100,12 @@ export function Window({
   const [hidden, setHidden] = React.useState(false);
   const [isMinimized, setIsMinimized] = React.useState(false);
   const [isMaximized, setIsMaximized] = React.useState(false);
-  const prevForMaximizeRef = React.useRef<{ x: number; y: number; width: number; height: number } | null>(
-    null
-  );
+  const prevForMaximizeRef = React.useRef<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const prevHeightForMinimizeRef = React.useRef<number | null>(null);
   const [animateNext, setAnimateNext] = React.useState(false);
   const isInteracting = isDragging || Boolean(isResizing);
@@ -188,7 +191,11 @@ export function Window({
           setPosition((p) => ({ ...p, x: newX }));
           setSize((s) => ({ ...s, width: newWidth }));
         }
-        if (isResizing === "bottom" || isResizing === "bottom-right" || isResizing === "bottom-left") {
+        if (
+          isResizing === "bottom" ||
+          isResizing === "bottom-right" ||
+          isResizing === "bottom-left"
+        ) {
           const maxHeight = Math.max(minHeight, rect.height - position.y);
           const desired = localY - position.y; // height based on pointer
           const newHeight = Math.max(minHeight, Math.min(maxHeight, desired));
@@ -218,7 +225,18 @@ export function Window({
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", handleUp);
     };
-  }, [isDragging, isResizing, clampToBounds, getRect, minHeight, minWidth, position.x, position.y, size.width, size.height]);
+  }, [
+    isDragging,
+    isResizing,
+    clampToBounds,
+    getRect,
+    minHeight,
+    minWidth,
+    position.x,
+    position.y,
+    size.width,
+    size.height,
+  ]);
 
   // Keep inside bounds if container size changes
   React.useEffect(() => {
@@ -231,11 +249,10 @@ export function Window({
     return () => ro.disconnect();
   }, [clampToBounds, size.width, size.height]);
 
-  return (
-    hidden ? null : (
+  return hidden ? null : (
     <div
       className={cn(
-        "absolute select-none rounded-xl border border-border bg-white shadow-lg shadow-border/60 overflow-hidden",
+        "absolute select-none rounded-xl border border-border bg-card shadow-lg light:shadow-border/60 overflow-hidden",
         animateNext && !isInteracting && "transition-all duration-300 ease-out",
         isDragging && "cursor-grabbing",
         className
@@ -255,7 +272,12 @@ export function Window({
           if (!rect) return;
           setAnimateNext(true);
           if (!isMaximized) {
-            prevForMaximizeRef.current = { x: position.x, y: position.y, width: size.width, height: size.height };
+            prevForMaximizeRef.current = {
+              x: position.x,
+              y: position.y,
+              width: size.width,
+              height: size.height,
+            };
             setPosition({ x: 0, y: 0 });
             setSize({ width: rect.width, height: rect.height });
             setIsMaximized(true);
@@ -271,7 +293,10 @@ export function Window({
         }}
         aria-label="Drag window"
       >
-        <div className="flex items-center gap-1.5 cursor-default" onPointerDown={(e) => e.stopPropagation()}>
+        <div
+          className="flex items-center gap-1.5 cursor-default"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           <button
             type="button"
             onClick={() => {
@@ -307,7 +332,12 @@ export function Window({
               const rect = getRect();
               if (!rect) return;
               if (!isMaximized) {
-                prevForMaximizeRef.current = { x: position.x, y: position.y, width: size.width, height: size.height };
+                prevForMaximizeRef.current = {
+                  x: position.x,
+                  y: position.y,
+                  width: size.width,
+                  height: size.height,
+                };
                 setPosition({ x: 0, y: 0 });
                 setSize({ width: rect.width, height: rect.height });
                 setIsMaximized(true);
@@ -326,7 +356,14 @@ export function Window({
             aria-label="Maximize window"
           />
         </div>
-        <span className={cn("text-xs truncate tracking-wide px-2 flex-1 min-w-0 text-center mr-12", isFocused ? "font-bold" : "font-medium")}>{title}</span>
+        <span
+          className={cn(
+            "text-xs truncate tracking-wide px-2 flex-1 min-w-0 text-center mr-12",
+            isFocused ? "font-bold" : "font-medium"
+          )}
+        >
+          {title}
+        </span>
       </div>
       <div className="w-full h-[calc(100%-2.25rem)] p-3 overflow-auto">{children}</div>
       {/* Resize handles */}
@@ -371,10 +408,7 @@ export function Window({
         aria-label="Resize corner"
       />
     </div>
-    )
   );
 }
 
 export default Window;
-
-
