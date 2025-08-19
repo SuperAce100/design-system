@@ -17,7 +17,7 @@ const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
     variant: {
       message:
-        "bg-gradient-to-b from-primary to-primary/70 border border-primary text-primary-foreground shadow-lg shadow-slate-200/50 max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
+        "bg-gradient-to-b from-primary to-primary/70 border border-primary text-primary-foreground shadow-lg shadow-slate-200/50 dark:shadow-none max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
       title: "font-semibold tracking-tight text-3xl mt-4 border-b-2 border-primary/30 pb-2",
     },
   },
@@ -26,7 +26,7 @@ const assistantMessageVariants = cva("flex flex-col gap-2", {
   variants: {
     variant: {
       message:
-        "bg-gradient-to-b from-muted to-muted/50 rounded-xl px-6 py-4 border shadow-lg shadow-slate-200/50 mr-8",
+        "bg-gradient-to-b from-muted to-muted/50 rounded-xl px-6 py-4 border shadow-lg shadow-slate-200/50 dark:shadow-none mr-8",
       paragraph: "",
     },
   },
