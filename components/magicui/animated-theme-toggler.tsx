@@ -1,26 +1,29 @@
 "use client";
 
 import { Moon, SunDim } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 type props = {
   className?: string;
 };
 
 export const AnimatedThemeToggler = ({ className }: props) => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const { theme, setTheme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(theme === "dark");
+  useEffect(() => {
+    setIsDarkMode(theme === "dark");
+  }, [theme]);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const changeTheme = async () => {
     if (!buttonRef.current) return;
 
-    // @ts-expect-error: startViewTransition is not yet in TypeScript DOM types
     await document.startViewTransition(() => {
       flushSync(() => {
-        const dark = document.documentElement.classList.toggle("dark");
-        setIsDarkMode(dark);
+        setTheme(theme === "dark" ? "light" : "dark");
       });
     }).ready;
 
