@@ -7,6 +7,12 @@ import React from "react";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { Copy, Check } from "lucide-react";
 import { ToolUIPart, UIMessage } from "ai";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
@@ -26,6 +32,25 @@ const assistantMessageVariants = cva("flex flex-col gap-2", {
     },
   },
 });
+
+// Helper function to render message parts
+const renderMessageParts = (parts: any[], startIndex = 0) => {
+  return parts.map((part, index) => {
+    const key = startIndex + index;
+    if (part.type.includes("tool")) {
+      return <div key={key}>Tool</div>;
+    } else if (part.type === "text") {
+      return <Markdown key={key}>{part.text}</Markdown>;
+    } else if (part.type === "reasoning") {
+      return (
+        <Markdown key={key} className="text-sm text-muted-foreground">
+          {part.text}
+        </Markdown>
+      );
+    }
+    return null;
+  });
+};
 
 export default function ChatMessage({
   message,
@@ -50,6 +75,32 @@ export default function ChatMessage({
     );
   }
 
+  // Find the first text part to determine accordion boundary
+  const firstTextIndex = message.parts.findIndex((part) => part.type === "text");
+  const hasTextPart = firstTextIndex !== -1;
+
+  // Determine accordion state and content
+  const shouldShowAccordion = firstTextIndex !== 0; // Show if first part is not text
+  const accordionDefaultValue = !hasTextPart ? "reasoning" : undefined; // Open if no text parts
+  const partsInAccordion = shouldShowAccordion ? message.parts.slice(0, firstTextIndex) : [];
+  const partsAfter = hasTextPart ? message.parts.slice(firstTextIndex) : [];
+
+  // If no accordion needed (first part is text), render normally
+  if (!shouldShowAccordion) {
+    return (
+      <div className={cn("flex items-start gap-3", className)}>
+        <div
+          className={cn(
+            "flex flex-col gap-1 relative",
+            assistantMessageVariants({ variant: "message" })
+          )}
+        >
+          {renderMessageParts(message.parts)}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("flex items-start gap-3", className)}>
       <div
@@ -58,16 +109,17 @@ export default function ChatMessage({
           assistantMessageVariants({ variant: "message" })
         )}
       >
-        {message.parts.map((part) => {
-          if (part.type.includes("tool")) {
-            return "Tool";
-          } else if (part.type === "text") {
-            return <Markdown>{part.text}</Markdown>;
-          } else if (part.type === "reasoning") {
-            return <Markdown className="text-sm text-muted-foreground">{part.text}</Markdown>;
-          }
-          return null;
-        })}
+        <Accordion type="single" collapsible defaultValue={accordionDefaultValue}>
+          <AccordionItem value="reasoning">
+            <AccordionTrigger className="text-md text-muted-foreground hover:no-underline hover:opacity-70 py-2">
+              Reasoning ({partsInAccordion.length} step{partsInAccordion.length > 1 ? "s" : ""})
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">{renderMessageParts(partsInAccordion)}</div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        {renderMessageParts(partsAfter, firstTextIndex)}
       </div>
     </div>
   );
