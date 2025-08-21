@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import ChatReasoning from "../chat-reasoning/chat-reasoning";
+import ChatReasoning from "@/registry/new-york/blocks/chat-reasoning/chat-reasoning";
 
 const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
