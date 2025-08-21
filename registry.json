@@ -93,7 +93,8 @@
         "@radix-ui/react-slot",
         "@radix-ui/react-select",
         "class-variance-authority",
-        "lucide-react"
+        "lucide-react",
+        "ai"
       ],
       "files": [
         {
@@ -128,8 +129,10 @@
         "lucide-react",
         "react-markdown",
         "remark-gfm",
-        "react-syntax-highlighter"
+        "react-syntax-highlighter",
+        "ai"
       ],
+      "registryDependencies": ["accordion"],
       "files": [
         {
           "path": "registry/new-york/blocks/chat-message/chat-message.tsx",
@@ -139,6 +142,11 @@
           "path": "registry/new-york/blocks/button/button.tsx",
           "type": "registry:component",
           "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/chat-reasoning/chat-reasoning.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-reasoning.tsx"
         },
         {
           "path": "registry/new-york/blocks/markdown/markdown.tsx",
