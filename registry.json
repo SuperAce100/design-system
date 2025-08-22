@@ -161,6 +161,21 @@
       ]
     },
     {
+      "name": "chat-reasoning",
+      "type": "registry:component",
+      "title": "Chat Reasoning",
+      "description": "A chat reasoning component for a nice chatbot experience. Ready for useChat().",
+      "dependencies": ["ai"],
+      "registryDependencies": ["accordion"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/chat-reasoning/chat-reasoning.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-reasoning.tsx"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:component",
       "title": "Badge",

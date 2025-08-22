@@ -1,0 +1,45 @@
+import ChatReasoning from "@/registry/new-york/blocks/chat-reasoning/chat-reasoning";
+import ChatTool from "@/registry/new-york/blocks/chat-tool/chat-tool";
+import { UIDataTypes, UIMessagePart, UITools } from "ai";
+import { useState } from "react";
+
+const partsInAccordion: UIMessagePart<UIDataTypes, UITools>[] = [
+  {
+    type: "reasoning",
+    text: "The user is asking for the sum of the first six positive even numbers.",
+  },
+  {
+    type: "tool-calculator",
+    toolCallId: "1",
+    state: "output-available",
+    input: "2 + 4 + 6 + 8 + 10 + 12",
+    output: "42",
+  },
+  {
+    type: "reasoning",
+    text: "The calculator tool returned the answer 42. Let me return the answer to the user.",
+  },
+  {
+    type: "text",
+    text: "The calculator tool returned an error. Let me return the error to the user.",
+  },
+];
+
+
+export default function ChatReasoningDemo() {
+  const [currentPart, setCurrentPart] = useState(0);
+  return (
+    <ChatReasoning
+      partsInAccordion={partsInAccordion}
+      renderMessagePart={(part, key) => {
+        if (part.type === "reasoning") {
+          return <div key={key}>{part.text}</div>;
+        } else if (part.type === "tool-calculator") {
+        return <ChatTool toolMessagePart={part} />;
+        }
+        return null;
+      }}
+      defaultValue={"reasoning"}
+    />
+  );
+}
