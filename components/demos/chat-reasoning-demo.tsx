@@ -1,7 +1,7 @@
+"use client";
 import ChatReasoning from "@/registry/new-york/blocks/chat-reasoning/chat-reasoning";
 import ChatTool from "@/registry/new-york/blocks/chat-tool/chat-tool";
-import { UIDataTypes, UIMessagePart, UITools } from "ai";
-import { useState } from "react";
+import { ToolUIPart, UIDataTypes, UIMessagePart, UITools } from "ai";
 
 const partsInAccordion: UIMessagePart<UIDataTypes, UITools>[] = [
   {
@@ -19,25 +19,22 @@ const partsInAccordion: UIMessagePart<UIDataTypes, UITools>[] = [
     type: "reasoning",
     text: "The calculator tool returned the answer 42. Let me return the answer to the user.",
   },
-  {
-    type: "text",
-    text: "The calculator tool returned an error. Let me return the error to the user.",
-  },
 ];
 
-
 export default function ChatReasoningDemo() {
-  const [currentPart, setCurrentPart] = useState(0);
   return (
     <ChatReasoning
       partsInAccordion={partsInAccordion}
       renderMessagePart={(part, key) => {
         if (part.type === "reasoning") {
-          return <div key={key}>{part.text}</div>;
+          return (
+            <div key={key} className="text-sm text-muted-foreground">
+              {part.text}
+            </div>
+          );
         } else if (part.type === "tool-calculator") {
-        return <ChatTool toolMessagePart={part} />;
+          return <ChatTool {...(part as ToolUIPart)} />;
         }
-        return null;
       }}
       defaultValue={"reasoning"}
     />

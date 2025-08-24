@@ -11,6 +11,7 @@ export default function ChatReasoning({
   partsInAccordion,
   defaultValue,
   renderMessagePart,
+  className,
 }: {
   partsInAccordion: UIMessagePart<UIDataTypes, UITools>[];
   defaultValue?: string;
@@ -18,11 +19,17 @@ export default function ChatReasoning({
     part: UIMessagePart<UIDataTypes, UITools>,
     key: string | number
   ) => React.ReactNode;
+  className?: string;
 }) {
   return (
-    <Accordion type="single" collapsible defaultValue={defaultValue}>
-      <AccordionItem value="reasoning">
-        <AccordionTrigger className="text-md text-muted-foreground hover:no-underline hover:opacity-70 py-2">
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue={defaultValue}
+      className={cn("w-full", className)}
+    >
+      <AccordionItem value="reasoning" className="w-full">
+        <AccordionTrigger className="text-md text-muted-foreground hover:no-underline hover:opacity-70 py-2 w-full">
           {defaultValue === "reasoning" ? "Reasoning..." : `Done reasoning.`}
         </AccordionTrigger>
         <AccordionContent className="p-0 -mt-1">

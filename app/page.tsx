@@ -20,6 +20,7 @@ import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
 import ModeToggle from "@/components/ui/mode-toggle";
+import ChatReasoningDemo from "@/components/demos/chat-reasoning-demo";
 
 const components = [
   {
@@ -114,6 +115,14 @@ const components = [
     description:
       "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
     demo: <ChatMessageDemo />,
+  },
+  {
+    id: "chat-reasoning",
+    name: "Chat Reasoning",
+    section: "AI",
+    description:
+      "A chat reasoning component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+    demo: <ChatReasoningDemo />,
   },
   {
     id: "jsx-preview",
