@@ -37,6 +37,7 @@ export default function ChatReasoningDemo() {
         }
       }}
       defaultValue={"reasoning"}
+      className="w-full max-w-sm"
     />
   );
 }
