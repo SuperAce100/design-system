@@ -33,7 +33,7 @@ export default function ChatReasoningDemo() {
             </div>
           );
         } else if (part.type === "tool-calculator") {
-          return <ChatTool {...(part as ToolUIPart)} />;
+          return <ChatTool toolMessagePart={part as ToolUIPart} />;
         }
       }}
       defaultValue={"reasoning"}
