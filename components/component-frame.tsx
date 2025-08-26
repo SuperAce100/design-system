@@ -41,7 +41,7 @@ export default function ComponentFrame({
       .catch(() => {});
   }, [code, componentName, sourcePath]);
   return (
-    <div
+  <div
       className={cn(
         "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl dark:shadow-none shadow-gray-300/20",
         className

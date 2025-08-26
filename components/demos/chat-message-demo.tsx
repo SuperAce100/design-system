@@ -1,5 +1,14 @@
+"use client";
 import ChatMessage from "@/registry/new-york/blocks/chat-message/chat-message";
 import { UIMessage } from "ai";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/registry/new-york/blocks/select/select";
 
 const messages: UIMessage[] = [
   {
@@ -67,11 +76,58 @@ const messages: UIMessage[] = [
 ];
 
 export default function ChatMessageDemo() {
+  const [userMessageVariant, setUserMessageVariant] = useState<string>("default");
+  const [assistantMessageVariant, setAssistantMessageVariant] = useState<string>("default");
+
   return (
-    <div className="flex flex-col gap-4 w-full max-w-lg">
-      {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
-      ))}
+    <div className="flex flex-col gap-4 w-full">
+      {/* Variant Controls */}
+      <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-muted-foreground">User</label>
+          <Select value={userMessageVariant} onValueChange={setUserMessageVariant}>
+            <SelectTrigger className="w-[120px]" size="sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {["default", "raised", "title"].map((variant) => (
+                <SelectItem key={variant} value={variant}>
+                  {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-muted-foreground">Assistant</label>
+          <Select value={assistantMessageVariant} onValueChange={setAssistantMessageVariant}>
+            <SelectTrigger className="w-[120px]" size="sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {["default", "raised", "paragraph"].map((variant) => (
+                <SelectItem key={variant} value={variant}>
+                  {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Chat Messages */}
+      <div className="flex flex-col gap-4 w-full max-w-lg mx-auto">
+        {messages.map((message) => (
+          <ChatMessage
+            key={message.id}
+            message={message}
+            userMessageVariant={userMessageVariant as any}
+            assistantMessageVariant={assistantMessageVariant as any}
+            className="transition-all"
+          />
+        ))}
+      </div>
     </div>
   );
 }
