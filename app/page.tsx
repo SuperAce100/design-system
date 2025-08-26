@@ -119,17 +119,17 @@ const components = [
   },
   {
     id: "chat-reasoning",
-    name: "Chat Reasoning",
+    name: "Reasoning",
     section: "AI",
     description:
-      "A chat reasoning component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+      "A chat reasoning component that automatically collapses, contains tool calls, and more.",
     demo: <ChatReasoningDemo />,
   },
   {
     id: "chat-tool",
-    name: "Chat Tool",
+    name: "Tool Call",
     section: "AI",
-    description: "A chat tool component compatible with the Vercel AI SDK.",
+    description: "A chat tool component that displays tool calls and their results.",
     demo: <ChatToolDemo />,
   },
   {

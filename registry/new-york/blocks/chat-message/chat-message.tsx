@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import ChatReasoning from "@/registry/new-york/blocks/chat-reasoning/chat-reasoning";
+import ChatTool from "../chat-tool/chat-tool";
 
 const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
@@ -37,7 +38,12 @@ const assistantMessageVariants = cva("flex flex-col gap-2", {
 // Helper function to render a single message part
 const renderMessagePart = (part: any, key: string | number) => {
   if (part.type.includes("tool")) {
-    return <div key={key}>Tool</div>;
+    return (
+      <ChatTool
+        toolMessagePart={part as ToolUIPart}
+        className="my-1 border-none px-0 py-0 shadow-none text-muted-foreground"
+      />
+    );
   } else if (part.type === "text") {
     return <Markdown key={key}>{part.text}</Markdown>;
   } else if (part.type === "reasoning") {

@@ -33,7 +33,12 @@ export default function ChatReasoningDemo() {
             </div>
           );
         } else if (part.type === "tool-calculator") {
-          return <ChatTool toolMessagePart={part as ToolUIPart} className="my-2" />;
+          return (
+            <ChatTool
+              toolMessagePart={part as ToolUIPart}
+              className="my-1 border-none px-0 py-0 shadow-none text-muted-foreground"
+            />
+          );
         }
       }}
       defaultValue={"reasoning"}
