@@ -21,7 +21,7 @@ const DescriptionList = React.forwardRef<HTMLDListElement, DescriptionListProps>
             return (
               <div
                 key={index}
-                className="flex flex-col gap-0 px-4 py-4 transition-all duration-200 hover:rounded-md hover:bg-muted"
+                className="flex flex-col gap-0 px-4 py-4 transition-all duration-150 ease-out hover:duration-75 hover:rounded-md hover:bg-muted"
               >
                 <dt className="font-medium text-sm capitalize text-muted-foreground">{key}</dt>
                 <dd className="">{value}</dd>
@@ -32,7 +32,7 @@ const DescriptionList = React.forwardRef<HTMLDListElement, DescriptionListProps>
           return (
             <div
               key={index}
-              className="grid grid-cols-3 items-start justify-items-start px-4 py-4 transition-all duration-200 hover:rounded-md hover:bg-muted"
+              className="grid grid-cols-3 items-start justify-items-start px-4 py-4 transition-all duration-150 ease-out hover:duration-75 hover:rounded-md hover:bg-muted"
             >
               <dt className="font-medium capitalize">{key}</dt>
               <dd className="col-span-2 text-muted-foreground">{value}</dd>

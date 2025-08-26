@@ -189,12 +189,9 @@ export default function Home() {
         <p className="text-muted-foreground text-lg">
           A set of components I&apos;ve built. Designed to be flexible, LLM-friendly, and functional
           while still being beautiful. Just init with{" "}
-          <a
-            href="https://ui.shadcn.com/docs/installation"
-            className="underline underline-offset-2 hover:text-foreground transition-all duration-200"
-          >
-            shadcn
-          </a>{" "}
+          <Button variant="link" asChild className="p-0">
+            <Link href="https://ui.shadcn.com/docs/installation">shadcn</Link>
+          </Button>{" "}
           and add the components you need.
         </p>
       </header>
