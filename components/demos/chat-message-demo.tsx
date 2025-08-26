@@ -122,8 +122,8 @@ export default function ChatMessageDemo() {
           <ChatMessage
             key={message.id}
             message={message}
-            userMessageVariant={userMessageVariant as any}
-            assistantMessageVariant={assistantMessageVariant as any}
+            userMessageVariant={userMessageVariant as "default" | "raised" | "title"}
+            assistantMessageVariant={assistantMessageVariant as "default" | "raised" | "paragraph"}
             className="transition-all"
           />
         ))}
