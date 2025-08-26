@@ -98,7 +98,7 @@ export function CodeBlock({
         }}
         variant="ghost"
         size="icon"
-        className="absolute right-2 top-2 focus-visible:ring-0 bg-card text-muted-foreground hover:bg-muted active:bg-muted"
+        className="absolute right-2 top-2 focus-visible:ring-0 text-muted-foreground hover:bg-muted active:bg-muted"
         aria-label={copied ? "Copied" : "Copy to clipboard"}
       >
         <span className="sr-only">{copied ? "Copied" : "Copy"}</span>

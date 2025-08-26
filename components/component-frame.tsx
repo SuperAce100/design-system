@@ -41,7 +41,7 @@ export default function ComponentFrame({
       .catch(() => {});
   }, [code, componentName, sourcePath]);
   return (
-  <div
+    <div
       className={cn(
         "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl dark:shadow-none shadow-gray-300/20",
         className
@@ -77,9 +77,20 @@ export default function ComponentFrame({
         </div>
       </div>
       <div className="flex items-center justify-center min-h-[400px] relative">{children}</div>
-      {showSource && code && (
-        <CodeBlock code={code} language="tsx" className="mt-4" variant="flat" />
-      )}
+      <div className="relative">
+        <div
+          className={cn(
+            "transition-all duration-500 ease-in-out overflow-hidden",
+            showSource && code
+              ? "max-h-[1000px] opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+          )}
+        >
+          {showSource && code && (
+            <CodeBlock code={code} language="tsx" className="mt-4" variant="flat" />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
