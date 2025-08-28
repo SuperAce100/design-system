@@ -10,14 +10,6 @@ import {
   componentList,
 } from "@/lib/component-registry";
 import { Button } from "@/registry/new-york/blocks/button/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardAction,
-} from "@/registry/new-york/ui/card";
 
 export async function generateStaticParams() {
   return getAllComponentIds().map((id) => ({ component: id }));
@@ -43,6 +35,19 @@ export default function ComponentPage({ params }: { params: { component: string 
 
   return (
     <div className="max-w-5xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
+      <header className="flex flex-col gap-3 px-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-4xl mt-8 font-semibold tracking-tight">{meta.name}</h1>
+            {meta.description && (
+              <p className="text-muted-foreground text-lg">{meta.description}</p>
+            )}
+          </div>
+          <Button variant="link" asChild className="p-0 mt-8">
+            <Link href="/">All components</Link>
+          </Button>
+        </div>
+      </header>
       <main className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative min-h-0 overflow-hidden">
         <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
           {sectionOrder.map((section) => {
@@ -69,30 +74,19 @@ export default function ComponentPage({ params }: { params: { component: string 
           })}
         </div>
         <div className="flex flex-col flex-1 gap-6 col-span-3 overflow-y-auto scroll-smooth">
-          <Card className="w-full">
-            <CardHeader className="border-b">
-              <CardTitle>{meta.name}</CardTitle>
-              {meta.description && (
-                <CardDescription>{meta.description}</CardDescription>
-              )}
-              <CardAction>
-                <Button variant="link" asChild className="p-0">
-                  <Link href="/">All components</Link>
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent className="py-6">
-              <ComponentFrame
-                key={meta.id}
-                title="Live preview"
-                id={meta.id}
-                componentName={meta.id}
-                className="border-0 shadow-none rounded-none p-0 bg-transparent"
-              >
-                {demo}
-              </ComponentFrame>
-            </CardContent>
-          </Card>
+          <section className="px-1">
+            <h2 className="text-xl font-medium tracking-tight mb-2">Preview</h2>
+            <ComponentFrame
+              key={meta.id}
+              title="Live preview"
+              id={meta.id}
+              componentName={meta.id}
+              className="border-0 shadow-none rounded-none p-0 bg-transparent"
+            >
+              {demo}
+            </ComponentFrame>
+          </section>
+          {/* Optional future sections: Usage, API, Examples */}
         </div>
       </main>
     </div>
