@@ -36,7 +36,7 @@ const toolMessagePart: ToolUIPart[] = [
 
 export default function ChatToolDemo() {
   return (
-    <div className="grid grid-cols-2 gap-4 w-full">
+    <div className="grid grid-cols-2 gap-4 w-full max-w-md">
       {toolMessagePart.map((part) => (
         <ChatTool key={part.toolCallId} toolMessagePart={part} />
       ))}
