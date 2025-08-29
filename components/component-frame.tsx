@@ -1,9 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
-import { Button } from "@/registry/new-york/blocks/button/button";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
-import { Code2Icon } from "lucide-react";
 import React from "react";
 
 const BASE_URL = "https://ds.asanshay.com/r/";
@@ -27,11 +25,11 @@ export default function ComponentFrame({
   source?: string;
   sourcePath?: string;
 }) {
-  const [showSource, setShowSource] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<"demo" | "source">("demo");
   const [code, setCode] = React.useState<string | null>(source || null);
 
   React.useEffect(() => {
-    if (code) return; // already have source
+    if (code || activeTab !== "source") return; // only fetch when needed
     const path = sourcePath ?? `components/demos/${componentName}-demo.tsx`;
     fetch(`/api/source?path=${encodeURIComponent(path)}`)
       .then((res) => (res.ok ? res.text() : null))
@@ -39,7 +37,7 @@ export default function ComponentFrame({
         if (text) setCode(text);
       })
       .catch(() => {});
-  }, [code, componentName, sourcePath]);
+  }, [code, componentName, sourcePath, activeTab]);
   return (
     <div
       className={cn(
@@ -48,49 +46,43 @@ export default function ComponentFrame({
       )}
       id={id}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-semibold">{title}</h2>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-        <div className="flex gap-0 items-center">
-          <ScriptCopyBtn
-            className=""
-            commandMap={{
-              npm: `npx shadcn@latest add ${BASE_URL}${componentName}.json`,
-              yarn: `yarn shadcn@latest add ${BASE_URL}${componentName}.json`,
-              pnpm: `pnpm dlx shadcn@latest add ${BASE_URL}${componentName}.json`,
-              bun: `bunx shadcn@latest add ${BASE_URL}${componentName}.json`,
-            }}
-          />
-          {code && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className=" text-foreground hover:text-primary rounded-md size-9"
-              onClick={() => setShowSource((prev) => !prev)}
-              aria-label={showSource ? "Hide source" : "Show source"}
-            >
-              <Code2Icon className="size-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center justify-center min-h-[400px] relative">{children}</div>
-      <div className="relative">
-        <div
-          className={cn(
-            "transition-all duration-500 ease-in-out overflow-hidden",
-            showSource && code
-              ? "max-h-[1000px] opacity-100 translate-y-0"
-              : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
-          )}
-        >
-          {showSource && code && (
-            <CodeBlock code={code} language="tsx" className="mt-4" variant="flat" />
-          )}
+      <div className="flex items-center justify-between gap-3">
+        <div className="inline-flex items-center rounded-md border bg-muted p-0.5">
+          <button
+            type="button"
+            onClick={() => setActiveTab("demo")}
+            aria-selected={activeTab === "demo"}
+            className={cn(
+              "px-3 py-1.5 text-sm rounded-md transition-colors",
+              activeTab === "demo"
+                ? "bg-background text-foreground shadow"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Demo
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("source")}
+            aria-selected={activeTab === "source"}
+            className={cn(
+              "px-3 py-1.5 text-sm rounded-md transition-colors",
+              activeTab === "source"
+                ? "bg-background text-foreground shadow"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Source
+          </button>
         </div>
       </div>
+      {activeTab === "demo" ? (
+        <div className="flex items-center justify-center min-h-[360px] relative">{children}</div>
+      ) : (
+        <div className="relative max-h-[360px] overflow-y-auto rounded-xl">
+          {code && <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />}
+        </div>
+      )}
     </div>
   );
 }

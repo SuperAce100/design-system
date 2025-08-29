@@ -51,9 +51,6 @@ export default function ComponentPage({ params }: { params: { component: string 
               <p className="text-muted-foreground text-lg">{meta.description}</p>
             )}
           </div>
-          <Button variant="link" asChild className="p-0 mt-2">
-            <Link href="/">All components</Link>
-          </Button>
         </div>
       </header>
       <main className="grid grid-cols-1 sm:grid-cols-5 gap-8 relative min-h-0 overflow-hidden">
@@ -81,7 +78,7 @@ export default function ComponentPage({ params }: { params: { component: string 
             );
           })}
         </div>
-        <div className="flex flex-col flex-1 gap-10 col-span-3 overflow-y-auto scroll-smooth">
+        <div className="flex flex-col flex-1 gap-12 col-span-3 overflow-y-auto scroll-smooth">
           <section id="preview" className="px-1">
             <h2 className="text-xl font-medium tracking-tight mb-2">Preview</h2>
             <ComponentFrame
@@ -96,9 +93,7 @@ export default function ComponentPage({ params }: { params: { component: string 
           </section>
           <section id="installation" className="px-1">
             <h2 className="text-xl font-medium tracking-tight mb-2">Installation</h2>
-            <p className="text-sm text-muted-foreground mb-3">
-              Install with your preferred package manager:
-            </p>
+            <p className="text-sm text-muted-foreground mb-3">Install using the shadcn CLI</p>
             <ScriptCopyBtn
               commandMap={{
                 npm: `npx shadcn@latest add https://ds.asanshay.com/r/${meta.id}.json`,
