@@ -47,32 +47,32 @@ export default function ComponentFrame({
       id={id}
     >
       <div className="flex items-center justify-between gap-3">
-        <div className="inline-flex items-center rounded-md border bg-muted p-0.5">
+        <div className="inline-flex items-center gap-3">
           <button
             type="button"
             onClick={() => setActiveTab("demo")}
             aria-selected={activeTab === "demo"}
             className={cn(
-              "px-3 py-1.5 text-sm rounded-md transition-colors",
+              "text-xl font-medium rounded-md transition-colors",
               activeTab === "demo"
-                ? "bg-background text-foreground shadow"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-foreground"
+                : "text-muted-foreground/50 hover:text-foreground/80"
             )}
           >
-            Demo
+            Preview
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("source")}
             aria-selected={activeTab === "source"}
             className={cn(
-              "px-3 py-1.5 text-sm rounded-md transition-colors",
+              "text-xl font-medium rounded-md transition-colors",
               activeTab === "source"
-                ? "bg-background text-foreground shadow"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-foreground"
+                : "text-muted-foreground/50 hover:text-foreground/80"
             )}
           >
-            Source
+            Code
           </button>
         </div>
       </div>

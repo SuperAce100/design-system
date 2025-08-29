@@ -80,7 +80,6 @@ export default function ComponentPage({ params }: { params: { component: string 
         </div>
         <div className="flex flex-col flex-1 gap-12 col-span-3 overflow-y-auto scroll-smooth">
           <section id="preview" className="px-1">
-            <h2 className="text-xl font-medium tracking-tight mb-2">Preview</h2>
             <ComponentFrame
               key={meta.id}
               title="Live preview"
@@ -92,7 +91,7 @@ export default function ComponentPage({ params }: { params: { component: string 
             </ComponentFrame>
           </section>
           <section id="installation" className="px-1">
-            <h2 className="text-xl font-medium tracking-tight mb-2">Installation</h2>
+            <h2 className="text-xl font-medium mb-2">Installation</h2>
             <p className="text-sm text-muted-foreground mb-3">Install using the shadcn CLI</p>
             <ScriptCopyBtn
               commandMap={{
