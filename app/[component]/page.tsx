@@ -11,6 +11,7 @@ import {
 } from "@/lib/component-registry";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
+import { cn } from "@/lib/utils";
 
 export async function generateStaticParams() {
   return getAllComponentIds().map((id) => ({ component: id }));
@@ -65,9 +66,9 @@ export default function ComponentPage({ params }: { params: { component: string 
                 </span>
                 {comps.map((component) => (
                   <Button
-                    variant={component.id === id ? "secondary" : "ghost"}
+                    variant={"ghost"}
                     size="sm"
-                    className="w-full justify-start"
+                    className={cn("w-full justify-start", component.id === id && "bg-primary/10")}
                     asChild
                     key={component.id}
                   >

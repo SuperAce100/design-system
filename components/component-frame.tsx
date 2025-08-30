@@ -77,7 +77,9 @@ export default function ComponentFrame({
         </div>
       </div>
       {activeTab === "demo" ? (
-        <div className="flex items-center justify-center min-h-[360px] relative">{children}</div>
+        <div className="flex flex-col items-center justify-center min-h-[360px] relative h-full">
+          {children}
+        </div>
       ) : (
         <div className="relative max-h-[360px] overflow-y-auto rounded-xl">
           {code && <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />}

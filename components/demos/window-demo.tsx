@@ -10,33 +10,29 @@ export default function WindowDemo() {
   ]);
 
   return (
-    <div className="w-full h-full">
-      <WindowContainer className="w-full h-full border border-border border-dashed rounded-2xl">
-        {windows.map((w) => (
-          <Window
-            key={w.id}
-            title={w.title}
-            initialX={w.x}
-            initialY={w.y}
-            initialWidth={w.w}
-            initialHeight={w.h}
-            onClose={() => setWindows((prev) => prev.filter((x) => x.id !== w.id))}
-          >
-            {w.id === 1 ? (
-              <p className="text-sm text-muted-foreground">
-                Drag by the header. Resize from any side or corner.
-              </p>
-            ) : (
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>Windows stay within the container.</p>
-                <p>You can have multiple windows.</p>
-              </div>
-            )}
-          </Window>
-        ))}
-      </WindowContainer>
-    </div>
+    <WindowContainer className="w-full h-full border border-border border-dashed rounded-2xl flex-1 min-h-0">
+      {windows.map((w) => (
+        <Window
+          key={w.id}
+          title={w.title}
+          initialX={w.x}
+          initialY={w.y}
+          initialWidth={w.w}
+          initialHeight={w.h}
+          onClose={() => setWindows((prev) => prev.filter((x) => x.id !== w.id))}
+        >
+          {w.id === 1 ? (
+            <p className="text-sm text-muted-foreground">
+              Drag by the header. Resize from any side or corner.
+            </p>
+          ) : (
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>Windows stay within the container.</p>
+              <p>You can have multiple windows.</p>
+            </div>
+          )}
+        </Window>
+      ))}
+    </WindowContainer>
   );
 }
-
-
