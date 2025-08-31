@@ -1,24 +1,17 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
 import React from "react";
-
-const BASE_URL = "https://ds.asanshay.com/r/";
 
 export default function ComponentFrame({
   children,
   className,
-  title,
-  description,
   id,
   componentName,
   source,
   sourcePath,
 }: {
   children: React.ReactNode;
-  title: string;
-  description?: string;
   id?: string;
   componentName: string;
   className?: string;
@@ -51,7 +44,6 @@ export default function ComponentFrame({
           <button
             type="button"
             onClick={() => setActiveTab("demo")}
-            aria-selected={activeTab === "demo"}
             className={cn(
               "text-xl font-medium rounded-md transition-colors",
               activeTab === "demo"
@@ -64,7 +56,6 @@ export default function ComponentFrame({
           <button
             type="button"
             onClick={() => setActiveTab("source")}
-            aria-selected={activeTab === "source"}
             className={cn(
               "text-xl font-medium rounded-md transition-colors",
               activeTab === "source"

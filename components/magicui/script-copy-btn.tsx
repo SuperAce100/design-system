@@ -36,8 +36,6 @@ export function ScriptCopyBtn({ commandMap, className }: ScriptCopyBtnProps) {
   const renderHighlightedCmd = (cmd: string) => {
     const tokens = cmd.trim().split(/\s+/g);
     const accentSet = new Set(["pnpm", "npm", "yarn", "bun", "npx", "bunx", "dlx"]);
-    const urlMatch = cmd.match(/https?:\/\/\S+/);
-    const url = urlMatch?.[0];
     return (
       <>
         {tokens.map((tok, i) => {

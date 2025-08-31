@@ -17,8 +17,12 @@ export async function generateStaticParams() {
   return getAllComponentIds().map((id) => ({ component: id }));
 }
 
-export default function ComponentPage({ params }: { params: { component: string } }) {
-  const id = params.component;
+export default async function ComponentPage({
+  params,
+}: {
+  params: Promise<{ component: string }>;
+}) {
+  const { component: id } = await params;
   const meta = getComponentMeta(id);
   const demo = getDemoById(id);
 
@@ -26,14 +30,15 @@ export default function ComponentPage({ params }: { params: { component: string 
     notFound();
   }
 
-  const componentsBySection = React.useMemo(() => {
-    return componentList.reduce<Record<string, typeof componentList>>((acc, component) => {
+  const componentsBySection = componentList.reduce<Record<string, typeof componentList>>(
+    (acc, component) => {
       const section = component.section;
       if (!acc[section]) acc[section] = [] as unknown as typeof componentList;
       acc[section].push(component);
       return acc;
-    }, {} as Record<string, typeof componentList>);
-  }, []);
+    },
+    {} as Record<string, typeof componentList>
+  );
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
@@ -83,7 +88,6 @@ export default function ComponentPage({ params }: { params: { component: string 
           <section id="preview" className="px-1">
             <ComponentFrame
               key={meta.id}
-              title="Live preview"
               id={meta.id}
               componentName={meta.id}
               className="border-0 shadow-none rounded-none p-0 bg-transparent"
