@@ -7,7 +7,7 @@ import { componentList, sectionOrder } from "@/lib/component-registry";
 const components = componentList;
 
 export default function Home() {
-  // Group components by their section for easier rendering in the sidebar
+  // Group components by their section for easier rendering in the sidebar/content
   const componentsBySection = React.useMemo(() => {
     return components.reduce<Record<string, typeof components>>((acc, component) => {
       const section = component.section as string;
@@ -18,47 +18,46 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
+    <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
       <header className="flex flex-col gap-2 px-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl mt-8 font-semibold tracking-tight">Asanshay&apos;s Components</h1>
-          <ModeToggle />
+        <div className="text-sm text-muted-foreground mt-6">
+          <Link href="/" className="hover:text-foreground transition-colors">
+            Components
+          </Link>
         </div>
-        <p className="text-muted-foreground text-lg">
-          A set of components I&apos;ve built. Designed to be flexible, LLM-friendly, and functional
-          while still being beautiful. Just init with{" "}
-          <Button variant="link" asChild className="p-0">
-            <Link href="https://ui.shadcn.com/docs/installation">shadcn</Link>
-          </Button>{" "}
-          and add the components you need.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-4xl font-semibold tracking-tight">Asanshay's Components</h1>
+            <p className="text-muted-foreground text-lg">
+              A set of beautiful, flexible, and LLM-ready components for your next project.
+            </p>
+          </div>
+        </div>
       </header>
-      <main className="grid grid-cols-1 sm:grid-cols-4 gap-8 relative min-h-0 overflow-hidden">
-        <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
-          {sectionOrder.map((section) => {
-            const comps = componentsBySection[section];
-            if (!comps) return null;
-            return (
-              <React.Fragment key={section}>
-                <span className="text-muted-foreground text-xs uppercase tracking-widest font-medium mt-6 mb-1 ml-3 first:mt-0">
-                  {section}
-                </span>
+      <main className="flex flex-col gap-8 relative min-h-0 overflow-hidden px-3 max-w-4xl">
+        {sectionOrder.map((section) => {
+          const comps = componentsBySection[section];
+          if (!comps) return null;
+          const anchor = section.toLowerCase();
+          return (
+            <section key={section} id={anchor} className="">
+              <h2 className="text-xl font-medium mb-1">{section}</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
                 {comps.map((component) => (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start"
-                    asChild
                     key={component.id}
+                    variant="link"
+                    size="sm"
+                    className="justify-start no-underline text-primary pl-0 hover:opacity-100 "
+                    asChild
                   >
                     <Link href={`/${component.id}`}>{component.name}</Link>
                   </Button>
                 ))}
-              </React.Fragment>
-            );
-          })}
-        </div>
-        <div className="flex flex-col flex-1 gap-8 col-span-3 overflow-y-auto scroll-smooth" />
+              </div>
+            </section>
+          );
+        })}
       </main>
     </div>
   );
