@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 import Link from "next/link";
 import ModeToggle from "@/components/ui/mode-toggle";
@@ -10,6 +11,8 @@ import { Badge } from "@/registry/new-york/blocks/badge/badge";
 import type { UIMessage } from "ai";
 import MotionBlurText from "@/registry/new-york/blocks/motion-blur-text/motion-blur-text";
 import Reveal from "@/registry/new-york/blocks/reveal/reveal";
+import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
+import ShowcaseChat from "@/components/showcase-chat";
 
 const components = componentList;
 
@@ -24,24 +27,8 @@ export default function Home() {
     }, {} as Record<string, typeof components>);
   }, []);
 
-  const showcaseMessages: UIMessage[] = [
-    {
-      id: "u1",
-      role: "user",
-      parts: [{ type: "text", text: "Generate a beautiful card with a button." }],
-    },
-    {
-      id: "a1",
-      role: "assistant",
-      parts: [
-        { type: "reasoning", text: "I'll compose Card, Button and Badge." },
-        { type: "text", text: "Done! Here's a quick preview and code snippet." },
-      ],
-    },
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
+    <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8 overflow-y-auto">
       <header className="flex flex-col gap-2 px-3">
         <div className="text-sm text-muted-foreground mt-6">
           <Link href="/" className="hover:text-foreground transition-colors">
@@ -121,12 +108,7 @@ export function Example() {
                 />
               </Reveal>
               <Reveal index={2} className="flex flex-col gap-2">
-                <div className="text-sm text-muted-foreground">Chat</div>
-                <div className="flex flex-col gap-2">
-                  {showcaseMessages.map((m) => (
-                    <ChatMessage key={m.id} message={m} />
-                  ))}
-                </div>
+                <ShowcaseChat className="flex flex-col gap-2" defaultModel="gpt-5-nano" />
               </Reveal>
             </div>
           </Card>
