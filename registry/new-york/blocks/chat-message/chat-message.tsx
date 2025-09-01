@@ -84,7 +84,7 @@ export default function ChatMessage({
   const hasTextPart = firstTextIndex !== -1;
 
   const shouldShowAccordion = firstTextIndex !== 0;
-  const accordionDefaultValue = !hasTextPart ? "reasoning" : undefined;
+  const accordionDefaultValue = !hasTextPart ? "reasoning" : null;
   const partsInAccordion = shouldShowAccordion ? message.parts.slice(0, firstTextIndex) : [];
   const partsAfter = hasTextPart ? message.parts.slice(firstTextIndex) : [];
 
@@ -100,7 +100,7 @@ export default function ChatMessage({
           <ChatReasoning
             renderMessagePart={renderMessagePart}
             partsInAccordion={partsInAccordion}
-            defaultValue={accordionDefaultValue}
+            defaultValue={accordionDefaultValue ?? undefined}
           />
         )}
         {partsAfter.map((part, index) => renderMessagePart(part, firstTextIndex + index))}
