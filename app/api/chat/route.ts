@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { convertToModelMessages, streamText, UIMessage, stepCountIs } from "ai";
+import { convertToModelMessages, streamText, UIMessage, stepCountIs, smoothStream } from "ai";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       },
     },
     stopWhen: stepCountIs(100),
+    experimental_transform: smoothStream(),
   });
 
   return result.toUIMessageStreamResponse();

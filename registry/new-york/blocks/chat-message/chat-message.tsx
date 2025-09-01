@@ -55,7 +55,7 @@ const renderMessagePart = (part: any, key: string | number) => {
       </Markdown>
     );
   }
-  return null;
+  return <div key={key}>{part.type}</div>;
 };
 
 export default function ChatMessage({
