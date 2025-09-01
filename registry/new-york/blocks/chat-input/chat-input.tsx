@@ -51,11 +51,17 @@ export default function ChatInput({
         autoComplete="off"
         placeholder={placeholder}
         className="w-full pb-20 pt-4 px-4 rounded-xl text-md bg-background disabled:opacity-100 disabled:cursor-not-allowed disabled:bg-background"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            e.currentTarget.form?.requestSubmit();
+          }
+        }}
       />
       <Button
         type="submit"
         disabled={loading}
-        variant="default"
+        variant="fancy"
         size="icon"
         className="absolute bottom-2 right-2"
       >
