@@ -59,9 +59,8 @@ export default function Home() {
           Start here then make it your own. Open Source. Open Code.
         </p>
         <div className="flex items-center gap-3">
-          <Button size="lg">Get Started</Button>
-          <Button variant="outline" size="lg">
-            View Components
+          <Button variant="fancy" size="lg" asChild>
+            <Link href="/components">View Components</Link>
           </Button>
         </div>
       </header>
@@ -102,7 +101,6 @@ export default function Home() {
 
         {activeTab === "chat" && <ChatExample />}
 
-        
         <div className="pb-10" />
       </main>
     </div>
