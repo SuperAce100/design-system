@@ -6,18 +6,32 @@ import { Button } from "@/registry/new-york/blocks/button/button";
 import { componentList, sectionOrder } from "@/lib/component-registry";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/registry/new-york/blocks/card/card";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
-import ChatMessage from "@/registry/new-york/blocks/chat-message/chat-message";
 import { Badge } from "@/registry/new-york/blocks/badge/badge";
 import type { UIMessage } from "ai";
 import MotionBlurText from "@/registry/new-york/blocks/motion-blur-text/motion-blur-text";
 import Reveal from "@/registry/new-york/blocks/reveal/reveal";
-import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
 import ShowcaseChat from "@/components/showcase-chat";
+import { Input } from "@/registry/new-york/blocks/input/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/registry/new-york/blocks/select/select";
+import { Textarea } from "@/registry/new-york/blocks/textarea/textarea";
+import Markdown from "@/registry/new-york/blocks/markdown/markdown";
+import { DescriptionList } from "@/registry/new-york/blocks/description-list/description-list";
+import OverviewExample from "@/components/examples/OverviewExample";
+import DashboardExample from "@/components/examples/DashboardExample";
+import TasksExample from "@/components/examples/TasksExample";
+import PlaygroundExample from "@/components/examples/PlaygroundExample";
+import ChatExample from "@/components/examples/ChatExample";
 
 const components = componentList;
 
 export default function Home() {
-  // Group components by their section for easier rendering in the sidebar/content
+  // Group components by their section for easier rendering
   const componentsBySection = React.useMemo(() => {
     return components.reduce<Record<string, typeof components>>((acc, component) => {
       const section = component.section as string;
@@ -27,98 +41,76 @@ export default function Home() {
     }, {} as Record<string, typeof components>);
   }, []);
 
+  // Tabs state
+  const [activeTab, setActiveTab] = React.useState<string>("overview");
+
   return (
-    <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8 overflow-y-auto">
-      <header className="flex flex-col gap-2 px-3">
-        <div className="text-sm text-muted-foreground mt-6">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Components
-          </Link>
-        </div>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-4xl font-semibold tracking-tight">Asanshay's Components</h1>
-            <p className="text-muted-foreground text-lg">
-              A set of beautiful, flexible, and LLM-ready components for your next project.
-            </p>
-          </div>
+    <div className="max-w-6xl mx-auto flex flex-col px-4 pt-8 gap-10">
+      {/* Hero */}
+      <header className="flex flex-col gap-6 items-center text-center mt-48">
+        <Badge variant="fancy" color="primary" className="px-3 py-1">
+          Now available: shadcn CLI 3.0 and MCP Server →
+        </Badge>
+        <h1 className="text-5xl md:text-6xl font-semibold tracking-tight">
+          The Foundation for your Design System
+        </h1>
+        <p className="text-muted-foreground text-lg max-w-3xl">
+          A set of beautifully designed components that you can customize, extend, and build on.
+          Start here then make it your own. Open Source. Open Code.
+        </p>
+        <div className="flex items-center gap-3">
+          <Button size="lg">Get Started</Button>
+          <Button variant="outline" size="lg">
+            View Components
+          </Button>
         </div>
       </header>
-      <main className="flex flex-col gap-8 relative min-h-0 overflow-hidden px-3 max-w-4xl">
-        <section id="showcase" className="">
-          <Card className="p-4">
-            <Reveal index={0} className="flex items-center gap-2 mb-2">
-              <Badge variant="regular" color="primary">
-                New
-              </Badge>
-              <Badge variant="regular" color="emerald">
-                LLM-ready
-              </Badge>
-              <Badge variant="regular" color="sky">
-                Composable
-              </Badge>
-            </Reveal>
-            <CardHeader className="p-0 mb-3">
-              <MotionBlurText className="text-2xl font-medium tracking-tight">
-                Showcase
-              </MotionBlurText>
-              <CardDescription>Multiple components working together.</CardDescription>
-            </CardHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Reveal index={1} className="flex flex-col gap-2">
-                <div className="rounded-xl border p-4">
-                  <div className="text-sm text-muted-foreground mb-2">Preview</div>
-                  <div className="flex flex-col gap-2">
-                    <div className="rounded-2xl border p-4 bg-card">
-                      <div className="flex items-center justify-between">
-                        <div className="font-medium">Design System Card</div>
-                        <Badge variant="regular" color="indigo">
-                          Beta
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Clean building blocks styled with shadcn.
-                      </div>
-                      <div className="mt-3">
-                        <Button size="sm">Get Started</Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <CodeBlock
-                  variant="flat"
-                  title="Usage"
-                  language="tsx"
-                  code={`import { Card, CardHeader, CardTitle, CardDescription } from "@/registry/new-york/blocks/card/card";
-import { Button } from "@/registry/new-york/blocks/button/button";
-import { Badge } from "@/registry/new-york/blocks/badge/badge";
 
-export function Example() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Design System Card</CardTitle>
-        <CardDescription>Clean building blocks styled with shadcn.</CardDescription>
-      </CardHeader>
-      <Badge variant="regular" color="indigo">Beta</Badge>
-      <Button size="sm">Get Started</Button>
-    </Card>
-  );
-}`}
-                />
-              </Reveal>
-              <Reveal index={2} className="flex flex-col gap-2">
-                <ShowcaseChat className="flex flex-col gap-2" defaultModel="gpt-5-nano" />
-              </Reveal>
-            </div>
-          </Card>
-        </section>
+      {/* Examples */}
+      <main className="flex flex-col gap-8 relative">
+        {/* Tabs */}
+        <div className="flex items-center gap-6 overflow-x-auto px-1">
+          {[
+            { id: "overview", label: "Examples" },
+            { id: "dashboard", label: "Dashboard" },
+            { id: "tasks", label: "Tasks" },
+            { id: "playground", label: "Playground" },
+            { id: "chat", label: "Chat" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`text-sm whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Panels */}
+        {activeTab === "overview" && <OverviewExample />}
+
+        {activeTab === "dashboard" && <DashboardExample />}
+
+        {activeTab === "tasks" && <TasksExample />}
+
+        {activeTab === "playground" && <PlaygroundExample />}
+
+        {activeTab === "chat" && <ChatExample />}
+
+        {/* (Old showcase removed) */}
+
+        {/* Components index */}
         {sectionOrder.map((section) => {
           const comps = componentsBySection[section];
           if (!comps) return null;
           const anchor = section.toLowerCase();
           return (
-            <section key={section} id={anchor} className="">
+            <section key={section} id={anchor} className="px-1">
               <h2 className="text-xl font-medium mb-1">{section}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
                 {comps.map((component) => (
@@ -126,7 +118,7 @@ export function Example() {
                     key={component.id}
                     variant="link"
                     size="sm"
-                    className="justify-start no-underline text-primary pl-0 hover:opacity-100 "
+                    className="justify-start no-underline text-primary pl-0 hover:opacity-100"
                     asChild
                   >
                     <Link href={`/${component.id}`}>{component.name}</Link>
@@ -136,6 +128,7 @@ export function Example() {
             </section>
           );
         })}
+        <div className="pb-10" />
       </main>
     </div>
   );
