@@ -59,7 +59,7 @@ export default async function ComponentPage({
           </div>
         </div>
       </header>
-      <main className="grid grid-cols-1 sm:grid-cols-5 gap-8 relative min-h-0 overflow-hidden">
+      <main className="grid grid-cols-1 sm:grid-cols-5 gap-8 relative min-h-0 overflow-hidden pb-10">
         <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
           {sectionOrder.map((section) => {
             const comps = (componentsBySection as Record<string, typeof componentList>)[section];
@@ -109,7 +109,7 @@ export default async function ComponentPage({
           </section>
           {/* Future: Usage, API, Examples */}
         </div>
-        <aside className="hidden sm:flex flex-col col-span-1 sticky top-0 pt-10">
+        <aside className="hidden sm:flex flex-col col-span-1 sticky top-0">
           <span className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
             On this page
           </span>
