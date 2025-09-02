@@ -33,6 +33,12 @@ export default function CardDemo() {
           This is a card with some informative text and space to add more useful stuff.
         </CardDescription>
       </Card>
+      <Card variant="double">
+        <CardTitle>Double</CardTitle>
+        <CardDescription>
+          This is a card with some informative text and space to add more useful stuff.
+        </CardDescription>
+      </Card>
     </div>
   );
 }

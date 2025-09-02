@@ -4,12 +4,15 @@ import { cn } from "@/lib/utils";
 const cardVariants = cva("text-card-foreground rounded-3xl p-6 flex flex-col gap-2", {
   variants: {
     variant: {
-      default: "bg-card border border-border shadow-sm light:shadow-border/60",
-      raised: "bg-card border border-border shadow-xl light:shadow-border/60 -translate-y-0.5",
+      default: "bg-card border border-border shadow-md shadow-border/50 dark:shadow-none",
+      raised:
+        "bg-card border border-border shadow-xl shadow-border/50 dark:shadow-none -translate-y-0.5",
       flat: "bg-muted",
       outline: "border border-border",
       fancy_light:
-        "border border-primary/30 bg-transparent bg-radial-[at_70%_25%] from-transparent to-primary/20 shadow-lg inset-shadow-sm light:shadow-border/60  inset-shadow-white/80 transition-all duration-200 hover:bg-primary/10",
+        "border border-primary/30 bg-transparent bg-radial-[at_70%_25%] from-transparent to-primary/20 shadow-lg inset-shadow-sm dark:shadow-none shadow-border/50 inset-shadow-white/80 transition-all duration-200 hover:bg-primary/10",
+      double:
+        "border border-border shadow-md shadow-border/50 dark:shadow-none relative bg-secondary/30 backdrop-blur-sm",
     },
   },
   defaultVariants: {
@@ -21,8 +24,16 @@ export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {}
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, ...props }, ref) => (
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, variant, ...props }, ref) =>
+  variant === "double" ? (
+    <div className={cn(cardVariants({ variant, className }))}>
+      <div
+        ref={ref}
+        className=" absolute inset-2 p-4 border border-border rounded-2xl bg-card shadow-lg shadow-border/50 dark:shadow-none"
+        {...props}
+      />
+    </div>
+  ) : (
     <div ref={ref} className={cn(cardVariants({ variant, className }))} {...props} />
   )
 );
