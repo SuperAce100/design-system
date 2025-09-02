@@ -102,32 +102,7 @@ export default function Home() {
 
         {activeTab === "chat" && <ChatExample />}
 
-        {/* (Old showcase removed) */}
-
-        {/* Components index */}
-        {sectionOrder.map((section) => {
-          const comps = componentsBySection[section];
-          if (!comps) return null;
-          const anchor = section.toLowerCase();
-          return (
-            <section key={section} id={anchor} className="px-1">
-              <h2 className="text-xl font-medium mb-1">{section}</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                {comps.map((component) => (
-                  <Button
-                    key={component.id}
-                    variant="link"
-                    size="sm"
-                    className="justify-start no-underline text-primary pl-0 hover:opacity-100"
-                    asChild
-                  >
-                    <Link href={`/${component.id}`}>{component.name}</Link>
-                  </Button>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+        
         <div className="pb-10" />
       </main>
     </div>

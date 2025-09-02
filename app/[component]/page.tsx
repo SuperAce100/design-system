@@ -44,7 +44,7 @@ export default async function ComponentPage({
     <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
       <header className="flex flex-col gap-2 px-3">
         <div className="text-sm text-muted-foreground mt-6">
-          <Link href="/" className="hover:text-foreground transition-colors">
+          <Link href="/components" className="hover:text-foreground transition-colors">
             Components
           </Link>
           <span className="mx-2">/</span>
