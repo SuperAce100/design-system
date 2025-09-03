@@ -3,7 +3,7 @@ import * as React from "react";
 import ChatMessage from "@/registry/new-york/blocks/chat-message/chat-message";
 import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, UIMessage } from "ai";
 
 export default function ShowcaseChat({
   defaultModel = "gpt-5-nano",
@@ -42,7 +42,7 @@ export default function ShowcaseChat({
     <div className={className}>
       <div className="text-sm text-muted-foreground">Chat</div>
       <div className="flex flex-col gap-2">
-        {messages.map((m: any) => (
+        {messages.map((m: UIMessage) => (
           <ChatMessage key={m.id} message={m} />
         ))}
       </div>

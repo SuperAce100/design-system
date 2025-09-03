@@ -1,16 +1,6 @@
-import {
-  getAllComponentIds,
-  getComponentMeta,
-  getDemoById,
-  sectionOrder,
-  componentList,
-} from "@/lib/component-registry";
+import { sectionOrder, componentList } from "@/lib/component-registry";
 import Link from "next/link";
 import { Button } from "@/registry/new-york/blocks/button/button";
-import { cn } from "@/lib/utils";
-import ComponentFrame from "@/components/component-frame";
-import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
-import * as React from "react";
 
 export default function ComponentsPage() {
   const componentsBySection = componentList.reduce<Record<string, typeof componentList>>(

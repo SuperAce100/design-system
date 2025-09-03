@@ -1,5 +1,4 @@
 "use client";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/registry/new-york/blocks/card/card";
 import Markdown from "@/registry/new-york/blocks/markdown/markdown";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
 

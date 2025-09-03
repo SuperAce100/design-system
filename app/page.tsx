@@ -1,49 +1,10 @@
 "use client";
-import * as React from "react";
 import Link from "next/link";
-import ModeToggle from "@/components/ui/mode-toggle";
 import { Button } from "@/registry/new-york/blocks/button/button";
-import { componentList, sectionOrder } from "@/lib/component-registry";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/registry/new-york/blocks/card/card";
-import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
 import { Badge } from "@/registry/new-york/blocks/badge/badge";
-import type { UIMessage } from "ai";
-import MotionBlurText from "@/registry/new-york/blocks/motion-blur-text/motion-blur-text";
 import Reveal from "@/registry/new-york/blocks/reveal/reveal";
-import ShowcaseChat from "@/components/showcase-chat";
-import { Input } from "@/registry/new-york/blocks/input/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/registry/new-york/blocks/select/select";
-import { Textarea } from "@/registry/new-york/blocks/textarea/textarea";
-import Markdown from "@/registry/new-york/blocks/markdown/markdown";
-import { DescriptionList } from "@/registry/new-york/blocks/description-list/description-list";
-import OverviewExample from "@/components/examples/OverviewExample";
-import DashboardExample from "@/components/examples/DashboardExample";
-import TasksExample from "@/components/examples/TasksExample";
-import PlaygroundExample from "@/components/examples/PlaygroundExample";
-import ChatExample from "@/components/examples/ChatExample";
-
-const components = componentList;
 
 export default function Home() {
-  // Group components by their section for easier rendering
-  const componentsBySection = React.useMemo(() => {
-    return components.reduce<Record<string, typeof components>>((acc, component) => {
-      const section = component.section as string;
-      if (!acc[section]) acc[section] = [] as unknown as typeof components;
-      acc[section].push(component);
-      return acc;
-    }, {} as Record<string, typeof components>);
-  }, []);
-
-  // Tabs state
-  const [activeTab, setActiveTab] = React.useState<string>("overview");
-
   return (
     <div className="flex flex-col px-4 gap-10">
       {/* Hero */}

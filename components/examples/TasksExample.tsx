@@ -1,5 +1,4 @@
 "use client";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/registry/new-york/blocks/card/card";
 import { Input } from "@/registry/new-york/blocks/input/input";
 import {
   Select,

@@ -1,7 +1,6 @@
 "use client";
 import { Badge } from "@/registry/new-york/blocks/badge/badge";
 import { Button } from "@/registry/new-york/blocks/button/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/registry/new-york/blocks/card/card";
 import { DescriptionList } from "@/registry/new-york/blocks/description-list/description-list";
 
 export default function OverviewExample() {
