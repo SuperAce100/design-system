@@ -17,6 +17,72 @@
       ]
     },
     {
+      "name": "chat",
+      "type": "registry:component",
+      "title": "Chat",
+      "description": "A complete chat component that composes chat-message and chat-input and wires to /api/chat.",
+      "dependencies": [
+        "ai",
+        "@ai-sdk/react",
+        "@radix-ui/react-select",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": ["accordion"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/chat/chat.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/chat-message/chat-message.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-message.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/chat-input/chat-input.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-input.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/chat-tool/chat-tool.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-tool.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/chat-reasoning/chat-reasoning.tsx",
+          "type": "registry:component",
+          "target": "components/chat/chat-reasoning.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/markdown/markdown.tsx",
+          "type": "registry:component",
+          "target": "components/ui/markdown.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/code-block/code-block.tsx",
+          "type": "registry:component",
+          "target": "components/ui/code-block.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/select/select.tsx",
+          "type": "registry:component",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/textarea/textarea.tsx",
+          "type": "registry:component",
+          "target": "components/ui/textarea.tsx"
+        }
+      ]
+    },
+    {
       "name": "window",
       "type": "registry:component",
       "title": "Window",
