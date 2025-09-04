@@ -24,12 +24,18 @@
       "dependencies": [
         "ai",
         "@ai-sdk/react",
+        "@ai-sdk/openai",
         "@radix-ui/react-select",
         "class-variance-authority",
         "lucide-react"
       ],
       "registryDependencies": ["accordion"],
       "files": [
+        {
+          "path": "registry/new-york/routes/chat/route.ts",
+          "type": "registry:component",
+          "target": "app/api/chat/route.ts"
+        },
         {
           "path": "registry/new-york/blocks/chat/chat.tsx",
           "type": "registry:component",

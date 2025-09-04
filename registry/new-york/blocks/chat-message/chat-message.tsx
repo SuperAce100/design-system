@@ -4,17 +4,9 @@ import { cn } from "@/lib/utils";
 import { VariantProps, cva } from "class-variance-authority";
 import Markdown from "@/registry/new-york/blocks/markdown/markdown";
 import React from "react";
-import { Button } from "@/registry/new-york/blocks/button/button";
-import { Copy, Check } from "lucide-react";
 import { ToolUIPart, UIMessage } from "ai";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import ChatReasoning from "@/registry/new-york/blocks/chat-reasoning/chat-reasoning";
-import ChatTool from "../chat-tool/chat-tool";
+import ChatTool from "@/registry/new-york/blocks/chat-tool/chat-tool";
 
 const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
