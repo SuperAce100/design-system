@@ -61,7 +61,7 @@ export default function ChatInput({
         }}
       />
       <Button
-        type={stop ? "button" : "submit"}
+        type={loading ? "button" : "submit"}
         onClick={() => {
           if (stop) {
             stop();
@@ -72,7 +72,7 @@ export default function ChatInput({
         size="icon"
         className="absolute bottom-2 right-2"
       >
-        {stop ? <SquareIcon className="w-4 h-4" /> : <SendIcon className="w-4 h-4" />}
+        {loading ? <SquareIcon className="w-4 h-4" /> : <SendIcon className="w-4 h-4" />}
       </Button>
       {onModelChange && models && (
         <div className="flex items-center gap-2 absolute bottom-0 left-0">

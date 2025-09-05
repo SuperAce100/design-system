@@ -19,6 +19,7 @@ import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
 import ChatReasoningDemo from "@/components/demos/chat-reasoning-demo";
 import ChatToolDemo from "@/components/demos/chat-tool-demo";
+import ChatDemo from "@/components/demos/chat-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -123,6 +124,13 @@ export const componentList: ComponentMeta[] = [
     description: "A chat tool component that displays tool calls and their results.",
   },
   {
+    id: "chat",
+    name: "Chat",
+    section: "AI",
+    description:
+      "A complete chat component that composes chat-message and chat-input and wires to /api/chat.",
+  },
+  {
     id: "jsx-preview",
     name: "JSX Preview",
     section: "AI",
@@ -165,6 +173,7 @@ const demoMap: Record<string, React.ReactNode> = {
   "chat-message": <ChatMessageDemo />,
   "chat-reasoning": <ChatReasoningDemo />,
   "chat-tool": <ChatToolDemo />,
+  chat: <ChatDemo />,
   "jsx-preview": <JSXPreviewDemo />,
   pointer: <PointerDemo />,
   reveal: <RevealDemo />,

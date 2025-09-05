@@ -44,18 +44,20 @@ export default function Chat({
   };
 
   return (
-    <div className={cn("relative", className)}>
-      <div className="flex flex-col gap-2 flex-1 overflow-y-auto h-[calc(100%-48px)] pb-12 px-2">
+    <div className={cn("relative flex flex-col", className)}>
+      <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto px-2">
         {messages.map((m: UIMessage) => (
           <ChatMessage key={m.id} message={m} />
         ))}
+        <div className="min-h-32"></div>
       </div>
 
-      {status === "streaming" && (
-        <div className="text-sm text-muted-foreground">
-          <Loader className="size-4 animate-spin" />
-        </div>
-      )}
+      {status === "streaming" ||
+        (status === "submitted" && (
+          <div className="text-sm text-muted-foreground">
+            <Loader className="size-4 animate-spin" />
+          </div>
+        ))}
 
       {status === "error" && error && (
         <div className="text-destructive text-sm flex items-center gap-2 px-4 py-2 rounded-md bg-destructive/10">
@@ -66,7 +68,7 @@ export default function Chat({
 
       <ChatInput
         title=""
-        placeholder="Ask the UI builder..."
+        placeholder="Ask anything..."
         models={models}
         allowFileUpload={false}
         loading={status === "streaming"}
