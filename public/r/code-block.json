@@ -8,8 +8,7 @@
     "@radix-ui/react-slot",
     "class-variance-authority",
     "lucide-react",
-    "react-syntax-highlighter",
-    "next-themes"
+    "react-syntax-highlighter"
   ],
   "files": [
     {

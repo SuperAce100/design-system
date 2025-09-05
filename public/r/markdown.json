@@ -10,8 +10,7 @@
     "lucide-react",
     "react-syntax-highlighter",
     "react-markdown",
-    "remark-gfm",
-    "next-themes"
+    "remark-gfm"
   ],
   "files": [
     {
