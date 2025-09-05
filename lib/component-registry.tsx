@@ -101,20 +101,21 @@ export const componentList: ComponentMeta[] = [
     id: "chat",
     name: "Chat",
     section: "AI",
-    description: "A full AI chatbot, batteries included. Just add an OpenAI key.",
+    description:
+      "A full chat component with tool calling, reasoning, etc. using the AI SDK. Just add an OpenAI key.",
   },
   {
     id: "chat-input",
     name: "Chat Input",
     section: "AI",
-    description: "A chat input component for a nice chatbot experience. Ready for useChat().",
+    description:
+      "A chat input component with status indicators, model selection, and more. Ready for useChat().",
   },
   {
     id: "chat-message",
     name: "Chat Message",
     section: "AI",
-    description:
-      "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
+    description: "A configurable chat message including markdown support, tool calls, etc.",
   },
   {
     id: "chat-reasoning",
@@ -127,7 +128,8 @@ export const componentList: ComponentMeta[] = [
     id: "chat-tool",
     name: "Tool Call",
     section: "AI",
-    description: "A chat tool component that displays tool calls and their results.",
+    description:
+      "A component that displays tool calls as they stream in in a nice collapsible display.",
   },
   {
     id: "jsx-preview",
@@ -146,13 +148,13 @@ export const componentList: ComponentMeta[] = [
     id: "reveal",
     name: "Reveal",
     section: "Effects",
-    description: "A simple wrapper that reveals content when it scrolls into view.",
+    description: "A simple wrapper that animates content when it scrolls into view.",
   },
   {
     id: "motion-blur-text",
     name: "Motion Blur Text",
     section: "Effects",
-    description: "A cool motion blur text effect.",
+    description: "A motion blur text effect that can be used to show motion.",
   },
 ];
 

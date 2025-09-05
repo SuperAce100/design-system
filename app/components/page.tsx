@@ -25,8 +25,7 @@ export default function ComponentsPage() {
           <div className="flex flex-col gap-1">
             <h1 className="text-4xl font-semibold tracking-tight">Splash</h1>
             <p className="text-muted-foreground text-lg">
-              A set of beautifully designed components that you can customize, extend, and build on.
-              Start here then make it your own. Open Source. Open Code.
+              A component library designed to be beautiful, easy to use, and LLM-ready.
             </p>
           </div>
         </div>
