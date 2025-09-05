@@ -15,7 +15,7 @@ export default function Chat({
   defaultModel?: string;
   className?: string;
 }) {
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, status, error, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
@@ -73,6 +73,7 @@ export default function Chat({
         handleSubmit={handleSubmit}
         handleInputChange={handleInputChange}
         input={input}
+        stop={stop}
         className="absolute bottom-0"
         model={model}
         onModelChange={setModel}
