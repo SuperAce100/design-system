@@ -23,7 +23,7 @@ export default function ComponentsPage() {
         </div>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-4xl font-semibold tracking-tight">Components</h1>
+            <h1 className="text-4xl font-semibold tracking-tight">Splash</h1>
             <p className="text-muted-foreground text-lg">
               A set of beautifully designed components that you can customize, extend, and build on.
               Start here then make it your own. Open Source. Open Code.
