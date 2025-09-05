@@ -31,7 +31,7 @@ export default function ComponentsPage() {
           </div>
         </div>
       </header>
-      <main className="flex flex-col gap-8 px-2">
+      <main className="flex flex-col gap-8 px-2 pb-16">
         {/* Components index */}
         {sectionOrder.map((section) => {
           const comps = componentsBySection[section];
@@ -39,17 +39,27 @@ export default function ComponentsPage() {
           const anchor = section.toLowerCase();
           return (
             <section key={section} id={anchor} className="px-1">
-              <h2 className="text-xl font-medium mb-1">{section}</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-2 text-muted-foreground/70">
+                {section}
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {comps.map((component) => (
                   <Button
                     key={component.id}
-                    variant="link"
+                    variant="outline"
                     size="sm"
-                    className="justify-start no-underline text-primary pl-0 hover:opacity-100"
+                    className="justify-start no-underline rounded-xl p-4 duration-500 hover:transition-none"
                     asChild
                   >
-                    <Link href={`/${component.id}`}>{component.name}</Link>
+                    <Link
+                      href={`/${component.id}`}
+                      className="flex flex-col gap-1 justify-start items-start"
+                    >
+                      <h3 className="text-xl font-medium text-primary">{component.name}</h3>
+                      <p className="max-w-full text-wrap text-muted-foreground/70 text-sm">
+                        {component.description}
+                      </p>
+                    </Link>
                   </Button>
                 ))}
               </div>

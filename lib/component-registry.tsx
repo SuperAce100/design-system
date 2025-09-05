@@ -98,6 +98,12 @@ export const componentList: ComponentMeta[] = [
     description: "A clean page header so your pages look consistent.",
   },
   {
+    id: "chat",
+    name: "Chat",
+    section: "AI",
+    description: "A full AI chatbot, batteries included. Just add an OpenAI key.",
+  },
+  {
     id: "chat-input",
     name: "Chat Input",
     section: "AI",
@@ -122,13 +128,6 @@ export const componentList: ComponentMeta[] = [
     name: "Tool Call",
     section: "AI",
     description: "A chat tool component that displays tool calls and their results.",
-  },
-  {
-    id: "chat",
-    name: "Chat",
-    section: "AI",
-    description:
-      "A complete chat component that composes chat-message and chat-input and wires to /api/chat.",
   },
   {
     id: "jsx-preview",
