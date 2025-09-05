@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
+import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <AnimatedThemeToggler className="fixed top-4 right-4" />
         </ThemeProvider>
         <Analytics />
       </body>
