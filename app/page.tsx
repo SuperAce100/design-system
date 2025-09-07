@@ -4,7 +4,6 @@ import { Button } from "@/registry/new-york/blocks/button/button";
 import { Badge } from "@/registry/new-york/blocks/badge/badge";
 import Reveal from "@/registry/new-york/blocks/reveal/reveal";
 import { Github } from "lucide-react";
-import ChatInputDemo from "@/components/demos/chat-input-demo";
 import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
 
 export default function Home() {
@@ -37,7 +36,7 @@ export default function Home() {
             ]}
             loading={false}
             handleSubmit={() => {}}
-            handleInputChange={(e) => {}}
+            handleInputChange={() => {}}
             input=""
             model="gpt-5-mini"
             className="w-full"
