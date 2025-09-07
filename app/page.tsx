@@ -4,6 +4,8 @@ import { Button } from "@/registry/new-york/blocks/button/button";
 import { Badge } from "@/registry/new-york/blocks/badge/badge";
 import Reveal from "@/registry/new-york/blocks/reveal/reveal";
 import { Github } from "lucide-react";
+import ChatInputDemo from "@/components/demos/chat-input-demo";
+import ChatInput from "@/registry/new-york/blocks/chat-input/chat-input";
 
 export default function Home() {
   return (
@@ -22,6 +24,24 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-semibold tracking-tight text-balance">
             Add AI to your app in one command
           </h1>
+        </Reveal>
+        <Reveal index={1} className="w-full">
+          <ChatInput
+            placeholder="Type something..."
+            models={[
+              {
+                id: "gpt-5-mini",
+                name: "GPT-5 mini",
+                description: "Fast and affordable",
+              },
+            ]}
+            loading={false}
+            handleSubmit={() => {}}
+            handleInputChange={(e) => {}}
+            input=""
+            model="gpt-5-mini"
+            className="w-full"
+          />
         </Reveal>
         <Reveal index={2}>
           <p className="text-muted-foreground text-lg max-w-3xl">
