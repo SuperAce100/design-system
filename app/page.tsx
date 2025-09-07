@@ -6,7 +6,7 @@ import Reveal from "@/registry/new-york/blocks/reveal/reveal";
 
 export default function Home() {
   return (
-    <div className="flex flex-col px-4 gap-10">
+    <div className="flex flex-col px-4 gap-10 bg-radial-[at_40%_30%] from-primary/0 to-primary/30 dark:from-primary/40 dark:to-primary/0">
       {/* Hero */}
       <header className="max-w-2xl mx-auto flex flex-col gap-6 items-center text-center h-screen justify-center">
         <Reveal index={0}>
