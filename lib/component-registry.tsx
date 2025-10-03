@@ -20,6 +20,7 @@ import PointerDemo from "@/components/demos/pointer-demo";
 import ChatReasoningDemo from "@/components/demos/chat-reasoning-demo";
 import ChatToolDemo from "@/components/demos/chat-tool-demo";
 import ChatDemo from "@/components/demos/chat-demo";
+import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -72,6 +73,12 @@ export const componentList: ComponentMeta[] = [
     name: "Input",
     section: "Primitives",
     description: "A simple input component with a tactile feel.",
+  },
+  {
+    id: "invisible-input",
+    name: "Invisible Input",
+    section: "Primitives",
+    description: "An unstyled input that looks like text; fully styleable.",
   },
   {
     id: "textarea",
@@ -166,6 +173,7 @@ const demoMap: Record<string, React.ReactNode> = {
   markdown: <MarkdownDemo />,
   select: <SelectDemo />,
   input: <InputDemo />,
+  "invisible-input": <InvisibleInputDemo />,
   textarea: <TextareaDemo />,
   card: <CardDemo />,
   "description-list": <DescriptionListDemo />,

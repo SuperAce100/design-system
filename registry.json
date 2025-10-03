@@ -411,6 +411,20 @@
           "target": "components/ui/code-block.tsx"
         }
       ]
+    },
+    {
+      "name": "invisible-input",
+      "type": "registry:component",
+      "title": "Invisible Input",
+      "description": "An unstyled input that looks like text; fully styleable.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/invisible-input/invisible-input.tsx",
+          "type": "registry:component",
+          "target": "components/ui/invisible-input.tsx"
+        }
+      ]
     }
   ]
 }
