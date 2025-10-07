@@ -20,7 +20,13 @@ export default function CommandPromptDemo() {
           ⌘K
         </kbd>
       </div>
-      <CommandPromptOverlay placeholder="Type a command..." suggestions={DEFAULT_SUGGESTIONS} />
+      <CommandPromptOverlay
+        placeholder="Type a command..."
+        suggestions={DEFAULT_SUGGESTIONS}
+        background="card"
+        showPrefix={false}
+        focusRing={false}
+      />
     </div>
   );
 }

@@ -20,6 +20,9 @@ export type CommandPromptProps = Omit<
   initialHistory?: string[];
   prefix?: string;
   frameless?: boolean;
+  showPrefix?: boolean;
+  focusRing?: boolean;
+  background?: "background" | "card";
 };
 
 /**
@@ -41,6 +44,9 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
     prefix = ">",
     disabled,
     placeholder,
+    showPrefix = true,
+    focusRing = true,
+    background = "background",
     ...inputProps
   }: CommandPromptProps,
   ref
@@ -168,14 +174,15 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
       <div
         data-slot="command-prompt"
         className={cn(
-          "rounded-xl bg-background transition-[color,box-shadow]",
+          "rounded-xl transition-[color,box-shadow]",
+          background === "card" ? "bg-card" : "bg-background",
           inputProps.frameless ? "shadow-none border-none" : "border border-input shadow-lg",
-          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+          focusRing && "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
           disabled && "opacity-50 cursor-not-allowed"
         )}
       >
-        <div className="flex w-full items-center gap-2 px-3 py-2">
-          <span className="text-muted-foreground select-none">{prefix}</span>
+        <div className="flex w-full items-center gap-2 px-3 pt-3 pb-3">
+          {showPrefix ? <span className="text-muted-foreground select-none">{prefix}</span> : null}
           <input
             ref={inputRef}
             type="text"
@@ -300,11 +307,11 @@ const CommandPromptOverlay = React.forwardRef<HTMLInputElement, CommandPromptOve
     return (
       <div
         className={cn(
-          "fixed inset-0 z-50 grid place-items-start p-4 sm:p-6 bg-background/60 backdrop-blur-sm"
+          "fixed inset-0 z-50 grid place-items-center p-4 sm:p-6 bg-background/60 backdrop-blur-sm"
         )}
         onClick={handleBackdropClick}
       >
-        <div className={cn("mx-auto w-full max-w-xl")} role="dialog" aria-modal="true">
+        <div className={cn("mx-auto w-full max-w-xl -mt-24")} role="dialog" aria-modal="true">
           <CommandPrompt ref={inputRef} {...props} />
         </div>
       </div>
