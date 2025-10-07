@@ -19,6 +19,7 @@ export type CommandPromptProps = Omit<
   getSuggestions?: (value: string) => Suggestion[];
   initialHistory?: string[];
   prefix?: string;
+  frameless?: boolean;
 };
 
 /**
@@ -167,66 +168,67 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
       <div
         data-slot="command-prompt"
         className={cn(
-          "dark:bg-input/30 border-input flex w-full items-center gap-2 rounded-md border bg-transparent px-3 py-2 shadow-xs transition-[color,box-shadow]",
+          "rounded-xl bg-background transition-[color,box-shadow]",
+          inputProps.frameless ? "shadow-none border-none" : "border border-input shadow-lg",
           "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
           disabled && "opacity-50 cursor-not-allowed"
         )}
       >
-        <span className="text-muted-foreground select-none">{prefix}</span>
-        <input
-          ref={inputRef}
-          type="text"
-          aria-autocomplete="list"
-          aria-controls={open ? listboxId : undefined}
-          aria-activedescendant={open ? activeId : undefined}
-          aria-expanded={open}
-          placeholder={placeholder}
-          className={cn(
-            "placeholder:text-muted-foreground w-full bg-transparent text-base outline-none md:text-sm"
-          )}
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          disabled={disabled}
-          {...inputProps}
-        />
-      </div>
+        <div className="flex w-full items-center gap-2 px-3 py-2">
+          <span className="text-muted-foreground select-none">{prefix}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            aria-autocomplete="list"
+            aria-controls={open ? listboxId : undefined}
+            aria-activedescendant={open ? activeId : undefined}
+            aria-expanded={open}
+            placeholder={placeholder}
+            className={cn(
+              "placeholder:text-muted-foreground w-full bg-transparent text-base outline-none md:text-sm"
+            )}
+            value={inputValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            {...inputProps}
+          />
+        </div>
 
-      {open && computedSuggestions.length > 0 ? (
-        <ul
-          ref={listRef}
-          id={listboxId}
-          role="listbox"
-          className={cn(
-            "border-input mt-2 max-h-64 w-full overflow-auto rounded-md border bg-background p-1 text-sm shadow-md"
-          )}
-        >
-          {computedSuggestions.map((s, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <li
-                key={`${s.value}-${idx}`}
-                id={`${listboxId}-option-${idx}`}
-                role="option"
-                aria-selected={isActive}
-                className={cn(
-                  "focus:bg-accent focus:text-accent-foreground flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1.5 outline-none",
-                  isActive ? "bg-accent text-accent-foreground" : undefined
-                )}
-                onMouseMove={() => handleMouseMove(idx)}
-                onClick={() => handleClickSuggestion(s)}
-              >
-                <span className="truncate">{s.value}</span>
-                {s.description ? (
-                  <span className="text-muted-foreground hidden shrink-0 text-xs md:inline">
-                    {s.description}
-                  </span>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
+        {open && computedSuggestions.length > 0 ? (
+          <ul
+            ref={listRef}
+            id={listboxId}
+            role="listbox"
+            className={cn("max-h-72 w-full overflow-auto border-t border-input p-1 text-sm")}
+          >
+            {computedSuggestions.map((s, idx) => {
+              const isActive = idx === activeIndex;
+              return (
+                <li
+                  key={`${s.value}-${idx}`}
+                  id={`${listboxId}-option-${idx}`}
+                  role="option"
+                  aria-selected={isActive}
+                  className={cn(
+                    "focus:bg-accent focus:text-accent-foreground flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 outline-none",
+                    isActive ? "bg-accent text-accent-foreground" : undefined
+                  )}
+                  onMouseMove={() => handleMouseMove(idx)}
+                  onClick={() => handleClickSuggestion(s)}
+                >
+                  <span className="truncate">{s.value}</span>
+                  {s.description ? (
+                    <span className="text-muted-foreground hidden shrink-0 text-xs md:inline">
+                      {s.description}
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+      </div>
     </div>
   );
 });
@@ -298,19 +300,12 @@ const CommandPromptOverlay = React.forwardRef<HTMLInputElement, CommandPromptOve
     return (
       <div
         className={cn(
-          "fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6",
-          "bg-background/80 backdrop-blur-sm"
+          "fixed inset-0 z-50 grid place-items-start p-4 sm:p-6 bg-background/60 backdrop-blur-sm"
         )}
         onClick={handleBackdropClick}
       >
-        <div
-          className={cn("w-full max-w-xl rounded-md border border-input bg-background shadow-lg")}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="p-2 sm:p-3">
-            <CommandPrompt ref={inputRef} {...props} />
-          </div>
+        <div className={cn("mx-auto w-full max-w-xl")} role="dialog" aria-modal="true">
+          <CommandPrompt ref={inputRef} {...props} />
         </div>
       </div>
     );
