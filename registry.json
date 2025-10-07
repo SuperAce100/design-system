@@ -4,6 +4,20 @@
   "homepage": "https://ds.asanshay.com",
   "items": [
     {
+      "name": "command-prompt",
+      "type": "registry:component",
+      "title": "Command Prompt",
+      "description": "A keyboard-first command prompt with history and autocomplete.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/command-prompt/command-prompt.tsx",
+          "type": "registry:component",
+          "target": "components/ui/command-prompt.tsx"
+        }
+      ]
+    },
+    {
       "name": "pointer",
       "type": "registry:component",
       "title": "Pointer",

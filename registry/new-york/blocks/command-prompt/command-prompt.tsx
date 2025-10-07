@@ -1,0 +1,208 @@
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
+
+type Suggestion = {
+  value: string;
+  description?: string;
+};
+
+export type CommandPromptProps = Omit<
+  React.ComponentProps<"input">,
+  "onChange" | "value" | "defaultValue"
+> & {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  onSubmit?: (value: string) => void;
+  suggestions?: Suggestion[];
+  getSuggestions?: (value: string) => Suggestion[];
+  initialHistory?: string[];
+  prefix?: string;
+};
+
+/**
+ * A keyboard-first command prompt with history navigation and autocomplete.
+ * - ArrowUp/ArrowDown to cycle history
+ * - Tab to accept highlighted suggestion
+ * - Enter to submit
+ */
+function CommandPrompt({
+  className,
+  value,
+  defaultValue,
+  onValueChange,
+  onSubmit,
+  suggestions,
+  getSuggestions,
+  initialHistory,
+  prefix = ">",
+  disabled,
+  placeholder,
+  ...inputProps
+}: CommandPromptProps) {
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = React.useState<string>(defaultValue ?? "");
+  const inputValue = isControlled ? value! : uncontrolledValue;
+  const setInputValue = React.useCallback(
+    (next: string) => {
+      if (disabled) return;
+      if (!isControlled) setUncontrolledValue(next);
+      onValueChange?.(next);
+    },
+    [disabled, isControlled, onValueChange]
+  );
+
+  const [history, setHistory] = React.useState<string[]>(() => initialHistory ?? []);
+  const [historyIndex, setHistoryIndex] = React.useState<number>(-1);
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [activeIndex, setActiveIndex] = React.useState<number>(0);
+  const listRef = React.useRef<HTMLUListElement | null>(null);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const computedSuggestions: Suggestion[] = React.useMemo(() => {
+    const base = getSuggestions ? getSuggestions(inputValue) : suggestions ?? [];
+    if (!inputValue) return base.slice(0, 8);
+    const lower = inputValue.toLowerCase();
+    return base.filter((s) => s.value.toLowerCase().includes(lower)).slice(0, 8);
+  }, [getSuggestions, suggestions, inputValue]);
+
+  React.useEffect(() => {
+    setOpen(computedSuggestions.length > 0);
+    setActiveIndex(0);
+  }, [computedSuggestions]);
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (disabled) return;
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length === 0) return;
+      const nextIndex = historyIndex < 0 ? history.length - 1 : Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIndex);
+      setInputValue(history[nextIndex] ?? "");
+      return;
+    }
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (history.length === 0) return;
+      const nextIndex = historyIndex < 0 ? 0 : Math.min(history.length - 1, historyIndex + 1);
+      setHistoryIndex(nextIndex);
+      setInputValue(history[nextIndex] ?? "");
+      return;
+    }
+
+    if (e.key === "Tab") {
+      if (open && computedSuggestions[activeIndex]) {
+        e.preventDefault();
+        setInputValue(computedSuggestions[activeIndex].value);
+      }
+      return;
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmed = inputValue.trim();
+      onSubmit?.(trimmed);
+      if (trimmed) {
+        setHistory((prev) => (prev[prev.length - 1] === trimmed ? prev : [...prev, trimmed]));
+      }
+      setHistoryIndex(-1);
+      return;
+    }
+
+    if (e.key === "Escape") {
+      setOpen(false);
+      setActiveIndex(0);
+      return;
+    }
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setInputValue(e.target.value);
+    setHistoryIndex(-1);
+  }
+
+  function handleMouseMove(idx: number) {
+    setActiveIndex(idx);
+  }
+
+  function handleClickSuggestion(s: Suggestion) {
+    setInputValue(s.value);
+    inputRef.current?.focus();
+  }
+
+  const listboxId = React.useId();
+  const activeId = `${listboxId}-option-${activeIndex}`;
+
+  return (
+    <div className={cn("w-full", className)}>
+      <div
+        data-slot="command-prompt"
+        className={cn(
+          "dark:bg-input/30 border-input flex w-full items-center gap-2 rounded-md border bg-transparent px-3 py-2 shadow-xs transition-[color,box-shadow]",
+          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
+      >
+        <span className="text-muted-foreground select-none">{prefix}</span>
+        <input
+          ref={inputRef}
+          type="text"
+          aria-autocomplete="list"
+          aria-controls={open ? listboxId : undefined}
+          aria-activedescendant={open ? activeId : undefined}
+          aria-expanded={open}
+          placeholder={placeholder}
+          className={cn(
+            "placeholder:text-muted-foreground w-full bg-transparent text-base outline-none md:text-sm"
+          )}
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          {...inputProps}
+        />
+      </div>
+
+      {open && computedSuggestions.length > 0 ? (
+        <ul
+          ref={listRef}
+          id={listboxId}
+          role="listbox"
+          className={cn(
+            "border-input mt-2 max-h-64 w-full overflow-auto rounded-md border bg-background p-1 text-sm shadow-md"
+          )}
+        >
+          {computedSuggestions.map((s, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <li
+                key={`${s.value}-${idx}`}
+                id={`${listboxId}-option-${idx}`}
+                role="option"
+                aria-selected={isActive}
+                className={cn(
+                  "focus:bg-accent focus:text-accent-foreground flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1.5 outline-none",
+                  isActive ? "bg-accent text-accent-foreground" : undefined
+                )}
+                onMouseMove={() => handleMouseMove(idx)}
+                onClick={() => handleClickSuggestion(s)}
+              >
+                <span className="truncate">{s.value}</span>
+                {s.description ? (
+                  <span className="text-muted-foreground hidden shrink-0 text-xs md:inline">
+                    {s.description}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+export { CommandPrompt };

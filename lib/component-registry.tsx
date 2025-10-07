@@ -21,6 +21,7 @@ import ChatReasoningDemo from "@/components/demos/chat-reasoning-demo";
 import ChatToolDemo from "@/components/demos/chat-tool-demo";
 import ChatDemo from "@/components/demos/chat-demo";
 import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
+import CommandPromptDemo from "@/components/demos/command-prompt-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -73,6 +74,12 @@ export const componentList: ComponentMeta[] = [
     name: "Input",
     section: "Primitives",
     description: "A simple input component with a tactile feel.",
+  },
+  {
+    id: "command-prompt",
+    name: "Command Prompt",
+    section: "Primitives",
+    description: "A keyboard-first command prompt with history and autocomplete.",
   },
   {
     id: "invisible-input",
@@ -173,6 +180,7 @@ const demoMap: Record<string, React.ReactNode> = {
   markdown: <MarkdownDemo />,
   select: <SelectDemo />,
   input: <InputDemo />,
+  "command-prompt": <CommandPromptDemo />,
   "invisible-input": <InvisibleInputDemo />,
   textarea: <TextareaDemo />,
   card: <CardDemo />,
