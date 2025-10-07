@@ -14,10 +14,10 @@ const DEFAULT_SUGGESTIONS = [
 
 export default function CommandPromptDemo() {
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-2 items-center justify-center">
       <div className="text-sm text-muted-foreground">
-        <kbd className="rounded-md border border-input bg-background px-2 py-1 text-xs shadow-xs">
-          ⌘K
+        <kbd className="rounded-md border border-input bg-card px-2 py-1 text-xs shadow-xs">
+          ⌘ + K
         </kbd>
       </div>
       <CommandPromptOverlay

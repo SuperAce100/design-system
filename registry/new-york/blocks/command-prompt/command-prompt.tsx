@@ -1,10 +1,12 @@
 import * as React from "react";
+import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
 type Suggestion = {
   value: string;
   description?: string;
+  onSelect?: () => void | Promise<void>;
 };
 
 export type CommandPromptProps = Omit<
@@ -69,6 +71,7 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
   const [activeIndex, setActiveIndex] = React.useState<number>(0);
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const itemRefs = React.useRef<(HTMLLIElement | null)[]>([]);
 
   // Expose input ref to parent
   React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
@@ -131,6 +134,9 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
           ? computedSuggestions[activeIndex].value
           : inputValue;
       const trimmed = chosen.trim();
+      if (open && computedSuggestions[activeIndex]) {
+        computedSuggestions[activeIndex].onSelect?.();
+      }
       onCommand?.(trimmed);
       if (trimmed) {
         setHistory((prev) => (prev[prev.length - 1] === trimmed ? prev : [...prev, trimmed]));
@@ -158,6 +164,8 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
   function handleClickSuggestion(s: Suggestion) {
     setInputValue(s.value);
     inputRef.current?.focus();
+    s.onSelect?.();
+    onCommand?.(s.value);
   }
 
   const listboxId = React.useId();
@@ -169,6 +177,17 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
     if (el) el.scrollIntoView({ block: "nearest" });
   }, [activeIndex]);
 
+  // Background highlight position/size
+  const [highlight, setHighlight] = React.useState<{ top: number; height: number }>({
+    top: 0,
+    height: 0,
+  });
+  React.useEffect(() => {
+    const el = itemRefs.current[activeIndex];
+    if (!el) return;
+    setHighlight({ top: el.offsetTop, height: el.offsetHeight });
+  }, [activeIndex, computedSuggestions.length, open]);
+
   return (
     <div className={cn("w-full", className)}>
       <div
@@ -176,7 +195,7 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
         className={cn(
           "rounded-xl transition-[color,box-shadow]",
           background === "card" ? "bg-card" : "bg-background",
-          inputProps.frameless ? "shadow-none border-none" : "border border-input shadow-lg",
+          inputProps.frameless ? "shadow-none border-none" : "border border-input shadow-xl",
           focusRing && "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
           disabled && "opacity-50 cursor-not-allowed"
         )}
@@ -207,8 +226,17 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
             ref={listRef}
             id={listboxId}
             role="listbox"
-            className={cn("max-h-72 w-full overflow-auto border-t border-input p-1 text-sm")}
+            className={cn(
+              "relative max-h-72 w-full overflow-auto border-t border-input p-1 text-sm"
+            )}
           >
+            <motion.div
+              aria-hidden
+              className="absolute left-1 right-1 z-0 rounded-md bg-accent"
+              animate={{ top: highlight.top, height: highlight.height }}
+              transition={{ duration: 0.05, ease: "easeOut" }}
+              style={{ top: highlight.top, height: highlight.height }}
+            />
             {computedSuggestions.map((s, idx) => {
               const isActive = idx === activeIndex;
               return (
@@ -218,11 +246,14 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
                   role="option"
                   aria-selected={isActive}
                   className={cn(
-                    "focus:bg-accent focus:text-accent-foreground flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 outline-none",
-                    isActive ? "bg-accent text-accent-foreground" : undefined
+                    "relative z-10 flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 outline-none transition-colors",
+                    isActive ? "text-accent-foreground" : undefined
                   )}
                   onMouseMove={() => handleMouseMove(idx)}
                   onClick={() => handleClickSuggestion(s)}
+                  ref={(el) => {
+                    itemRefs.current[idx] = el;
+                  }}
                 >
                   <span className="truncate">{s.value}</span>
                   {s.description ? (
@@ -281,7 +312,7 @@ const CommandPromptOverlay = React.forwardRef<HTMLInputElement, CommandPromptOve
           const isK = e.key.toLowerCase() === "k";
           if ((e.metaKey || e.ctrlKey) && isK) {
             e.preventDefault();
-            setOpen(true);
+            setOpen(!open);
           } else if (e.key === "Escape" && open) {
             setOpen(false);
           }
@@ -307,7 +338,7 @@ const CommandPromptOverlay = React.forwardRef<HTMLInputElement, CommandPromptOve
     return (
       <div
         className={cn(
-          "fixed inset-0 z-50 grid place-items-center p-4 sm:p-6 bg-background/60 backdrop-blur-sm"
+          "fixed inset-0 z-50 grid place-items-center p-4 sm:p-6 bg-background/60 backdrop-blur-xs"
         )}
         onClick={handleBackdropClick}
       >
