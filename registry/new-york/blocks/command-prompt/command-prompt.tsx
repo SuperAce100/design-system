@@ -14,7 +14,7 @@ export type CommandPromptProps = Omit<
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-  onSubmit?: (value: string) => void;
+  onCommand?: (value: string) => void;
   suggestions?: Suggestion[];
   getSuggestions?: (value: string) => Suggestion[];
   initialHistory?: string[];
@@ -27,20 +27,23 @@ export type CommandPromptProps = Omit<
  * - Tab to accept highlighted suggestion
  * - Enter to submit
  */
-function CommandPrompt({
-  className,
-  value,
-  defaultValue,
-  onValueChange,
-  onSubmit,
-  suggestions,
-  getSuggestions,
-  initialHistory,
-  prefix = ">",
-  disabled,
-  placeholder,
-  ...inputProps
-}: CommandPromptProps) {
+const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(function CommandPrompt(
+  {
+    className,
+    value,
+    defaultValue,
+    onValueChange,
+    onCommand,
+    suggestions,
+    getSuggestions,
+    initialHistory,
+    prefix = ">",
+    disabled,
+    placeholder,
+    ...inputProps
+  }: CommandPromptProps,
+  ref
+) {
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] = React.useState<string>(defaultValue ?? "");
   const inputValue = isControlled ? value! : uncontrolledValue;
@@ -60,6 +63,9 @@ function CommandPrompt({
   const listRef = React.useRef<HTMLUListElement | null>(null);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
+  // Expose input ref to parent
+  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
+
   const computedSuggestions: Suggestion[] = React.useMemo(() => {
     const base = getSuggestions ? getSuggestions(inputValue) : suggestions ?? [];
     if (!inputValue) return base.slice(0, 8);
@@ -75,21 +81,31 @@ function CommandPrompt({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (disabled) return;
 
+    const hasSuggestions = open && computedSuggestions.length > 0;
+
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (history.length === 0) return;
-      const nextIndex = historyIndex < 0 ? history.length - 1 : Math.max(0, historyIndex - 1);
-      setHistoryIndex(nextIndex);
-      setInputValue(history[nextIndex] ?? "");
+      if (hasSuggestions) {
+        setActiveIndex(
+          (idx) => (idx - 1 + computedSuggestions.length) % computedSuggestions.length
+        );
+      } else if (history.length > 0) {
+        const nextIndex = historyIndex < 0 ? history.length - 1 : Math.max(0, historyIndex - 1);
+        setHistoryIndex(nextIndex);
+        setInputValue(history[nextIndex] ?? "");
+      }
       return;
     }
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (history.length === 0) return;
-      const nextIndex = historyIndex < 0 ? 0 : Math.min(history.length - 1, historyIndex + 1);
-      setHistoryIndex(nextIndex);
-      setInputValue(history[nextIndex] ?? "");
+      if (hasSuggestions) {
+        setActiveIndex((idx) => (idx + 1) % computedSuggestions.length);
+      } else if (history.length > 0) {
+        const nextIndex = historyIndex < 0 ? 0 : Math.min(history.length - 1, historyIndex + 1);
+        setHistoryIndex(nextIndex);
+        setInputValue(history[nextIndex] ?? "");
+      }
       return;
     }
 
@@ -103,8 +119,12 @@ function CommandPrompt({
 
     if (e.key === "Enter") {
       e.preventDefault();
-      const trimmed = inputValue.trim();
-      onSubmit?.(trimmed);
+      const chosen =
+        open && computedSuggestions[activeIndex]
+          ? computedSuggestions[activeIndex].value
+          : inputValue;
+      const trimmed = chosen.trim();
+      onCommand?.(trimmed);
       if (trimmed) {
         setHistory((prev) => (prev[prev.length - 1] === trimmed ? prev : [...prev, trimmed]));
       }
@@ -135,6 +155,12 @@ function CommandPrompt({
 
   const listboxId = React.useId();
   const activeId = `${listboxId}-option-${activeIndex}`;
+
+  // Keep active option in view
+  React.useEffect(() => {
+    const el = listRef.current?.children?.[activeIndex] as HTMLElement | undefined;
+    if (el) el.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
 
   return (
     <div className={cn("w-full", className)}>
@@ -203,6 +229,92 @@ function CommandPrompt({
       ) : null}
     </div>
   );
-}
+});
 
 export { CommandPrompt };
+
+// Full-screen overlay with Cmd/Ctrl+K toggle
+export type CommandPromptOverlayProps = Omit<CommandPromptProps, "className"> & {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+};
+
+function useGlobalShortcut(handler: (e: KeyboardEvent) => void) {
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      handler(e);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handler]);
+}
+
+const CommandPromptOverlay = React.forwardRef<HTMLInputElement, CommandPromptOverlayProps>(
+  function CommandPromptOverlay({ open: controlledOpen, onOpenChange, ...props }, ref) {
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState<boolean>(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen! : uncontrolledOpen;
+    const setOpen = React.useCallback(
+      (next: boolean) => {
+        if (!isControlled) setUncontrolledOpen(next);
+        onOpenChange?.(next);
+      },
+      [isControlled, onOpenChange]
+    );
+
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
+    React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
+
+    // Cmd/Ctrl+K to open
+    useGlobalShortcut(
+      React.useCallback(
+        (e: KeyboardEvent) => {
+          const isK = e.key.toLowerCase() === "k";
+          if ((e.metaKey || e.ctrlKey) && isK) {
+            e.preventDefault();
+            setOpen(true);
+          } else if (e.key === "Escape" && open) {
+            setOpen(false);
+          }
+        },
+        [open, setOpen]
+      )
+    );
+
+    // Focus input when opened
+    React.useEffect(() => {
+      if (open) {
+        const id = requestAnimationFrame(() => inputRef.current?.focus());
+        return () => cancelAnimationFrame(id);
+      }
+    }, [open]);
+
+    if (!open) return null;
+
+    function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
+      if (e.target === e.currentTarget) setOpen(false);
+    }
+
+    return (
+      <div
+        className={cn(
+          "fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6",
+          "bg-background/80 backdrop-blur-sm"
+        )}
+        onClick={handleBackdropClick}
+      >
+        <div
+          className={cn("w-full max-w-xl rounded-md border border-input bg-background shadow-lg")}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="p-2 sm:p-3">
+            <CommandPrompt ref={inputRef} {...props} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+export { CommandPromptOverlay };
