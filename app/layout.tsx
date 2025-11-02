@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Splash",
+  title: "Asanshay's components",
   description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
 };
 
