@@ -16,6 +16,9 @@ export default function Home() {
   return (
     <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
       <header className="flex flex-col gap-2 px-3">
+        <Link href="/" className="text-sm text-muted-foreground mt-6">
+          <span className="text-foreground">Components</span>
+        </Link>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h1 className="text-4xl font-semibold tracking-tight">Asanshay's components</h1>
