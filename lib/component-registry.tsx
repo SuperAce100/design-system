@@ -22,6 +22,7 @@ import ChatToolDemo from "@/components/demos/chat-tool-demo";
 import ChatDemo from "@/components/demos/chat-demo";
 import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
 import CommandPromptDemo from "@/components/demos/command-prompt-demo";
+import LoaderDemo from "@/components/demos/loader-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -170,6 +171,12 @@ export const componentList: ComponentMeta[] = [
     section: "Effects",
     description: "A motion blur text effect that can be used to show motion.",
   },
+  {
+    id: "loader",
+    name: "Loader",
+    section: "Primitives",
+    description: "A collection of elegant loading indicators with progress support.",
+  },
 ];
 
 const demoMap: Record<string, React.ReactNode> = {
@@ -195,6 +202,7 @@ const demoMap: Record<string, React.ReactNode> = {
   pointer: <PointerDemo />,
   reveal: <RevealDemo />,
   "motion-blur-text": <MotionBlurTextDemo />,
+  loader: <LoaderDemo />,
 };
 
 export function getDemoById(id: string): React.ReactNode | null {

@@ -439,6 +439,20 @@
           "target": "components/ui/invisible-input.tsx"
         }
       ]
+    },
+    {
+      "name": "loader",
+      "type": "registry:component",
+      "title": "Loader",
+      "description": "A collection of elegant loading indicators with progress support.",
+      "dependencies": ["class-variance-authority", "motion"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/loader/loader.tsx",
+          "type": "registry:component",
+          "target": "components/ui/loader.tsx"
+        }
+      ]
     }
   ]
 }
