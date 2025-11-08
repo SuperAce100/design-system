@@ -34,7 +34,7 @@ const sizeClasses = {
     pulse: "size-4",
   },
   lg: {
-    spinner: "size-8 border-[3px]",
+    spinner: "size-8 border-3",
     dots: "size-2.5",
     pulse: "size-6",
   },
@@ -51,22 +51,18 @@ function Loader({ variant = "spinner", size = "default", className, ...props }: 
     return (
       <div
         data-slot="loader"
-        className={cn(
-          "rounded-full border-4 border-primary/10 relative",
-          sizeConfig.spinner,
-          className
-        )}
+        className={cn("relative rounded-full", sizeConfig.spinner, className)}
         {...props}
       >
         <motion.div
-          className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary border-r-primary/50"
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary"
           animate={{ rotate: 360 }}
-          transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary/30"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: "backInOut",
+            repeatType: "loop",
+          }}
         />
       </div>
     );
@@ -74,21 +70,21 @@ function Loader({ variant = "spinner", size = "default", className, ...props }: 
 
   if (variant === "dots") {
     return (
-      <div data-slot="loader" className={cn("flex items-center gap-2", className)} {...props}>
-        {[0, 200, 400].map((delay, index) => (
+      <div data-slot="loader" className={cn("flex items-center gap-1.5", className)} {...props}>
+        {[0, 150, 300].map((delay, index) => (
           <motion.div
             key={index}
             className={cn("rounded-full bg-primary", sizeConfig.dots)}
             animate={{
-              y: [0, -8, 0],
-              scale: [1, 1.1, 1],
-              opacity: [1, 0.8, 1],
+              y: [0, -6, 0],
+              opacity: [0.4, 1, 0.4],
             }}
             transition={{
-              duration: 0.6,
+              duration: 0.8,
               repeat: Infinity,
               ease: "easeInOut",
               delay: delay / 1000,
+              repeatType: "loop",
             }}
           />
         ))}
@@ -103,26 +99,19 @@ function Loader({ variant = "spinner", size = "default", className, ...props }: 
         className={cn("relative inline-flex items-center justify-center", className)}
         {...props}
       >
-        {[0, 0.2, 0.4].map((delay, index) => (
-          <motion.div
-            key={index}
-            className={cn(
-              "absolute rounded-full bg-primary",
-              index === 0 ? "bg-primary" : index === 1 ? "bg-primary/80" : "bg-primary/60",
-              sizeConfig.pulse
-            )}
-            animate={{
-              scale: [1, 1.5, 2],
-              opacity: [1, 0.5, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeOut",
-              delay,
-            }}
-          />
-        ))}
+        <motion.div
+          className={cn("absolute rounded-full bg-primary", sizeConfig.pulse)}
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.8, 0.3, 0.8],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            repeatType: "loop",
+          }}
+        />
       </div>
     );
   }
