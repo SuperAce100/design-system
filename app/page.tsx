@@ -21,7 +21,7 @@ export default function Home() {
         </Link>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-4xl font-semibold tracking-tight">Asanshay's components</h1>
+            <h1 className="text-4xl font-semibold tracking-tight">Asanshay&apos;s components</h1>
             <p className="text-muted-foreground text-lg">
               A component library designed to be beautiful, easy to use, and LLM-ready.
             </p>
