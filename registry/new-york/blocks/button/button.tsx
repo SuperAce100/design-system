@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/70 text-primary-foreground shadow-lg dark:shadow-none shadow-slate-200/50 hover:bg-white dark:hover:bg-primary hover:shadow-lg active:bg-primary active:shadow-none hover:-translate-y-px active:translate-y-px ",
+          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/70 text-primary-foreground shadow-lg dark:shadow-none shadow-slate-200/50 hover:bg-white dark:hover:bg-primary hover:shadow-lg active:bg-primary active:shadow-none hover:-translate-y-px active:translate-y-px",
         fancy:
           "border border-primary bg-primary/30 bg-radial-[at_50%_25%] from-primary/40 to-primary text-primary-foreground shadow-md inset-shadow-sm inset-shadow-white/50 hover:bg-white hover:shadow-lg hover:inset-shadow-white active:bg-primary/30 active:shadow-none active:inset-shadow-primary/80  hover:-translate-y-px active:translate-y-px",
         destructive:
@@ -18,10 +18,10 @@ const buttonVariants = cva(
         outline:
           "border shadow-lg dark:shadow-none hover:shadow-none shadow-slate-200/50 bg-transparent text-primary hover:border-transparent hover:bg-primary/10 active:bg-primary/30",
         secondary:
-          "border border-transparent bg-primary/10 text-primary hover:border-primary/50 hover:bg-transparent  active:border-transparent active:border-primary active:ring-1",
+          "border border-transparent bg-primary/10 text-primary hover:border-primary/50 hover:bg-transparent  active:border-transparent active:border-primary active:ring-1 active:scale-95",
         ghost:
           "bg-transparent text-primary hover:border-transparent hover:bg-primary/10 active:bg-primary/30",
-        link: "text-foreground underline decoration-primary underline-offset-2 hover:underline-offset-2 active:underline-offset-4 hover:opacity-70 hover:decoration-2 active:text-foreground",
+        link: "text-foreground underline decoration-primary underline-offset-2 hover:underline-offset-2 active:decoration-4 hover:opacity-70 hover:decoration-2 active:text-foreground",
       },
       size: {
         default: "px-4 py-2",

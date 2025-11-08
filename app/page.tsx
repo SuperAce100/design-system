@@ -35,17 +35,17 @@ export default function Home() {
           if (!comps) return null;
           const anchor = section.toLowerCase();
           return (
-            <section key={section} id={anchor} className="px-1">
-              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-2 text-muted-foreground/70">
+            <section key={section} id={anchor} className="-mx-3">
+              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-4 text-muted-foreground/70">
                 {section}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {comps.map((component) => (
                   <Button
                     key={component.id}
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="justify-start no-underline rounded-xl p-4 duration-500 hover:transition-none"
+                    className="justify-start no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
                     asChild
                   >
                     <Link
