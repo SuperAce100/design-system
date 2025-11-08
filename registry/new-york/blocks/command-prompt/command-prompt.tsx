@@ -25,6 +25,7 @@ export type CommandPromptProps = Omit<
   showPrefix?: boolean;
   focusRing?: boolean;
   background?: "background" | "card";
+  showActions?: boolean;
 };
 
 /**
@@ -49,6 +50,7 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
     showPrefix = true,
     focusRing = true,
     background = "background",
+    showActions = true,
     ...inputProps
   }: CommandPromptProps,
   ref
@@ -265,6 +267,43 @@ const CommandPrompt = React.forwardRef<HTMLInputElement, CommandPromptProps>(fun
               );
             })}
           </ul>
+        ) : null}
+
+        {showActions ? (
+          <div className="flex items-center justify-between gap-2 border-t border-input px-3 py-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3">
+              {history.length > 0 ? (
+                <span className="flex items-center gap-1.5">
+                  <kbd className="rounded border border-input bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium">
+                    ↑↓
+                  </kbd>
+                  <span>history</span>
+                </span>
+              ) : null}
+              <span className="flex items-center gap-1.5">
+                <kbd className="rounded border border-input bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium">
+                  Esc
+                </kbd>
+                <span>to close</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <kbd className="rounded border border-input bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium">
+                  ↵
+                </kbd>
+                <span>to accept</span>
+              </span>
+              {open && computedSuggestions.length > 0 ? (
+                <span className="flex items-center gap-1.5">
+                  <kbd className="rounded border border-input bg-muted px-1.5 py-0.5 font-mono text-[10px] font-medium">
+                    Tab
+                  </kbd>
+                  <span>to complete</span>
+                </span>
+              ) : null}
+            </div>
+          </div>
         ) : null}
       </div>
     </div>
