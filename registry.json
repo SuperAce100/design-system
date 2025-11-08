@@ -453,6 +453,20 @@
           "target": "components/ui/loader.tsx"
         }
       ]
+    },
+    {
+      "name": "morphing-text",
+      "type": "registry:component",
+      "title": "Morphing Text",
+      "description": "Text that smoothly animates character changes when the value updates.",
+      "dependencies": ["motion"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/morphing-text/morphing-text.tsx",
+          "type": "registry:component",
+          "target": "components/ui/morphing-text.tsx"
+        }
+      ]
     }
   ]
 }

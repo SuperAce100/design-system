@@ -23,6 +23,7 @@ import ChatDemo from "@/components/demos/chat-demo";
 import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
 import CommandPromptDemo from "@/components/demos/command-prompt-demo";
 import LoaderDemo from "@/components/demos/loader-demo";
+import MorphingTextDemo from "@/components/demos/morphing-text-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -177,6 +178,12 @@ export const componentList: ComponentMeta[] = [
     section: "Primitives",
     description: "A collection of elegant loading indicators with progress support.",
   },
+  {
+    id: "morphing-text",
+    name: "Morphing Text",
+    section: "Effects",
+    description: "Text that smoothly animates character changes when the value updates.",
+  },
 ];
 
 const demoMap: Record<string, React.ReactNode> = {
@@ -203,6 +210,7 @@ const demoMap: Record<string, React.ReactNode> = {
   reveal: <RevealDemo />,
   "motion-blur-text": <MotionBlurTextDemo />,
   loader: <LoaderDemo />,
+  "morphing-text": <MorphingTextDemo />,
 };
 
 export function getDemoById(id: string): React.ReactNode | null {
