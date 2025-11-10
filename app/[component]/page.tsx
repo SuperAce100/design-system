@@ -60,7 +60,7 @@ export default async function ComponentPage({
         </div>
       </header>
       <main className="grid grid-cols-1 sm:grid-cols-5 gap-8 relative min-h-0 overflow-hidden pb-10">
-        <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0">
+        <div className="flex flex-col flex-1 col-span-1 items-start sticky top-0 overflow-y-auto">
           {sectionOrder.map((section) => {
             const comps = (componentsBySection as Record<string, typeof componentList>)[section];
             if (!comps) return null;
