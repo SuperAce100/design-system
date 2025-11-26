@@ -67,7 +67,7 @@ export default function ComponentDocsPage({ meta, demo, sections }: ComponentDoc
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 className="sm:hidden"
                 onClick={() => setNavOpen(true)}
@@ -195,12 +195,38 @@ function MobileNav({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  if (!open) return null;
+  const [shouldRender, setShouldRender] = React.useState(open);
+
+  React.useEffect(() => {
+    if (open) {
+      setShouldRender(true);
+    }
+  }, [open]);
+
+  const handleTransitionEnd = React.useCallback(() => {
+    if (!open) {
+      setShouldRender(false);
+    }
+  }, [open]);
+
+  if (!shouldRender) return null;
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative ml-auto flex h-full w-[320px] max-w-full flex-col border-l bg-background px-5 py-6 shadow-2xl">
+      <div
+        className={cn(
+          "absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-200",
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+        onClick={onClose}
+      />
+      <div
+        className={cn(
+          "relative ml-auto flex h-full w-[320px] max-w-full flex-col border-l bg-background px-5 py-6 shadow-2xl transition-transform duration-300 ease-out",
+          open ? "translate-x-0" : "translate-x-full"
+        )}
+        onTransitionEnd={handleTransitionEnd}
+      >
         <div className="mb-4 flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">Browse components</p>
           <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close menu">
