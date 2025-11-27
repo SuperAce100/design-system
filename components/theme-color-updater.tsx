@@ -37,7 +37,8 @@ export function ThemeColorUpdater() {
       meta.setAttribute("content", background);
     };
 
-    updateThemeColor();
+    const frame = window.requestAnimationFrame(updateThemeColor);
+    return () => window.cancelAnimationFrame(frame);
   }, [resolvedTheme]);
 
   return null;
