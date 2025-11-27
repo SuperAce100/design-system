@@ -17,7 +17,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Asanshay's components",
-  description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
+  description:
+    "A set of beautiful, flexible, and LLM-ready components for your next project.",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({
