@@ -1,28 +1,18 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
+import {
+  isComponentSourceFile,
+  type ComponentSourceFile,
+} from "@/types/component-source";
 import React from "react";
-
-type RegistryFile = {
-  path: string;
-  content: string;
-};
-
-function isRegistryFile(file: unknown): file is RegistryFile {
-  if (!file || typeof file !== "object") {
-    return false;
-  }
-
-  const candidate = file as Record<string, unknown>;
-  return typeof candidate.path === "string" && typeof candidate.content === "string";
-}
 
 function formatFileLabel(path: string) {
   return path.replace(/^registry\/new-york\//, "");
 }
 
 function findPreferredFile(
-  files: RegistryFile[],
+  files: ComponentSourceFile[],
   componentName: string,
   preferredPath?: string
 ) {
@@ -50,6 +40,7 @@ export default function ComponentFrame({
   componentName,
   source,
   sourcePath,
+  sourceFiles,
 }: {
   children: React.ReactNode;
   id?: string;
@@ -57,22 +48,49 @@ export default function ComponentFrame({
   className?: string;
   source?: string;
   sourcePath?: string;
+  sourceFiles?: ComponentSourceFile[];
 }) {
   const [activeTab, setActiveTab] = React.useState<"demo" | "source">("demo");
-  const [code, setCode] = React.useState<string | null>(source || null);
-  const [files, setFiles] = React.useState<RegistryFile[]>([]);
-  const [selectedPath, setSelectedPath] = React.useState<string | null>(sourcePath ?? null);
+  const preferredFileFromProps =
+    sourceFiles?.length ? findPreferredFile(sourceFiles, componentName, sourcePath) : null;
+  const [code, setCode] = React.useState<string | null>(
+    source ?? preferredFileFromProps?.content ?? null
+  );
+  const [files, setFiles] = React.useState<ComponentSourceFile[]>(sourceFiles ?? []);
+  const [selectedPath, setSelectedPath] = React.useState<string | null>(
+    sourcePath ?? preferredFileFromProps?.path ?? null
+  );
   const [isLoadingSource, setIsLoadingSource] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    setCode(source || null);
+    if (source !== undefined) {
+      setCode(source);
+    }
   }, [source]);
+
+  React.useEffect(() => {
+    if (sourceFiles) {
+      setFiles(sourceFiles);
+    }
+  }, [sourceFiles]);
+
+  React.useEffect(() => {
+    if (!files.length) return;
+    setSelectedPath((current) => {
+      if (current && files.some((file) => file.path === current)) {
+        return current;
+      }
+      const preferred = findPreferredFile(files, componentName, sourcePath);
+      return preferred?.path ?? current;
+    });
+  }, [files, componentName, sourcePath]);
 
   React.useEffect(() => {
     if (
       activeTab !== "source" ||
       source ||
+      sourceFiles?.length ||
       files.length ||
       isLoadingSource ||
       error
@@ -91,8 +109,10 @@ export default function ComponentFrame({
           throw new Error("Failed to load source");
         }
         const data = await res.json();
-        const registryFiles: RegistryFile[] = Array.isArray(data?.files)
-          ? data.files.filter((file: unknown): file is RegistryFile => isRegistryFile(file))
+        const registryFiles: ComponentSourceFile[] = Array.isArray(data?.files)
+          ? data.files.filter((file: unknown): file is ComponentSourceFile =>
+              isComponentSourceFile(file)
+            )
           : [];
 
         if (!registryFiles.length) {
@@ -126,7 +146,16 @@ export default function ComponentFrame({
     return () => {
       isMounted = false;
     };
-  }, [activeTab, componentName, error, files.length, isLoadingSource, source, sourcePath]);
+  }, [
+    activeTab,
+    componentName,
+    error,
+    files.length,
+    isLoadingSource,
+    source,
+    sourceFiles,
+    sourcePath,
+  ]);
 
   React.useEffect(() => {
     if (!files.length || !selectedPath) return;

@@ -9,6 +9,7 @@ import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { ComponentMeta } from "@/lib/component-registry";
 import { cn } from "@/lib/utils";
 import { Button } from "@/registry/new-york/blocks/button/button";
+import type { ComponentSourceFile } from "@/types/component-source";
 
 type ComponentSection = {
   title: ComponentMeta["section"];
@@ -19,6 +20,7 @@ type ComponentDocsPageProps = {
   meta: ComponentMeta;
   demo: React.ReactNode;
   sections: ComponentSection[];
+  sourceFiles?: ComponentSourceFile[];
 };
 
 const pageAnchors = [
@@ -26,7 +28,7 @@ const pageAnchors = [
   { id: "installation", label: "Installation" },
 ];
 
-export default function ComponentDocsPage({ meta, demo, sections }: ComponentDocsPageProps) {
+export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
   const [navOpen, setNavOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -90,6 +92,7 @@ export default function ComponentDocsPage({ meta, demo, sections }: ComponentDoc
                 id={meta.id}
                 componentName={meta.id}
                 className="rounded-none border-0 bg-transparent p-0 shadow-none"
+                sourceFiles={sourceFiles}
               >
                 {demo}
               </ComponentFrame>
