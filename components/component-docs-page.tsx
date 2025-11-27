@@ -90,7 +90,6 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
               <ComponentFrame
                 key={meta.id}
                 id={meta.id}
-                componentName={meta.id}
                 className="rounded-none border-0 bg-transparent p-0 shadow-none"
                 sourceFiles={sourceFiles}
               >
