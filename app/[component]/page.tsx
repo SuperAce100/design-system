@@ -6,6 +6,7 @@ import {
   sectionOrder,
   componentList,
 } from "@/lib/component-registry";
+import { getComponentSourceFiles } from "@/lib/component-sources";
 import ComponentDocsPage from "@/components/component-docs-page";
 
 export async function generateStaticParams() {
@@ -20,6 +21,7 @@ export default async function ComponentPage({
   const { component: id } = await params;
   const meta = getComponentMeta(id);
   const demo = getDemoById(id);
+  const sourceFiles = await getComponentSourceFiles(id);
 
   if (!meta || !demo) {
     notFound();
@@ -37,6 +39,7 @@ export default async function ComponentPage({
       meta={meta}
       demo={demo}
       sections={sections}
+      sourceFiles={sourceFiles}
     />
   );
 }

@@ -1,36 +1,43 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
+import type { ComponentSourceFile } from "@/types/component-source";
 import React from "react";
 
 export default function ComponentFrame({
   children,
   className,
   id,
-  componentName,
   source,
-  sourcePath,
+  sourceFiles,
 }: {
   children: React.ReactNode;
   id?: string;
-  componentName: string;
   className?: string;
   source?: string;
-  sourcePath?: string;
+  sourceFiles?: ComponentSourceFile[];
 }) {
   const [activeTab, setActiveTab] = React.useState<"demo" | "source">("demo");
-  const [code, setCode] = React.useState<string | null>(source || null);
+  const [code, setCode] = React.useState<string | null>(
+    source ?? sourceFiles?.[0]?.content ?? null
+  );
 
   React.useEffect(() => {
-    if (code || activeTab !== "source") return; // only fetch when needed
-    const path = sourcePath ?? `components/demos/${componentName}-demo.tsx`;
-    fetch(`/api/source?path=${encodeURIComponent(path)}`)
-      .then((res) => (res.ok ? res.text() : null))
-      .then((text) => {
-        if (text) setCode(text);
-      })
-      .catch(() => {});
-  }, [code, componentName, sourcePath, activeTab]);
+    setCode(source ?? sourceFiles?.[0]?.content ?? null);
+  }, [source, sourceFiles]);
+
+  const renderSource = () => {
+    if (!code) {
+      return (
+        <div className="text-sm text-muted-foreground">
+          Source unavailable for this demo.
+        </div>
+      );
+    }
+
+    return <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />;
+  };
+
   return (
     <div
       className={cn(
@@ -73,7 +80,7 @@ export default function ComponentFrame({
         </div>
       ) : (
         <div className="relative max-h-[360px] overflow-y-auto rounded-xl">
-          {code && <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />}
+          {renderSource()}
         </div>
       )}
     </div>
