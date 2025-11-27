@@ -8,6 +8,15 @@ type RegistryFile = {
   content: string;
 };
 
+function isRegistryFile(file: unknown): file is RegistryFile {
+  if (!file || typeof file !== "object") {
+    return false;
+  }
+
+  const candidate = file as Record<string, unknown>;
+  return typeof candidate.path === "string" && typeof candidate.content === "string";
+}
+
 function formatFileLabel(path: string) {
   return path.replace(/^registry\/new-york\//, "");
 }
@@ -83,10 +92,7 @@ export default function ComponentFrame({
         }
         const data = await res.json();
         const registryFiles: RegistryFile[] = Array.isArray(data?.files)
-          ? data.files.filter(
-              (file: any): file is RegistryFile =>
-                typeof file?.path === "string" && typeof file?.content === "string"
-            )
+          ? data.files.filter((file: unknown): file is RegistryFile => isRegistryFile(file))
           : [];
 
         if (!registryFiles.length) {
@@ -105,7 +111,9 @@ export default function ComponentFrame({
         }
       } catch (err) {
         if (!isMounted) return;
-        setError("Unable to load source");
+        setError(
+          err instanceof Error && err.message ? err.message : "Unable to load source"
+        );
       } finally {
         if (isMounted) {
           setIsLoadingSource(false);
