@@ -101,10 +101,10 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
               <p className="mb-3 text-sm text-muted-foreground">Install using the shadcn CLI</p>
               <ScriptCopyBtn
                 commandMap={{
-                  npm: `npx shadcn@latest add https://splashui.com/r/${meta.id}.json`,
-                  yarn: `yarn shadcn@latest add https://splashui.com/r/${meta.id}.json`,
-                  pnpm: `pnpm dlx shadcn@latest add https://splashui.com/r/${meta.id}.json`,
-                  bun: `bunx shadcn@latest add https://splashui.com/r/${meta.id}.json`,
+                  npm: `npx shadcn@latest add https://ds.asanshay.com/r/${meta.id}.json`,
+                  yarn: `yarn shadcn@latest add https://ds.asanshay.com/r/${meta.id}.json`,
+                  pnpm: `pnpm dlx shadcn@latest add https://ds.asanshay.com/r/${meta.id}.json`,
+                  bun: `bunx shadcn@latest add https://ds.asanshay.com/r/${meta.id}.json`,
                 }}
               />
             </section>
