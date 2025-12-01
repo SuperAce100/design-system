@@ -14,11 +14,11 @@ export default function Home() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col h-screen px-4 pt-8 gap-8">
-      <header className="flex flex-col gap-2 px-3">
-        <Link href="/" className="text-sm text-muted-foreground mt-6">
+    <div className="max-w-6xl mx-auto flex flex-col min-h-screen px-4 pt-8 gap-8">
+      <header className="flex flex-col gap-3 px-1">
+        <div className="text-sm text-muted-foreground">
           <span className="text-foreground">Components</span>
-        </Link>
+        </div>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h1 className="text-4xl font-semibold tracking-tight">Asanshay&apos;s components</h1>
@@ -28,15 +28,15 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <main className="flex flex-col gap-8 px-2 pb-16">
+      <main className="flex flex-col gap-8 px-1 pb-16">
         {/* Components index */}
         {sectionOrder.map((section) => {
           const comps = componentsBySection[section];
           if (!comps) return null;
           const anchor = section.toLowerCase();
           return (
-            <section key={section} id={anchor} className="-mx-3">
-              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-4 text-muted-foreground/70">
+            <section key={section} id={anchor} className="-mx-2">
+              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-3 text-muted-foreground/70">
                 {section}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
