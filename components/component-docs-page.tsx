@@ -29,7 +29,7 @@ const pageAnchors = [
 export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
   return (
     <>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-24 pt-8 lg:pb-12">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-32 pt-8 lg:pb-12">
         <header className="flex flex-col gap-3 px-1">
           <div className="text-sm text-muted-foreground">
             <Link href="/" className="transition-colors hover:text-foreground">
@@ -207,7 +207,7 @@ function MobileBottomNav({
   }, [activeId]);
 
   // Calculate transform for each item based on its position relative to center
-  const getItemTransform = (element: HTMLElement | null) => {
+  const getItemTransform = React.useCallback((element: HTMLElement | null) => {
     if (!element || !containerWidth) return { transform: "", opacity: 1, scale: 1 };
 
     const itemLeft = element.offsetLeft;
@@ -219,32 +219,38 @@ function MobileBottomNav({
 
     // Normalize distance (-1 to 1)
     const normalizedDistance = Math.max(-1, Math.min(1, distanceFromCenter / maxDistance));
+    const absDistance = Math.abs(normalizedDistance);
 
-    // Calculate rotation (items rotate like on a disk)
-    const rotateY = normalizedDistance * 45;
-    const rotateZ = normalizedDistance * -8;
+    // Arc effect: items curve down at edges like the rim of a wheel
+    // Using a circular arc formula: y = sqrt(1 - x^2) gives a semicircle
+    // We invert it so center is at top (y=0) and edges drop down
+    const arcHeight = 50; // Maximum drop in pixels
+    const arcY = arcHeight * (1 - Math.sqrt(1 - absDistance * absDistance));
 
-    // Calculate scale (center items are larger)
-    const scale = 1 - Math.abs(normalizedDistance) * 0.15;
+    // Rotation around Y axis - items turn away as they move to edges
+    const rotateY = normalizedDistance * 50;
 
-    // Calculate vertical offset (creates the arc)
-    const translateY = Math.abs(normalizedDistance) * 20;
+    // Slight tilt back for 3D effect
+    const rotateX = absDistance * 15;
 
-    // Calculate opacity
-    const opacity = 1 - Math.abs(normalizedDistance) * 0.4;
+    // Scale: center items slightly larger
+    const scale = 1 - absDistance * 0.15;
+
+    // Opacity fade at edges
+    const opacity = 1 - absDistance * 0.4;
 
     return {
-      transform: `perspective(800px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) translateY(${translateY}px) scale(${scale})`,
+      transform: `translateY(${arcY}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(${scale})`,
       opacity,
       scale,
     };
-  };
+  }, [containerWidth, scrollPosition]);
 
   return (
     <nav
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden transition-all duration-300 ease-out",
-        isExpanded ? "pb-6" : "pb-2"
+        isExpanded ? "pb-8" : "pb-4"
       )}
     >
       {/* Collapse/Expand handle */}
@@ -271,16 +277,26 @@ function MobileBottomNav({
       <div
         className={cn(
           "relative overflow-hidden transition-all duration-300 ease-out",
-          isExpanded ? "h-32" : "h-16"
+          isExpanded ? "h-40" : "h-24"
         )}
-        style={{ perspective: "800px" }}
+        style={{ perspective: "800px", perspectiveOrigin: "center 100%" }}
       >
+        {/* Curved track indicator */}
+        <div 
+          className="absolute inset-x-0 bottom-0 h-full pointer-events-none overflow-hidden"
+          style={{
+            background: "radial-gradient(ellipse 100% 80% at 50% 120%, var(--primary) 0%, transparent 50%)",
+            opacity: 0.08,
+          }}
+        />
+        
         <div
           ref={scrollContainerRef}
-          className="flex items-center overflow-x-auto scrollbar-hide px-4 gap-3 h-full"
+          className="flex items-start overflow-x-auto scrollbar-hide gap-2 h-full pt-2"
           style={{
-            paddingLeft: `calc(50% - 60px)`,
-            paddingRight: `calc(50% - 60px)`,
+            paddingLeft: `calc(50% - 50px)`,
+            paddingRight: `calc(50% - 50px)`,
+            transformStyle: "preserve-3d",
           }}
         >
           {allComponents.map((component) => {
@@ -299,8 +315,8 @@ function MobileBottomNav({
           })}
         </div>
 
-        {/* Center indicator line */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent pointer-events-none" />
+        {/* Center focus indicator */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-3 bg-primary/40 pointer-events-none" />
       </div>
     </nav>
   );
@@ -348,23 +364,24 @@ function MobileNavItem({
       ref={setRefs}
       href={`/${component.id}`}
       className={cn(
-        "flex-shrink-0 rounded-2xl px-5 text-sm font-medium transition-all duration-150 whitespace-nowrap flex flex-col items-center justify-center gap-1 text-center",
-        isExpanded ? "py-4 min-w-[100px]" : "py-2",
+        "flex-shrink-0 rounded-2xl px-4 text-sm font-medium whitespace-nowrap flex flex-col items-center justify-center gap-0.5 text-center origin-bottom",
+        isExpanded ? "py-3 min-w-[90px]" : "py-2",
         isActive
-          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+          : "bg-muted/50 text-muted-foreground hover:bg-accent hover:text-foreground"
       )}
       style={{
         transform: style.transform,
         opacity: style.opacity,
         transformStyle: "preserve-3d",
+        transition: "background-color 150ms, box-shadow 150ms",
       }}
     >
       <span className={cn("transition-all", isExpanded ? "text-base font-semibold" : "text-sm")}>
         {component.name}
       </span>
       {isExpanded && (
-        <span className="text-xs opacity-70 max-w-[120px] truncate">
+        <span className="text-xs opacity-70 max-w-[100px] truncate">
           {component.description}
         </span>
       )}
