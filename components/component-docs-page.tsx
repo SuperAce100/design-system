@@ -2,13 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 
 import ComponentFrame from "@/components/component-frame";
 import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { ComponentMeta } from "@/lib/component-registry";
 import { cn } from "@/lib/utils";
-import { Button } from "@/registry/new-york/blocks/button/button";
 import type { ComponentSourceFile } from "@/types/component-source";
 
 type ComponentSection = {
@@ -29,29 +27,9 @@ const pageAnchors = [
 ];
 
 export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
-  const [navOpen, setNavOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!navOpen) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setNavOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [navOpen]);
-
   return (
     <>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-12 pt-8">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-24 pt-8 lg:pb-12">
         <header className="flex flex-col gap-3 px-1">
           <div className="text-sm text-muted-foreground">
             <Link href="/" className="transition-colors hover:text-foreground">
@@ -66,18 +44,6 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
               {meta.description ? (
                 <p className="text-lg text-muted-foreground">{meta.description}</p>
               ) : null}
-            </div>
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="sm:hidden"
-                onClick={() => setNavOpen(true)}
-                aria-label="Open component menu"
-              >
-                <Menu className="mr-2 h-4 w-4" />
-                Browse components
-              </Button>
             </div>
           </div>
         </header>
@@ -139,9 +105,7 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
           </div>
         </aside>
       </div>
-      <MobileNav open={navOpen} onClose={() => setNavOpen(false)}>
-        <ComponentNavList sections={sections} activeId={meta.id} onNavigate={() => setNavOpen(false)} />
-      </MobileNav>
+      <MobileBottomNav sections={sections} activeId={meta.id} />
     </>
   );
 }
@@ -149,11 +113,9 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
 function ComponentNavList({
   sections,
   activeId,
-  onNavigate,
 }: {
   sections: ComponentSection[];
   activeId: string;
-  onNavigate?: () => void;
 }) {
   if (!sections.length) return null;
 
@@ -166,20 +128,18 @@ function ComponentNavList({
           </span>
           <div className="flex flex-col gap-1">
             {section.components.map((component) => (
-              <Button
+              <Link
                 key={component.id}
-                variant="ghost"
-                size="sm"
+                href={`/${component.id}`}
                 className={cn(
-                  "w-full justify-start text-left",
-                  component.id === activeId && "bg-primary/10 text-foreground"
+                  "rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-foreground",
+                  component.id === activeId
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground"
                 )}
-                asChild
               >
-                <Link href={`/${component.id}`} onClick={onNavigate}>
-                  {component.name}
-                </Link>
-              </Button>
+                {component.name}
+              </Link>
             ))}
           </div>
         </React.Fragment>
@@ -188,55 +148,64 @@ function ComponentNavList({
   );
 }
 
-function MobileNav({
-  open,
-  onClose,
-  children,
+function MobileBottomNav({
+  sections,
+  activeId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+  sections: ComponentSection[];
+  activeId: string;
 }) {
-  const [shouldRender, setShouldRender] = React.useState(open);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const activeItemRef = React.useRef<HTMLAnchorElement>(null);
 
+  // Flatten all components for the bottom bar
+  const allComponents = React.useMemo(
+    () => sections.flatMap((section) => section.components),
+    [sections]
+  );
+
+  // Scroll to active item on mount
   React.useEffect(() => {
-    if (open) {
-      setShouldRender(true);
-    }
-  }, [open]);
+    if (activeItemRef.current && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const activeItem = activeItemRef.current;
+      const containerWidth = container.offsetWidth;
+      const itemLeft = activeItem.offsetLeft;
+      const itemWidth = activeItem.offsetWidth;
 
-  const handleTransitionEnd = React.useCallback(() => {
-    if (!open) {
-      setShouldRender(false);
+      // Center the active item in the container
+      container.scrollTo({
+        left: itemLeft - containerWidth / 2 + itemWidth / 2,
+        behavior: "instant",
+      });
     }
-  }, [open]);
-
-  if (!shouldRender) return null;
+  }, [activeId]);
 
   return (
-    <div className="fixed inset-0 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden">
       <div
-        className={cn(
-          "absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-200",
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-        onClick={onClose}
-      />
-      <div
-        className={cn(
-          "relative ml-auto flex h-full w-[320px] max-w-full flex-col border-l bg-background px-5 py-6 shadow-2xl transition-transform duration-300 ease-out",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-        onTransitionEnd={handleTransitionEnd}
+        ref={scrollContainerRef}
+        className="flex overflow-x-auto scrollbar-hide px-2 py-2 gap-1"
       >
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">Browse components</p>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close menu">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex-1 overflow-y-auto pr-1">{children}</div>
+        {allComponents.map((component) => {
+          const isActive = component.id === activeId;
+          return (
+            <Link
+              key={component.id}
+              ref={isActive ? activeItemRef : undefined}
+              href={`/${component.id}`}
+              className={cn(
+                "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              {component.name}
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
 }
