@@ -157,6 +157,9 @@ function MobileBottomNav({
 }) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const activeItemRef = React.useRef<HTMLAnchorElement>(null);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [scrollPosition, setScrollPosition] = React.useState(0);
+  const [containerWidth, setContainerWidth] = React.useState(0);
 
   // Flatten all components for the bottom bar
   const allComponents = React.useMemo(
@@ -164,48 +167,207 @@ function MobileBottomNav({
     [sections]
   );
 
+  // Track scroll position for the circular effect
+  React.useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      setScrollPosition(container.scrollLeft);
+    };
+
+    const handleResize = () => {
+      setContainerWidth(container.offsetWidth);
+    };
+
+    handleResize();
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   // Scroll to active item on mount
   React.useEffect(() => {
     if (activeItemRef.current && scrollContainerRef.current) {
       const container = scrollContainerRef.current;
       const activeItem = activeItemRef.current;
-      const containerWidth = container.offsetWidth;
+      const cWidth = container.offsetWidth;
       const itemLeft = activeItem.offsetLeft;
       const itemWidth = activeItem.offsetWidth;
 
-      // Center the active item in the container
       container.scrollTo({
-        left: itemLeft - containerWidth / 2 + itemWidth / 2,
+        left: itemLeft - cWidth / 2 + itemWidth / 2,
         behavior: "instant",
       });
     }
   }, [activeId]);
 
+  // Calculate transform for each item based on its position relative to center
+  const getItemTransform = (element: HTMLElement | null) => {
+    if (!element || !containerWidth) return { transform: "", opacity: 1, scale: 1 };
+
+    const itemLeft = element.offsetLeft;
+    const itemWidth = element.offsetWidth;
+    const itemCenter = itemLeft + itemWidth / 2 - scrollPosition;
+    const viewportCenter = containerWidth / 2;
+    const distanceFromCenter = itemCenter - viewportCenter;
+    const maxDistance = containerWidth / 2;
+
+    // Normalize distance (-1 to 1)
+    const normalizedDistance = Math.max(-1, Math.min(1, distanceFromCenter / maxDistance));
+
+    // Calculate rotation (items rotate like on a disk)
+    const rotateY = normalizedDistance * 45;
+    const rotateZ = normalizedDistance * -8;
+
+    // Calculate scale (center items are larger)
+    const scale = 1 - Math.abs(normalizedDistance) * 0.15;
+
+    // Calculate vertical offset (creates the arc)
+    const translateY = Math.abs(normalizedDistance) * 20;
+
+    // Calculate opacity
+    const opacity = 1 - Math.abs(normalizedDistance) * 0.4;
+
+    return {
+      transform: `perspective(800px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) translateY(${translateY}px) scale(${scale})`,
+      opacity,
+      scale,
+    };
+  };
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden">
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto scrollbar-hide px-2 py-2 gap-1"
+    <nav
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden transition-all duration-300 ease-out",
+        isExpanded ? "pb-6" : "pb-2"
+      )}
+    >
+      {/* Collapse/Expand handle */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 flex items-center justify-center w-12 h-6 rounded-t-xl bg-background border border-b-0 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
       >
-        {allComponents.map((component) => {
-          const isActive = component.id === activeId;
-          return (
-            <Link
-              key={component.id}
-              ref={isActive ? activeItemRef : undefined}
-              href={`/${component.id}`}
-              className={cn(
-                "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              {component.name}
-            </Link>
-          );
-        })}
+        <svg
+          className={cn(
+            "w-4 h-4 transition-transform duration-300",
+            isExpanded ? "rotate-180" : ""
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+
+      {/* Disk rotation container */}
+      <div
+        className={cn(
+          "relative overflow-hidden transition-all duration-300 ease-out",
+          isExpanded ? "h-32" : "h-16"
+        )}
+        style={{ perspective: "800px" }}
+      >
+        <div
+          ref={scrollContainerRef}
+          className="flex items-center overflow-x-auto scrollbar-hide px-4 gap-3 h-full"
+          style={{
+            paddingLeft: `calc(50% - 60px)`,
+            paddingRight: `calc(50% - 60px)`,
+          }}
+        >
+          {allComponents.map((component) => {
+            const isActive = component.id === activeId;
+            return (
+              <MobileNavItem
+                key={component.id}
+                component={component}
+                isActive={isActive}
+                isExpanded={isExpanded}
+                activeRef={isActive ? activeItemRef : undefined}
+                getItemTransform={getItemTransform}
+                scrollPosition={scrollPosition}
+              />
+            );
+          })}
+        </div>
+
+        {/* Center indicator line */}
+        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent pointer-events-none" />
       </div>
     </nav>
+  );
+}
+
+function MobileNavItem({
+  component,
+  isActive,
+  isExpanded,
+  activeRef,
+  getItemTransform,
+  scrollPosition,
+}: {
+  component: ComponentMeta;
+  isActive: boolean;
+  isExpanded: boolean;
+  activeRef?: React.Ref<HTMLAnchorElement>;
+  getItemTransform: (element: HTMLElement | null) => { transform: string; opacity: number; scale: number };
+  scrollPosition: number;
+}) {
+  const itemRef = React.useRef<HTMLAnchorElement>(null);
+  const [style, setStyle] = React.useState({ transform: "", opacity: 1 });
+
+  // Combine refs
+  const setRefs = React.useCallback(
+    (node: HTMLAnchorElement | null) => {
+      itemRef.current = node;
+      if (activeRef && typeof activeRef === "function") {
+        activeRef(node);
+      } else if (activeRef && typeof activeRef === "object") {
+        (activeRef as React.MutableRefObject<HTMLAnchorElement | null>).current = node;
+      }
+    },
+    [activeRef]
+  );
+
+  // Update transform on scroll
+  React.useEffect(() => {
+    const result = getItemTransform(itemRef.current);
+    setStyle({ transform: result.transform, opacity: result.opacity });
+  }, [scrollPosition, getItemTransform]);
+
+  return (
+    <Link
+      ref={setRefs}
+      href={`/${component.id}`}
+      className={cn(
+        "flex-shrink-0 rounded-2xl px-5 text-sm font-medium transition-all duration-150 whitespace-nowrap flex flex-col items-center justify-center gap-1 text-center",
+        isExpanded ? "py-4 min-w-[100px]" : "py-2",
+        isActive
+          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+      )}
+      style={{
+        transform: style.transform,
+        opacity: style.opacity,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      <span className={cn("transition-all", isExpanded ? "text-base font-semibold" : "text-sm")}>
+        {component.name}
+      </span>
+      {isExpanded && (
+        <span className="text-xs opacity-70 max-w-[120px] truncate">
+          {component.description}
+        </span>
+      )}
+    </Link>
   );
 }
