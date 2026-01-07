@@ -1,7 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "command-prompt",
-  "type": "registry:component",
   "title": "Command Prompt",
   "description": "A keyboard-first command prompt with history and autocomplete.",
   "dependencies": [],
@@ -12,5 +11,6 @@
       "type": "registry:component",
       "target": "components/ui/command-prompt.tsx"
     }
-  ]
+  ],
+  "type": "registry:component"
 }

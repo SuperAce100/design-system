@@ -1,7 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "chat-tool",
-  "type": "registry:component",
   "title": "Chat Tool",
   "description": "A chat tool component that displays tool calls and their results.",
   "dependencies": [
@@ -19,5 +18,6 @@
       "type": "registry:component",
       "target": "components/chat/chat-tool.tsx"
     }
-  ]
+  ],
+  "type": "registry:component"
 }

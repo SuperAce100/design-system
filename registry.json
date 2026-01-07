@@ -444,8 +444,8 @@
       "name": "loader",
       "type": "registry:component",
       "title": "Loader",
-      "description": "A collection of elegant loading indicators with progress support.",
-      "dependencies": ["class-variance-authority", "motion"],
+      "description": "A stylized 3D sphere loader with dithering shader effects.",
+      "dependencies": ["@paper-design/shaders-react"],
       "files": [
         {
           "path": "registry/new-york/blocks/loader/loader.tsx",

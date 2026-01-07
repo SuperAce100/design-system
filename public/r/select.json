@@ -1,7 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "select",
-  "type": "registry:component",
   "title": "Select",
   "description": "A lightly skinned select component.",
   "dependencies": [
@@ -15,5 +14,6 @@
       "type": "registry:component",
       "target": "components/ui/select.tsx"
     }
-  ]
+  ],
+  "type": "registry:component"
 }

@@ -1,7 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "card",
-  "type": "registry:component",
   "title": "Card",
   "description": "A variety of clean cards, from minimal to flashy.",
   "dependencies": [
@@ -14,5 +13,6 @@
       "type": "registry:component",
       "target": "components/ui/card.tsx"
     }
-  ]
+  ],
+  "type": "registry:component"
 }

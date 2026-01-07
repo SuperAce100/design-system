@@ -1,7 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "description-list",
-  "type": "registry:component",
   "title": "Description List",
   "description": "Quickly display a json object in an aesthetically pleasing way.",
   "dependencies": [],
@@ -12,5 +11,6 @@
       "type": "registry:component",
       "target": "components/ui/description-list.tsx"
     }
-  ]
+  ],
+  "type": "registry:component"
 }

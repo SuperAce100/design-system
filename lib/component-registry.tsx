@@ -176,7 +176,7 @@ export const componentList: ComponentMeta[] = [
     id: "loader",
     name: "Loader",
     section: "Primitives",
-    description: "A collection of elegant loading indicators with progress support.",
+    description: "A stylized 3D sphere loader with dithering shader effects.",
   },
   {
     id: "morphing-text",
