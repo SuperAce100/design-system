@@ -1,41 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Dithering } from "@paper-design/shaders-react";
+import { Dithering, GrainGradient, SmokeRing } from "@paper-design/shaders-react";
 import { cn } from "@/lib/utils";
 
-type DitheringType = "2x2" | "4x4" | "8x8";
-
-const variantConfig = {
-  default: {
-    colorBack: "#000000",
-    colorFront: "#00b3ff",
-    type: "4x4" as DitheringType,
-    speed: 1,
-    scale: 0.6,
-  },
-  neon: {
-    colorBack: "#0a0a0a",
-    colorFront: "#39ff14",
-    type: "4x4" as DitheringType,
-    speed: 1.2,
-    scale: 0.5,
-  },
-  monochrome: {
-    colorBack: "#000000",
-    colorFront: "#ffffff",
-    type: "8x8" as DitheringType,
-    speed: 0.8,
-    scale: 0.7,
-  },
-  warm: {
-    colorBack: "#1a0a00",
-    colorFront: "#ff6b35",
-    type: "4x4" as DitheringType,
-    speed: 0.9,
-    scale: 0.6,
-  },
-};
+type LoaderShape = "sphere" | "swirl" | "ripple";
+type LoaderStyle = "plain" | "blur" | "dither";
 
 const sizeConfig = {
   sm: { width: 48, height: 48 },
@@ -44,50 +14,101 @@ const sizeConfig = {
 };
 
 interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Preset variant with curated visual style */
-  variant?: keyof typeof variantConfig;
+  /** Base shape of the loader */
+  shape?: LoaderShape;
+  /** Visual style: plain (solid), blur (soft), or dither (pixelated) */
+  variant?: LoaderStyle;
   /** Size preset (maps to width/height) */
   size?: keyof typeof sizeConfig;
   /** Custom width (overrides size preset) */
   width?: number;
   /** Custom height (overrides size preset) */
   height?: number;
-  /** Background color (overrides variant default) */
-  colorBack?: string;
-  /** Foreground/sphere color (overrides variant default) */
-  colorFront?: string;
-  /** Dithering pattern type (overrides variant default) */
-  type?: DitheringType;
-  /** Animation speed multiplier (overrides variant default) */
+  /** Animation speed multiplier */
   speed?: number;
-  /** Sphere scale (overrides variant default) */
-  scale?: number;
+  /** Primary color */
+  color?: string;
+  /** Background color */
+  colorBack?: string;
 }
 
 function Loader({
-  variant = "default",
+  shape = "sphere",
+  variant = "dither",
   size = "default",
   width,
   height,
-  colorBack,
-  colorFront,
-  type,
-  speed,
-  scale,
+  speed = 1,
+  color = "#00b3ff",
+  colorBack = "#000000",
   className,
   style,
   ...props
 }: LoaderProps) {
-  const variantDefaults = variantConfig[variant];
   const sizeDefaults = sizeConfig[size];
-
   const resolvedWidth = width ?? sizeDefaults.width;
   const resolvedHeight = height ?? sizeDefaults.height;
-  const resolvedColorBack = colorBack ?? variantDefaults.colorBack;
-  const resolvedColorFront = colorFront ?? variantDefaults.colorFront;
-  const resolvedType = type ?? variantDefaults.type;
-  const resolvedSpeed = speed ?? variantDefaults.speed;
-  const resolvedScale = scale ?? variantDefaults.scale;
+
+  const renderShader = () => {
+    // Plain style - uses GrainGradient for smooth solid look
+    if (variant === "plain") {
+      const grainShape = shape === "sphere" ? "blob" : shape === "swirl" ? "truchet" : "ripple";
+      return (
+        <GrainGradient
+          width={resolvedWidth}
+          height={resolvedHeight}
+          colorBack={colorBack}
+          colors={[color]}
+          shape={grainShape}
+          softness={0.3}
+          intensity={0.6}
+          noise={0.1}
+          speed={speed}
+          scale={shape === "sphere" ? 1.3 : 1}
+        />
+      );
+    }
+
+    // Blur style - uses SmokeRing for soft ethereal look
+    if (variant === "blur") {
+      const smokeConfig = {
+        sphere: { radius: 0.25, thickness: 0.65, innerShape: 0.7, noiseScale: 2 },
+        swirl: { radius: 0.35, thickness: 0.4, innerShape: 1.5, noiseScale: 4 },
+        ripple: { radius: 0.3, thickness: 0.15, innerShape: 0.3, noiseScale: 1.5 },
+      };
+      const config = smokeConfig[shape];
+      return (
+        <SmokeRing
+          width={resolvedWidth}
+          height={resolvedHeight}
+          colorBack={colorBack}
+          colors={[color, `${color}88`]}
+          noiseScale={config.noiseScale}
+          noiseIterations={shape === "ripple" ? 3 : 6}
+          radius={config.radius}
+          thickness={config.thickness}
+          innerShape={config.innerShape}
+          speed={speed * 0.6}
+          scale={1}
+        />
+      );
+    }
+
+    // Dither style - uses Dithering shader with pixelated aesthetic
+    return (
+      <Dithering
+        width={resolvedWidth}
+        height={resolvedHeight}
+        colorBack={colorBack}
+        colorFront={color}
+        shape={shape}
+        type="4x4"
+        size={2}
+        speed={speed}
+        scale={0.6}
+      />
+    );
+  };
 
   return (
     <div
@@ -100,20 +121,10 @@ function Loader({
       }}
       {...props}
     >
-      <Dithering
-        width={resolvedWidth}
-        height={resolvedHeight}
-        colorBack={resolvedColorBack}
-        colorFront={resolvedColorFront}
-        shape="sphere"
-        type={resolvedType}
-        size={2}
-        speed={resolvedSpeed}
-        scale={resolvedScale}
-      />
+      {renderShader()}
     </div>
   );
 }
 
-export { Loader, variantConfig, sizeConfig };
-export type { LoaderProps };
+export { Loader, sizeConfig };
+export type { LoaderProps, LoaderShape, LoaderStyle };

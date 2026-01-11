@@ -176,7 +176,7 @@ export const componentList: ComponentMeta[] = [
     id: "loader",
     name: "Loader",
     section: "Primitives",
-    description: "A stylized 3D sphere loader with dithering shader effects.",
+    description: "Shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
   },
   {
     id: "morphing-text",
