@@ -444,13 +444,48 @@
       "name": "loader",
       "type": "registry:component",
       "title": "Loader",
-      "description": "Shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
-      "dependencies": ["@paper-design/shaders-react"],
+      "description": "Custom WebGL shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
+      "dependencies": [],
       "files": [
         {
           "path": "registry/new-york/blocks/loader/loader.tsx",
           "type": "registry:component",
           "target": "components/ui/loader.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shader-mount.tsx",
+          "type": "registry:component",
+          "target": "components/ui/shader-mount.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/index.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/index.ts"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/vertex.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/vertex.ts"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/utils.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/utils.ts"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/plain.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/plain.ts"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/blur.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/blur.ts"
+        },
+        {
+          "path": "registry/new-york/blocks/loader/shaders/dither.ts",
+          "type": "registry:component",
+          "target": "components/ui/shaders/dither.ts"
         }
       ]
     },

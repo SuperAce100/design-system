@@ -1,8 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Dithering, GrainGradient, SmokeRing } from "@paper-design/shaders-react";
 import { cn } from "@/lib/utils";
+import { ShaderMount } from "./shader-mount";
+import {
+  plainFragmentShader,
+  blurFragmentShader,
+  ditherFragmentShader,
+  hexToRgba,
+} from "./shaders";
 
 type LoaderShape = "sphere" | "swirl" | "ripple";
 type LoaderStyle = "plain" | "blur" | "dither";
@@ -11,6 +17,18 @@ const sizeConfig = {
   sm: { width: 48, height: 48 },
   default: { width: 80, height: 80 },
   lg: { width: 120, height: 120 },
+};
+
+const shapeMap: Record<LoaderShape, number> = {
+  sphere: 1,
+  swirl: 2,
+  ripple: 3,
+};
+
+const shaderMap: Record<LoaderStyle, string> = {
+  plain: plainFragmentShader,
+  blur: blurFragmentShader,
+  dither: ditherFragmentShader,
 };
 
 interface LoaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -49,66 +67,19 @@ function Loader({
   const resolvedWidth = width ?? sizeDefaults.width;
   const resolvedHeight = height ?? sizeDefaults.height;
 
-  const renderShader = () => {
-    // Plain style - uses GrainGradient for smooth solid look
-    if (variant === "plain") {
-      const grainShape = shape === "sphere" ? "blob" : shape === "swirl" ? "truchet" : "ripple";
-      return (
-        <GrainGradient
-          width={resolvedWidth}
-          height={resolvedHeight}
-          colorBack={colorBack}
-          colors={[color]}
-          shape={grainShape}
-          softness={0.3}
-          intensity={0.6}
-          noise={0.1}
-          speed={speed}
-          scale={shape === "sphere" ? 1.3 : 1}
-        />
-      );
-    }
+  const fragmentShader = shaderMap[variant];
+  const shapeValue = shapeMap[shape];
 
-    // Blur style - uses SmokeRing for soft ethereal look
-    if (variant === "blur") {
-      const smokeConfig = {
-        sphere: { radius: 0.25, thickness: 0.65, innerShape: 0.7, noiseScale: 2 },
-        swirl: { radius: 0.35, thickness: 0.4, innerShape: 1.5, noiseScale: 4 },
-        ripple: { radius: 0.3, thickness: 0.15, innerShape: 0.3, noiseScale: 1.5 },
-      };
-      const config = smokeConfig[shape];
-      return (
-        <SmokeRing
-          width={resolvedWidth}
-          height={resolvedHeight}
-          colorBack={colorBack}
-          colors={[color, `${color}88`]}
-          noiseScale={config.noiseScale}
-          noiseIterations={shape === "ripple" ? 3 : 6}
-          radius={config.radius}
-          thickness={config.thickness}
-          innerShape={config.innerShape}
-          speed={speed * 0.6}
-          scale={1}
-        />
-      );
-    }
-
-    // Dither style - uses Dithering shader with pixelated aesthetic
-    return (
-      <Dithering
-        width={resolvedWidth}
-        height={resolvedHeight}
-        colorBack={colorBack}
-        colorFront={color}
-        shape={shape}
-        type="4x4"
-        size={2}
-        speed={speed}
-        scale={0.6}
-      />
-    );
-  };
+  const uniforms = React.useMemo(
+    () => ({
+      u_colorFront: hexToRgba(color),
+      u_colorBack: hexToRgba(colorBack),
+      u_shape: shapeValue,
+      u_scale: 0.6,
+      u_pxSize: 2, // Pixel size for dithering
+    }),
+    [color, colorBack, shapeValue]
+  );
 
   return (
     <div
@@ -121,7 +92,13 @@ function Loader({
       }}
       {...props}
     >
-      {renderShader()}
+      <ShaderMount
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+        speed={speed}
+        width={resolvedWidth}
+        height={resolvedHeight}
+      />
     </div>
   );
 }

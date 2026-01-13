@@ -176,7 +176,7 @@ export const componentList: ComponentMeta[] = [
     id: "loader",
     name: "Loader",
     section: "Primitives",
-    description: "Shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
+    description: "Custom WebGL shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
   },
   {
     id: "morphing-text",
