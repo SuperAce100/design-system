@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-primary bg-A bg-linear-to-t from-primary to-primary/30 px-4 py-2 font-medium text-primary-foreground shadow-md inset-shadow-[0px_1px_0px_1px] inset-shadow-white/30 transition-all duration-75 hover:bg-primary/60 active:translate-y-px active:inset-shadow-black/10",
+          "border border-primary bg-primary/70 bg-linear-to-t from-primary to-primary/30 px-4 py-2 font-medium text-primary-foreground shadow-md inset-shadow-[0px_1px_0px_1px] inset-shadow-white/30 transition-all duration-75 hover:bg-primary/60 active:translate-y-px active:inset-shadow-black/10 dark:bg-primary dark:from-primary dark:to-primary/80 dark:hover:bg-primary/90",
         fancy:
           "border border-primary bg-primary/30 bg-radial-[at_50%_25%] from-primary/40 to-primary text-primary-foreground shadow-md inset-shadow-sm inset-shadow-white/50 hover:bg-white hover:shadow-lg hover:inset-shadow-white active:bg-primary/30 active:shadow-none active:inset-shadow-primary/80  hover:-translate-y-px active:translate-y-px",
         destructive:
