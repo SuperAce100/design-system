@@ -58,7 +58,7 @@ function Loader({
   height,
   speed = 1,
   color = "#00b3ff",
-  colorBack = "#000000",
+  colorBack = "transparent",
   className,
   style,
   ...props

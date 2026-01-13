@@ -22,7 +22,7 @@ float sphereShape(vec2 uv, float time) {
   uv *= 2.0;
   float d = 1.0 - pow(length(uv), 2.0);
   vec3 pos = vec3(uv, sqrt(max(0.0, d)));
-  vec3 lightPos = normalize(vec3(cos(1.5 * time), 0.8, sin(1.25 * time)));
+  vec3 lightPos = normalize(vec3(cos(3.0 * time), 0.8, sin(2.5 * time)));
   float shape = 0.5 + 0.5 * dot(lightPos, pos);
   return shape * step(0.0, d);
 }
@@ -30,7 +30,7 @@ float sphereShape(vec2 uv, float time) {
 // Swirl - spiral vortex pattern
 float swirlShape(vec2 uv, float time) {
   float l = length(uv);
-  float angle = 6.0 * atan(uv.y, uv.x) + 4.0 * time;
+  float angle = 6.0 * atan(uv.y, uv.x) + 8.0 * time;
   float twist = 1.2;
   float offset = 1.0 / pow(max(l, 1e-6), twist) + angle / TWO_PI;
   float mid = smoothstep(0.0, 1.0, pow(l, twist));
@@ -40,7 +40,7 @@ float swirlShape(vec2 uv, float time) {
 // Ripple - concentric expanding waves
 float rippleShape(vec2 uv, float time) {
   float dist = length(uv);
-  float waves = sin(pow(dist, 1.7) * 7.0 - 3.0 * time) * 0.5 + 0.5;
+  float waves = sin(pow(dist, 1.7) * 7.0 - 6.0 * time) * 0.5 + 0.5;
   return waves;
 }
 
@@ -58,6 +58,11 @@ float getShape(vec2 uv, float time) {
 
 // Helper to convert hex color to RGBA array
 export function hexToRgba(hex: string): [number, number, number, number] {
+  // Handle transparent
+  if (hex === "transparent" || hex === "") {
+    return [0, 0, 0, 0];
+  }
+  
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (result) {
     return [
@@ -67,5 +72,5 @@ export function hexToRgba(hex: string): [number, number, number, number] {
       1.0,
     ];
   }
-  return [0, 0, 0, 1];
+  return [0, 0, 0, 0];
 }
