@@ -120,168 +120,206 @@ void main() {
   
   float time = u_time * u_flowSpeed;
   
-  // Pixelation for dithered texture
+  // Smooth UV for smoke layer (no pixelation)
+  vec2 smoothNoiseUV = vec2(uv.x * aspect, uv.y) * u_noiseScale;
+  
+  // Pixelated UV for dither layer only
   float pixelSize = 2.0;
   vec2 pixelCoord = uv * u_resolution;
   vec2 pixelUV = floor(pixelCoord / pixelSize) * pixelSize / u_resolution;
   vec2 ditherCoord = floor(pixelCoord / pixelSize);
+  vec2 ditherNoiseUV = vec2(pixelUV.x * aspect, pixelUV.y) * u_noiseScale;
   
-  // Scale for noise
-  vec2 noiseUV = vec2(pixelUV.x * aspect, pixelUV.y) * u_noiseScale;
+  // Noise for smoke (smooth)
+  float leftSmokeWarp = fbm(smoothNoiseUV * 1.0 + vec2(time * 0.02, 0.0), time);
+  float leftSmokeWarp2 = fbm(smoothNoiseUV * 1.8 + vec2(-1.0, time * 0.015), time);
+  float rightSmokeWarp = fbm(smoothNoiseUV * 1.0 + vec2(5.0, time * 0.02), time);
+  float rightSmokeWarp2 = fbm(smoothNoiseUV * 1.8 + vec2(6.0, time * 0.015), time);
   
-  // === LEFT WISP - Curving ribbon that frames the left side ===
-  float leftWarp = fbm(noiseUV * 1.2 + vec2(time * 0.02, 0.0), time);
-  float leftWarp2 = fbm(noiseUV * 2.0 + vec2(-1.0, time * 0.015), time);
+  // Marble for smoke (smooth)
+  float leftSmokeMarble = marble(smoothNoiseUV + vec2(-2.0, 0.0), time);
+  float rightSmokeMarble = marble(smoothNoiseUV + vec2(3.0, 1.0), time * 0.9);
   
-  // Main ribbon - curves inward from left edge, flows vertically
-  float leftCurveBase = 0.12 + sin(pixelUV.y * 2.5) * 0.08 + leftWarp * 0.1;
-  float leftX = pixelUV.x - leftCurveBase;
+  // Noise for dither layer (pixelated)
+  float leftWarp = fbm(ditherNoiseUV * 1.2 + vec2(time * 0.02, 0.0), time);
+  float leftWarp2 = fbm(ditherNoiseUV * 2.0 + vec2(-1.0, time * 0.015), time);
+  float rightWarp = fbm(ditherNoiseUV * 1.2 + vec2(5.0, time * 0.02), time);
+  float rightWarp2 = fbm(ditherNoiseUV * 2.0 + vec2(6.0, time * 0.015), time);
   
-  // Create flowing ribbon shape
-  float leftRibbonInner = smoothstep(-0.02, 0.15, leftX);
-  float leftRibbonOuter = smoothstep(0.35, 0.1, leftX);
-  float leftRibbon = leftRibbonInner * leftRibbonOuter;
+  // Marble textures for dither detail (pixelated)
+  float leftMarble = marble(ditherNoiseUV + vec2(-2.0, 0.0), time);
+  float leftVein = marble(ditherNoiseUV * 1.5 + vec2(-1.0, 1.0), time * 0.8);
+  float rightMarble = marble(ditherNoiseUV + vec2(3.0, 1.0), time * 0.9);
+  float rightVein = marble(ditherNoiseUV * 1.4 + vec2(4.0, -1.0), time * 0.7);
   
-  // Add multiple thin vertical streaming lines within ribbon
-  float leftStream1 = sin(pixelUV.y * 15.0 + leftWarp * 6.0 + pixelUV.x * 10.0) * 0.5 + 0.5;
-  float leftStream2 = sin(pixelUV.y * 22.0 + leftWarp2 * 4.0 - pixelUV.x * 7.0) * 0.5 + 0.5;
-  float leftStream3 = sin(pixelUV.y * 28.0 + leftWarp * 3.0 + pixelUV.x * 12.0) * 0.5 + 0.5;
-  float leftStream4 = sin(pixelUV.y * 35.0 - leftWarp2 * 5.0 + pixelUV.x * 15.0) * 0.5 + 0.5;
-  float leftStreams = smoothstep(0.7, 0.96, leftStream1) * 0.6 + 
-                      smoothstep(0.72, 0.95, leftStream2) * 0.5 +
-                      smoothstep(0.75, 0.97, leftStream3) * 0.4 +
-                      smoothstep(0.78, 0.98, leftStream4) * 0.3;
+  // ============================================================
+  // LAYER 1: BASE SMOKE LAYER (smooth, soft, pale, flowing wisps)
+  // Uses smooth uv coordinates - NO pixelation
+  // ============================================================
   
-  // Marble texture
-  float leftMarble = marble(noiseUV + vec2(-2.0, 0.0), time);
-  float leftVein = marble(noiseUV * 1.5 + vec2(-1.0, 1.0), time * 0.8);
+  // Left smoke - soft flowing shape
+  float leftSmokeCurve = 0.15 + sin(uv.y * 2.2 + leftSmokeWarp * 0.6) * 0.1;
+  float leftSmokeX = uv.x - leftSmokeCurve;
+  float leftSmoke = smoothstep(-0.05, 0.2, leftSmokeX) * smoothstep(0.5, 0.15, leftSmokeX);
+  leftSmoke *= 0.5 + leftSmokeMarble * 0.5;
+  leftSmoke *= smoothstep(0.65, 0.0, uv.x);
   
-  // Flowing tendrils curving around
-  float leftTendril1 = sin(pixelUV.y * 8.0 + leftWarp * 4.0 + pixelUV.x * 12.0) * 0.5 + 0.5;
-  leftTendril1 = smoothstep(0.72, 0.98, leftTendril1) * pow(max(0.0, 0.3 - pixelUV.x), 1.3);
+  // Add smoke tendrils (smooth)
+  float leftSmokeTendril1 = sin(uv.y * 6.0 + leftSmokeWarp * 3.0 + uv.x * 8.0) * 0.5 + 0.5;
+  leftSmokeTendril1 = smoothstep(0.55, 0.85, leftSmokeTendril1) * pow(max(0.0, 0.35 - uv.x), 1.0);
   
-  float leftTendril2 = sin(pixelUV.y * 14.0 + leftVein * 3.0 - pixelUV.x * 6.0 + time * 0.3) * 0.5 + 0.5;
-  leftTendril2 = smoothstep(0.75, 0.98, leftTendril2) * pow(max(0.0, 0.25 - pixelUV.x), 1.5);
+  float leftSmokeTendril2 = sin(uv.y * 4.0 + leftSmokeWarp2 * 2.5 - uv.x * 5.0) * 0.5 + 0.5;
+  leftSmokeTendril2 = smoothstep(0.5, 0.8, leftSmokeTendril2) * pow(max(0.0, 0.4 - uv.x), 0.8);
   
-  // Combine left wisp
-  float leftBase = leftRibbon * (0.6 + leftMarble * 0.4 + leftStreams * 0.3);
-  float leftTendrils = leftTendril1 * 2.5 + leftTendril2 * 2.0;
-  float leftIntensity = leftBase + leftTendrils * 0.5;
-  leftIntensity *= smoothstep(0.7, 0.0, pixelUV.x); // Fade toward center
+  float leftSmokeIntensity = leftSmoke + leftSmokeTendril1 * 0.6 + leftSmokeTendril2 * 0.5;
   
-  // === RIGHT WISP - Curving ribbon that frames the right side ===
-  float rightWarp = fbm(noiseUV * 1.2 + vec2(5.0, time * 0.02), time);
-  float rightWarp2 = fbm(noiseUV * 2.0 + vec2(6.0, time * 0.015), time);
+  // Right smoke (smooth)
+  float rightSmokeCurve = 0.15 + sin((1.0 - uv.y) * 2.2 + rightSmokeWarp * 0.6) * 0.1;
+  float rightSmokeX = (1.0 - uv.x) - rightSmokeCurve;
+  float rightSmoke = smoothstep(-0.05, 0.2, rightSmokeX) * smoothstep(0.5, 0.15, rightSmokeX);
+  rightSmoke *= 0.5 + rightSmokeMarble * 0.5;
+  rightSmoke *= smoothstep(0.35, 1.0, uv.x);
   
-  // Mirror the curve for right side
-  float rightCurveBase = 0.12 + sin((1.0 - pixelUV.y) * 2.5) * 0.08 + rightWarp * 0.1;
-  float rightX = (1.0 - pixelUV.x) - rightCurveBase;
+  // Right smoke tendrils (smooth)
+  float rightSmokeTendril1 = sin((1.0 - uv.y) * 6.0 + rightSmokeWarp * 3.0 + (1.0 - uv.x) * 8.0) * 0.5 + 0.5;
+  rightSmokeTendril1 = smoothstep(0.55, 0.85, rightSmokeTendril1) * pow(max(0.0, uv.x - 0.65), 1.0);
   
-  // Create flowing ribbon shape
-  float rightRibbonInner = smoothstep(-0.02, 0.15, rightX);
-  float rightRibbonOuter = smoothstep(0.35, 0.1, rightX);
-  float rightRibbon = rightRibbonInner * rightRibbonOuter;
+  float rightSmokeTendril2 = sin((1.0 - uv.y) * 4.0 + rightSmokeWarp2 * 2.5 - (1.0 - uv.x) * 5.0) * 0.5 + 0.5;
+  rightSmokeTendril2 = smoothstep(0.5, 0.8, rightSmokeTendril2) * pow(max(0.0, uv.x - 0.6), 0.8);
   
-  // Add multiple thin vertical streaming lines
-  float rightStream1 = sin((1.0 - pixelUV.y) * 15.0 + rightWarp * 6.0 + (1.0 - pixelUV.x) * 10.0) * 0.5 + 0.5;
-  float rightStream2 = sin((1.0 - pixelUV.y) * 21.0 + rightWarp2 * 4.0 - (1.0 - pixelUV.x) * 7.0) * 0.5 + 0.5;
-  float rightStream3 = sin((1.0 - pixelUV.y) * 27.0 + rightWarp * 3.0 + (1.0 - pixelUV.x) * 12.0) * 0.5 + 0.5;
-  float rightStream4 = sin((1.0 - pixelUV.y) * 34.0 - rightWarp2 * 5.0 + (1.0 - pixelUV.x) * 14.0) * 0.5 + 0.5;
-  float rightStreams = smoothstep(0.7, 0.96, rightStream1) * 0.6 + 
-                       smoothstep(0.72, 0.95, rightStream2) * 0.5 +
-                       smoothstep(0.75, 0.97, rightStream3) * 0.4 +
-                       smoothstep(0.78, 0.98, rightStream4) * 0.3;
+  float rightSmokeIntensity = rightSmoke + rightSmokeTendril1 * 0.6 + rightSmokeTendril2 * 0.5;
   
-  // Marble texture
-  float rightMarble = marble(noiseUV + vec2(3.0, 1.0), time * 0.9);
-  float rightVein = marble(noiseUV * 1.4 + vec2(4.0, -1.0), time * 0.7);
+  // ============================================================
+  // LAYER 2: COLORFUL DITHER LAYER (concentrated, saturated dots)
+  // ============================================================
   
-  // Flowing tendrils
-  float rightTendril1 = sin((1.0 - pixelUV.y) * 8.0 + rightWarp * 4.0 + (1.0 - pixelUV.x) * 12.0) * 0.5 + 0.5;
-  rightTendril1 = smoothstep(0.72, 0.98, rightTendril1) * pow(max(0.0, pixelUV.x - 0.7), 1.3);
+  // Left dither pattern - thinner, more concentrated streams
+  float leftDitherCurve = 0.1 + sin(pixelUV.y * 3.5 + leftWarp * 1.2) * 0.12 + leftWarp2 * 0.08;
+  float leftDitherX = pixelUV.x - leftDitherCurve;
+  float leftDitherRibbon = smoothstep(-0.02, 0.12, leftDitherX) * smoothstep(0.32, 0.08, leftDitherX);
   
-  float rightTendril2 = sin((1.0 - pixelUV.y) * 13.0 + rightVein * 3.0 - (1.0 - pixelUV.x) * 6.0 + time * 0.25) * 0.5 + 0.5;
-  rightTendril2 = smoothstep(0.75, 0.98, rightTendril2) * pow(max(0.0, pixelUV.x - 0.75), 1.5);
+  // Thin streaming lines for dither
+  float leftLine1 = sin(pixelUV.y * 18.0 + leftWarp * 7.0 + pixelUV.x * 12.0) * 0.5 + 0.5;
+  float leftLine2 = sin(pixelUV.y * 25.0 + leftWarp2 * 5.0 - pixelUV.x * 8.0) * 0.5 + 0.5;
+  float leftLine3 = sin(pixelUV.y * 32.0 + leftVein * 4.0 + pixelUV.x * 15.0) * 0.5 + 0.5;
+  float leftLine4 = sin(pixelUV.y * 12.0 + leftMarble * 6.0 - pixelUV.x * 6.0) * 0.5 + 0.5;
   
-  // Combine right wisp
-  float rightBase = rightRibbon * (0.6 + rightMarble * 0.4 + rightStreams * 0.3);
-  float rightTendrils = rightTendril1 * 2.5 + rightTendril2 * 2.0;
-  float rightIntensity = rightBase + rightTendrils * 0.5;
-  rightIntensity *= smoothstep(0.3, 1.0, pixelUV.x); // Fade toward center
+  float leftLines = smoothstep(0.72, 0.97, leftLine1) * 0.7 +
+                    smoothstep(0.75, 0.98, leftLine2) * 0.6 +
+                    smoothstep(0.78, 0.99, leftLine3) * 0.5 +
+                    smoothstep(0.68, 0.92, leftLine4) * 0.4;
   
-  // === FRAME MASK - keep center clear ===
-  vec2 center = pixelUV - 0.5;
+  float leftDitherIntensity = leftDitherRibbon * (0.4 + leftLines * 0.8);
+  leftDitherIntensity *= smoothstep(0.55, 0.0, pixelUV.x);
+  
+  // Add concentrated spots
+  float leftSpot = smoothstep(0.6, 0.95, leftVein) * pow(max(0.0, 0.25 - pixelUV.x), 1.2);
+  leftDitherIntensity += leftSpot * 0.8;
+  
+  // Right dither pattern
+  float rightDitherCurve = 0.1 + sin((1.0 - pixelUV.y) * 3.5 + rightWarp * 1.2) * 0.12 + rightWarp2 * 0.08;
+  float rightDitherX = (1.0 - pixelUV.x) - rightDitherCurve;
+  float rightDitherRibbon = smoothstep(-0.02, 0.12, rightDitherX) * smoothstep(0.32, 0.08, rightDitherX);
+  
+  // Thin streaming lines for right dither
+  float rightLine1 = sin((1.0 - pixelUV.y) * 18.0 + rightWarp * 7.0 + (1.0 - pixelUV.x) * 12.0) * 0.5 + 0.5;
+  float rightLine2 = sin((1.0 - pixelUV.y) * 24.0 + rightWarp2 * 5.0 - (1.0 - pixelUV.x) * 8.0) * 0.5 + 0.5;
+  float rightLine3 = sin((1.0 - pixelUV.y) * 31.0 + rightVein * 4.0 + (1.0 - pixelUV.x) * 15.0) * 0.5 + 0.5;
+  float rightLine4 = sin((1.0 - pixelUV.y) * 11.0 + rightMarble * 6.0 - (1.0 - pixelUV.x) * 6.0) * 0.5 + 0.5;
+  
+  float rightLines = smoothstep(0.72, 0.97, rightLine1) * 0.7 +
+                     smoothstep(0.75, 0.98, rightLine2) * 0.6 +
+                     smoothstep(0.78, 0.99, rightLine3) * 0.5 +
+                     smoothstep(0.68, 0.92, rightLine4) * 0.4;
+  
+  float rightDitherIntensity = rightDitherRibbon * (0.4 + rightLines * 0.8);
+  rightDitherIntensity *= smoothstep(0.45, 1.0, pixelUV.x);
+  
+  // Add concentrated spots
+  float rightSpot = smoothstep(0.6, 0.95, rightVein) * pow(max(0.0, pixelUV.x - 0.75), 1.2);
+  rightDitherIntensity += rightSpot * 0.8;
+  
+  // ============================================================
+  // FRAME MASK - keep center clear
+  // ============================================================
+  // Use smooth uv for frame mask
+  vec2 center = uv - 0.5;
   center.x *= aspect * 0.6;
   float centerDist = length(center);
   float frameMask = smoothstep(0.08, u_edgeFade, centerDist);
-  float innerClear = smoothstep(0.28, 0.1, centerDist);
+  float innerClear = smoothstep(0.25, 0.08, centerDist);
   
-  leftIntensity *= frameMask;
-  rightIntensity *= frameMask;
+  // Apply frame mask to both layers
+  leftSmokeIntensity *= frameMask;
+  rightSmokeIntensity *= frameMask;
+  leftDitherIntensity *= frameMask;
+  rightDitherIntensity *= frameMask;
   
-  // === DITHERING for pixelated texture (more pronounced) ===
+  // ============================================================
+  // APPLY DITHERING to the dither layer
+  // ============================================================
   float dither = bayerDither(ditherCoord);
-  float ditherNoise = hash(ditherCoord * 0.25) * 0.35 + dither * 0.65;
-  float ditherFine = hash(ditherCoord * 1.5) * 0.3 + bayerDither(ditherCoord * 2.0) * 0.7;
+  float ditherNoise = hash(ditherCoord * 0.2) * 0.3 + dither * 0.7;
+  float ditherFine = hash(ditherCoord * 1.8) * 0.25 + bayerDither(ditherCoord * 2.5) * 0.75;
   
-  // Create multiple layers of dithered dots
-  float leftDot1 = step(dither * 0.25, leftIntensity * 0.45);
-  float leftDot2 = step(ditherNoise * 0.35, leftIntensity * 0.3);
-  float leftDot3 = step(ditherFine * 0.4, leftIntensity * 0.55);
-  float leftDithered = max(max(leftDot1, leftDot2 * 0.8), leftDot3 * 0.6);
+  // Multiple dither thresholds for varied dot density
+  float leftDot1 = step(dither * 0.2, leftDitherIntensity * 0.4);
+  float leftDot2 = step(ditherNoise * 0.3, leftDitherIntensity * 0.28);
+  float leftDot3 = step(ditherFine * 0.35, leftDitherIntensity * 0.5);
+  float leftDithered = max(max(leftDot1, leftDot2 * 0.85), leftDot3 * 0.7);
   
-  // Soft base + dithered overlay
-  float leftSoft = leftIntensity * 0.25;
-  float leftFinal = leftSoft + leftDithered * leftIntensity * 0.75;
+  float rightDot1 = step(dither * 0.2, rightDitherIntensity * 0.4);
+  float rightDot2 = step(ditherNoise * 0.3, rightDitherIntensity * 0.28);
+  float rightDot3 = step(ditherFine * 0.35, rightDitherIntensity * 0.5);
+  float rightDithered = max(max(rightDot1, rightDot2 * 0.85), rightDot3 * 0.7);
   
-  float rightDot1 = step(dither * 0.25, rightIntensity * 0.45);
-  float rightDot2 = step(ditherNoise * 0.35, rightIntensity * 0.3);
-  float rightDot3 = step(ditherFine * 0.4, rightIntensity * 0.55);
-  float rightDithered = max(max(rightDot1, rightDot2 * 0.8), rightDot3 * 0.6);
-  
-  float rightSoft = rightIntensity * 0.25;
-  float rightFinal = rightSoft + rightDithered * rightIntensity * 0.75;
-  
-  // === SATURATION VARIATION - concentrated in dithered areas ===
-  float leftSat = 0.1 + leftDithered * 0.6 + leftFinal * 0.8 + smoothstep(0.45, 0.9, leftVein) * 0.5;
-  float rightSat = 0.1 + rightDithered * 0.6 + rightFinal * 0.8 + smoothstep(0.45, 0.9, rightVein) * 0.5;
-  leftSat = clamp(leftSat, 0.0, 1.0);
-  rightSat = clamp(rightSat, 0.0, 1.0);
-  
-  // === COLORS ===
+  // ============================================================
+  // COLORS - separate for each layer
+  // ============================================================
   vec3 color = vec3(1.0);
   
-  // Left wisp - blue/cyan spectrum
-  vec3 leftPale = mix(vec3(1.0), vec3(0.82, 0.9, 0.97), 0.2);
-  vec3 leftMid = mix(vec3(1.0), vec3(0.5, 0.72, 0.94), 0.55);
-  vec3 leftVivid = vec3(0.3, 0.55, 0.9);
-  vec3 leftAccent = vec3(0.4, 0.5, 0.82); // Purple accent for some spots
+  // --- LAYER 1: Smoke colors (very pale, subtle) ---
+  vec3 leftSmokeColor = mix(vec3(1.0), vec3(0.88, 0.92, 0.98), 0.15); // Very pale blue tint
+  vec3 rightSmokeColor = mix(vec3(1.0), vec3(0.92, 0.9, 0.96), 0.15); // Very pale lavender tint
   
-  vec3 leftColor = mix(leftPale, leftMid, pow(leftSat, 0.7));
-  leftColor = mix(leftColor, leftVivid, smoothstep(0.5, 0.95, leftSat) * leftDithered);
-  // Add purple accent in some spots
-  leftColor = mix(leftColor, leftAccent, smoothstep(0.6, 0.95, leftVein) * leftDithered * 0.4);
+  // Apply smoke layer first (base)
+  color = mix(color, leftSmokeColor, leftSmokeIntensity * 0.5);
+  color = mix(color, rightSmokeColor, rightSmokeIntensity * 0.5);
   
-  // Right wisp - purple/lavender spectrum
-  vec3 rightPale = mix(vec3(1.0), vec3(0.88, 0.85, 0.96), 0.2);
-  vec3 rightMid = mix(vec3(1.0), vec3(0.65, 0.52, 0.88), 0.55);
-  vec3 rightVivid = vec3(0.48, 0.35, 0.82);
-  vec3 rightAccent = vec3(0.4, 0.55, 0.85); // Blue accent for some spots
+  // --- LAYER 2: Dither colors (more saturated, concentrated) ---
+  // Saturation varies based on intensity and vein patterns
+  float leftSat = 0.3 + leftDithered * 0.5 + smoothstep(0.5, 0.9, leftVein) * 0.3;
+  float rightSat = 0.3 + rightDithered * 0.5 + smoothstep(0.5, 0.9, rightVein) * 0.3;
   
-  vec3 rightColor = mix(rightPale, rightMid, pow(rightSat, 0.7));
-  rightColor = mix(rightColor, rightVivid, smoothstep(0.5, 0.95, rightSat) * rightDithered);
-  // Add blue accent in some spots
-  rightColor = mix(rightColor, rightAccent, smoothstep(0.55, 0.9, rightMarble) * rightDithered * 0.35);
+  // Left dither - blue/cyan with purple accents
+  vec3 leftDitherPale = mix(vec3(1.0), vec3(0.7, 0.85, 0.98), 0.35);
+  vec3 leftDitherMid = mix(vec3(1.0), vec3(0.45, 0.68, 0.94), 0.65);
+  vec3 leftDitherVivid = vec3(0.28, 0.52, 0.9);
+  vec3 leftDitherAccent = vec3(0.45, 0.45, 0.85); // Purple accent
   
-  // === COMBINE ===
-  color = mix(color, leftColor, leftFinal * 0.92);
-  color = mix(color, rightColor, rightFinal * 0.92);
+  vec3 leftDitherColor = mix(leftDitherPale, leftDitherMid, leftSat);
+  leftDitherColor = mix(leftDitherColor, leftDitherVivid, smoothstep(0.6, 1.0, leftSat) * leftDithered);
+  leftDitherColor = mix(leftDitherColor, leftDitherAccent, smoothstep(0.65, 0.95, leftVein) * leftDithered * 0.5);
+  
+  // Right dither - purple/lavender with blue accents
+  vec3 rightDitherPale = mix(vec3(1.0), vec3(0.85, 0.78, 0.96), 0.35);
+  vec3 rightDitherMid = mix(vec3(1.0), vec3(0.62, 0.48, 0.88), 0.65);
+  vec3 rightDitherVivid = vec3(0.45, 0.3, 0.82);
+  vec3 rightDitherAccent = vec3(0.38, 0.52, 0.88); // Blue accent
+  
+  vec3 rightDitherColor = mix(rightDitherPale, rightDitherMid, rightSat);
+  rightDitherColor = mix(rightDitherColor, rightDitherVivid, smoothstep(0.6, 1.0, rightSat) * rightDithered);
+  rightDitherColor = mix(rightDitherColor, rightDitherAccent, smoothstep(0.6, 0.92, rightMarble) * rightDithered * 0.45);
+  
+  // Apply dither layer on top of smoke
+  color = mix(color, leftDitherColor, leftDithered * leftDitherIntensity * 0.95);
+  color = mix(color, rightDitherColor, rightDithered * rightDitherIntensity * 0.95);
   
   // Ensure center stays white
   color = mix(color, vec3(1.0), innerClear);
   
   // Very subtle vignette
-  float vignette = 1.0 - centerDist * 0.03;
+  float vignette = 1.0 - centerDist * 0.025;
   color *= vignette;
   
   fragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
