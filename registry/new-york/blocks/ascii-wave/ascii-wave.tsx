@@ -154,35 +154,33 @@ export function AsciiWave({
       let leftLayout: ImageLayout | null = null;
       let rightLayout: ImageLayout | null = null;
 
-      // Left image layout
+      // Left image layout - fill height, anchor to left edge
       if (leftImageRef.current) {
         const img = leftImageRef.current;
         const imgAspect = img.width / img.height;
-        let drawWidth: number, drawHeight: number;
 
-        drawHeight = 0.85 * screenHeight;
-        drawWidth = drawHeight * imgAspect;
+        const drawHeight = screenHeight;
+        const drawWidth = drawHeight * imgAspect;
 
         leftLayout = {
           x: 0,
-          y: screenHeight / 2 - drawHeight / 2 - 0.1 * screenHeight,
+          y: 0,
           width: drawWidth,
           height: drawHeight,
         };
       }
 
-      // Right image layout
+      // Right image layout - fill height, anchor to right edge
       if (rightImageRef.current) {
         const img = rightImageRef.current;
         const imgAspect = img.width / img.height;
-        let drawWidth: number, drawHeight: number;
 
-        drawHeight = 0.85 * screenHeight;
-        drawWidth = drawHeight * imgAspect;
+        const drawHeight = screenHeight;
+        const drawWidth = drawHeight * imgAspect;
 
         rightLayout = {
           x: screenWidth - drawWidth,
-          y: screenHeight / 2 - drawHeight / 2 - 0.1 * screenHeight,
+          y: 0,
           width: drawWidth,
           height: drawHeight,
         };
@@ -237,9 +235,7 @@ export function AsciiWave({
         for (let col = 0; col < cols; col++) {
           const char = getChar({ x: col, y: row }, state);
 
-          if (row > 0.75 * rows) continue;
-
-          const normalizedRow = row / (0.75 * rows);
+          const normalizedRow = row / rows;
           let charOpacity = 0;
 
           const pixelX = cellWidth * col;
@@ -333,12 +329,14 @@ export function AsciiWave({
             }
           }
 
-          // Fade at top
-          let topFade = 1;
-          if (normalizedRow < 0.15) {
-            topFade = normalizedRow / 0.15;
+          // Fade at edges (top and bottom)
+          let edgeFade = 1;
+          if (normalizedRow < 0.1) {
+            edgeFade = normalizedRow / 0.1;
+          } else if (normalizedRow > 0.9) {
+            edgeFade = (1 - normalizedRow) / 0.1;
           }
-          charOpacity *= topFade;
+          charOpacity *= edgeFade;
 
           // Only render if visible
           if (charOpacity > 0.025) {

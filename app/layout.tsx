@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Hedvig_Letters_Serif } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
@@ -16,10 +16,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const hedvigLettersSerif = Hedvig_Letters_Serif({
+  variable: "--font-hedvig-letters-serif",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Asanshay's components",
-  description:
-    "A set of beautiful, flexible, and LLM-ready components for your next project.",
+  description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
@@ -33,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
