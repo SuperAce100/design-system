@@ -76,8 +76,12 @@ export default function ChatInput({
       </Button>
       {onModelChange && models && (
         <div className="flex items-center gap-2 absolute bottom-0 left-0">
-          <Select value={model} onValueChange={(value) => onModelChange(value)}>
-            <SelectTrigger className="w-[200px] shadow-none pl-4 hover:bg-transparent hover:text-foreground focus-visible:ring-0 border-none bg-transparent text-xs text-muted-foreground dark:bg-transparent">
+          <Select
+            className="w-[200px] data-[state=closed]:border-transparent data-[state=closed]:shadow-none data-[state=closed]:bg-transparent data-[state=closed]:hover:bg-transparent data-[state=closed]:hover:border-transparent data-[state=closed]:focus-within:ring-0 data-[state=closed]:focus-within:border-transparent"
+            value={model}
+            onValueChange={(value) => onModelChange(value)}
+          >
+            <SelectTrigger className="pl-4 hover:text-foreground text-xs text-muted-foreground">
               <SelectValue>
                 {models.find((m) => m.id === model)?.name || "Select a model"}
               </SelectValue>

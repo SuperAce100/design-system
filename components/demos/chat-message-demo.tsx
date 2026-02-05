@@ -85,8 +85,8 @@ export default function ChatMessageDemo() {
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-muted-foreground">User</label>
-          <Select value={userMessageVariant} onValueChange={setUserMessageVariant}>
-            <SelectTrigger className="w-[120px]" size="sm">
+          <Select className="w-[120px]" value={userMessageVariant} onValueChange={setUserMessageVariant}>
+            <SelectTrigger size="sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -101,8 +101,8 @@ export default function ChatMessageDemo() {
 
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-muted-foreground">Assistant</label>
-          <Select value={assistantMessageVariant} onValueChange={setAssistantMessageVariant}>
-            <SelectTrigger className="w-[120px]" size="sm">
+          <Select className="w-[120px]" value={assistantMessageVariant} onValueChange={setAssistantMessageVariant}>
+            <SelectTrigger size="sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

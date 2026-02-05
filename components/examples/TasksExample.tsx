@@ -26,7 +26,7 @@ export default function TasksExample() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input placeholder="Full name" />
           <Input placeholder="Email" />
-          <Select>
+          <Select className="w-full">
             <SelectTrigger>
               <SelectValue placeholder="Role" />
             </SelectTrigger>

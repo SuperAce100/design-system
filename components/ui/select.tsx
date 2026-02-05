@@ -3,14 +3,16 @@
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import { LayoutGroup, motion } from "motion/react"
+import { motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
 type SelectContextValue = {
   open: boolean
-  layoutGroupId: string
-  surfaceId: string
+  size: "sm" | "default"
+  setSize: (size: "sm" | "default") => void
+  invalid: boolean
+  setInvalid: (invalid: boolean) => void
 }
 
 const SelectContext = React.createContext<SelectContextValue | null>(null)
@@ -19,22 +21,25 @@ function useSelectContext() {
   return React.useContext(SelectContext)
 }
 
+type SelectProps = React.ComponentProps<typeof SelectPrimitive.Root> & {
+  className?: string
+}
+
 function Select({
   open: openProp,
   defaultOpen,
   onOpenChange,
+  className,
+  children,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
+}: SelectProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(
     defaultOpen ?? false
   )
   const isControlled = openProp !== undefined
   const open = isControlled ? openProp : uncontrolledOpen
-  const layoutGroupId = React.useId()
-  const surfaceId = React.useMemo(
-    () => `${layoutGroupId}-surface`,
-    [layoutGroupId]
-  )
+  const [size, setSize] = React.useState<"sm" | "default">("default")
+  const [invalid, setInvalid] = React.useState(false)
 
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
@@ -45,15 +50,34 @@ function Select({
   )
 
   return (
-    <SelectContext.Provider value={{ open, layoutGroupId, surfaceId }}>
-      <LayoutGroup id={layoutGroupId}>
-        <SelectPrimitive.Root
-          data-slot="select"
-          open={open}
-          onOpenChange={handleOpenChange}
-          {...props}
-        />
-      </LayoutGroup>
+    <SelectContext.Provider value={{ open, size, setSize, invalid, setInvalid }}>
+      <SelectPrimitive.Root
+        data-slot="select"
+        open={open}
+        onOpenChange={handleOpenChange}
+        {...props}
+      >
+        <motion.div
+          layout
+          data-state={open ? "open" : "closed"}
+          data-size={size}
+          data-invalid={invalid ? "true" : "false"}
+          transition={{ layout: { duration: 0.24, ease: [0.4, 0, 0.2, 1] } }}
+          className={cn(
+            "group relative inline-flex w-fit flex-col overflow-hidden rounded-md border transition-[color,box-shadow,background-color,border-color] duration-150 ease-out",
+            "border-input bg-transparent shadow-xs",
+            "hover:bg-muted hover:border-border/0",
+            "focus-within:ring-[3px] focus-within:ring-ring/50 focus-within:border-ring",
+            "dark:bg-input/30 dark:hover:bg-input/50",
+            "data-[state=open]:bg-popover data-[state=open]:shadow-md",
+            "data-[state=open]:hover:bg-popover data-[state=open]:hover:border-input",
+            "data-[invalid=true]:border-destructive data-[invalid=true]:focus-within:ring-destructive/20 dark:data-[invalid=true]:focus-within:ring-destructive/40",
+            className
+          )}
+        >
+          {children}
+        </motion.div>
+      </SelectPrimitive.Root>
     </SelectContext.Provider>
   )
 }
@@ -79,35 +103,34 @@ function SelectTrigger({
   size?: "sm" | "default"
 }) {
   const selectContext = useSelectContext()
-  const surfaceId = selectContext?.surfaceId
   const isOpen = selectContext?.open ?? false
+  const isInvalid =
+    props["aria-invalid"] === true || props["aria-invalid"] === "true"
+
+  React.useEffect(() => {
+    if (!selectContext) return
+    selectContext.setSize(size)
+    selectContext.setInvalid(isInvalid)
+  }, [isInvalid, selectContext, size])
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "group relative flex w-fit items-center justify-between gap-2 rounded-md px-3 py-2 text-sm whitespace-nowrap outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
+        "flex w-fit items-center justify-between gap-2 bg-transparent px-3 py-2 text-sm whitespace-nowrap outline-none transition-[color] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         className
       )}
       {...props}
     >
-      {!isOpen ? (
-        <motion.span
-          layout
-          layoutId={surfaceId}
-          className={cn(
-            "pointer-events-none absolute inset-0 rounded-md border border-input bg-transparent shadow-xs transition-[box-shadow,border-color,background-color] duration-150 ease-out",
-            "group-hover:bg-muted group-hover:border-border/0",
-            "dark:bg-input/30 dark:group-hover:bg-input/50",
-            "group-focus-visible:border-ring"
-          )}
-          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        />
-      ) : null}
-      <span className="relative z-10 flex w-full items-center justify-between gap-2">
+      <span className="flex w-full items-center justify-between gap-2">
         {children}
         <SelectPrimitive.Icon asChild>
-          <ChevronDownIcon className="size-4 opacity-50" />
+          <ChevronDownIcon
+            className={cn(
+              "size-4 opacity-50 transition-transform duration-150 ease-out",
+              isOpen && "rotate-180"
+            )}
+          />
         </SelectPrimitive.Icon>
       </span>
     </SelectPrimitive.Trigger>
@@ -117,43 +140,27 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = "popper",
+  position = "item-aligned",
+  style,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
-  const selectContext = useSelectContext()
-  const surfaceId = selectContext?.surfaceId
   return (
-    <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        data-slot="select-content"
-        className={cn(
-          "text-popover-foreground relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md",
-          position === "popper" &&
-            "data-[side=bottom]:-translate-y-[var(--radix-select-trigger-height)] data-[side=top]:translate-y-[var(--radix-select-trigger-height)]",
-          className
-        )}
-        position={position}
-        {...props}
-      >
-        <motion.div
-          layout
-          layoutId={surfaceId}
-          className="pointer-events-none absolute inset-0 rounded-md border border-input bg-popover shadow-md"
-          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        />
-        <SelectScrollUpButton className="relative z-10" />
-        <SelectPrimitive.Viewport
-          className={cn(
-            "relative z-10 p-1",
-            position === "popper" &&
-              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
-          )}
-        >
-          {children}
-        </SelectPrimitive.Viewport>
-        <SelectScrollDownButton className="relative z-10" />
-      </SelectPrimitive.Content>
-    </SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      data-slot="select-content"
+      className={cn(
+        "text-popover-foreground relative w-full max-h-(--radix-select-content-available-height) overflow-x-hidden overflow-y-auto !static !transform-none",
+        className
+      )}
+      position={position}
+      {...props}
+      style={{ position: "static", ...style }}
+    >
+      <SelectScrollUpButton />
+      <SelectPrimitive.Viewport className="p-1 w-full min-w-[var(--radix-select-trigger-width)]">
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectScrollDownButton />
+    </SelectPrimitive.Content>
   )
 }
 
