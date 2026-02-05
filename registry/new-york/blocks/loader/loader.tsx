@@ -69,16 +69,17 @@ function Loader({
 
   const fragmentShader = shaderMap[variant];
   const shapeValue = shapeMap[shape];
+  const scale = variant === "blur" ? 0.52 : 0.6;
 
   const uniforms = React.useMemo(
     () => ({
       u_colorFront: hexToRgba(color),
       u_colorBack: hexToRgba(colorBack),
       u_shape: shapeValue,
-      u_scale: 0.6,
+      u_scale: scale,
       u_pxSize: 2, // Pixel size for dithering
     }),
-    [color, colorBack, shapeValue]
+    [color, colorBack, shapeValue, scale]
   );
 
   return (

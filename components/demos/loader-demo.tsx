@@ -63,24 +63,6 @@ export default function LoaderDemo() {
         </div>
       </div>
 
-      {/* Sizes */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium text-muted-foreground">Sizes</h3>
-        <div className="flex items-end justify-center gap-8">
-          <div className="flex flex-col items-center gap-2">
-            <Loader size="sm" />
-            <span className="text-xs text-muted-foreground">sm</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <Loader size="default" />
-            <span className="text-xs text-muted-foreground">default</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <Loader size="lg" />
-            <span className="text-xs text-muted-foreground">lg</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
