@@ -27,19 +27,19 @@ function getStateInfo(state: string) {
       return {
         icon: Check,
         label: "Used ",
-        color: "text-green-500",
+        color: "text-success",
       };
     case "output-error":
       return {
         icon: AlertCircle,
         label: "Failed to use",
-        color: "text-red-500",
+        color: "text-destructive",
       };
     default:
       return {
         icon: Wrench,
         label: "Using",
-        color: "text-gray-500",
+        color: "text-muted-foreground",
       };
   }
 }
@@ -94,7 +94,7 @@ export default function ChatTool({
           <div className="flex flex-col gap-3 w-full pt-2">
             {/* Error Section - show for failed executions */}
             {toolMessagePart.state === "output-error" && toolMessagePart.errorText && (
-              <div className="bg-red-500/5 border rounded-md p-2 text-sm overflow-x-auto whitespace-pre-wrap text-red-700 dark:text-red-300 w-full">
+              <div className="bg-destructive/5 border rounded-md p-2 text-sm overflow-x-auto whitespace-pre-wrap text-destructive w-full">
                 {toolMessagePart.errorText}
               </div>
             )}

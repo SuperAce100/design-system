@@ -12,7 +12,7 @@ const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
     variant: {
       raised:
-        "bg-gradient-to-b from-primary to-primary/80 border border-primary text-primary-foreground shadow-lg shadow-slate-200/50 dark:shadow-none max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
+        "bg-gradient-to-b from-primary to-primary/80 border border-primary text-primary-foreground shadow-lg shadow-shade dark:shadow-none max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
       title: "font-semibold tracking-tight text-3xl mt-4 border-b border-primary/30 pb-1",
       default: "bg-primary/20 max-w-2xs ml-auto rounded-xl px-4 py-2",
     },

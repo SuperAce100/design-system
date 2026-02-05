@@ -28,11 +28,7 @@ export default function ComponentFrame({
 
   const renderSource = () => {
     if (!code) {
-      return (
-        <div className="text-sm text-muted-foreground">
-          Source unavailable for this demo.
-        </div>
-      );
+      return <div className="text-sm text-muted-foreground">Source unavailable for this demo.</div>;
     }
 
     return <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />;
@@ -41,7 +37,7 @@ export default function ComponentFrame({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl dark:shadow-none shadow-gray-300/20",
+        "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl dark:shadow-none shadow-shade",
         className
       )}
       id={id}
@@ -79,9 +75,7 @@ export default function ComponentFrame({
           {children}
         </div>
       ) : (
-        <div className="relative max-h-[360px] overflow-y-auto rounded-xl">
-          {renderSource()}
-        </div>
+        <div className="relative max-h-[360px] overflow-y-auto rounded-xl">{renderSource()}</div>
       )}
     </div>
   );

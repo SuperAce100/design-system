@@ -129,7 +129,7 @@ export function ScriptCopyBtn({ commandMap, className }: ScriptCopyBtnProps) {
             className={`size-4 transition-all duration-300 ${copied ? "scale-0" : "scale-100"}`}
           />
           <Check
-            className={`absolute inset-0 m-auto size-4 transition-all duration-300 text-emerald-500 ${
+            className={`absolute inset-0 m-auto size-4 transition-all duration-300 text-success ${
               copied ? "scale-100" : "scale-0"
             }`}
           />
