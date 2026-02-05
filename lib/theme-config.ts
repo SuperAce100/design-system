@@ -30,7 +30,8 @@ export type ThemeConfig = {
   neutral: NeutralScale;
   primary: PrimaryColor;
   radius: number; // rem value: 0 | 0.3 | 0.5 | 0.75 | 1.0
-  shadowOpacity: number; // 0–100 slider
+  shadowDepth: number; // 0–100 slider (controls how dark the shadow is)
+  shadowOpacity: number; // 0–100 slider (controls how transparent the shadow is)
 };
 
 export const RADIUS_PRESETS = [0, 0.3, 0.5, 0.75, 1.0] as const;
@@ -39,7 +40,8 @@ export const DEFAULT_CONFIG: ThemeConfig = {
   neutral: "neutral",
   primary: "sky",
   radius: 0.625,
-  shadowOpacity: 50,
+  shadowDepth: 50,
+  shadowOpacity: 20,
 };
 
 export const NEUTRAL_LABELS: Record<NeutralScale, string> = {
@@ -384,10 +386,6 @@ function fmt(lch: LCH): string {
   return `oklch(${lch[0]} ${lch[1]} ${lch[2]})`;
 }
 
-function fmtA(lch: LCH, alpha: number): string {
-  return `oklch(${lch[0]} ${lch[1]} ${lch[2]} / ${Math.round(alpha * 100)}%)`;
-}
-
 /** Very light primary colors need a darker stop for sufficient contrast. */
 const LIGHT_PRIMARIES: PrimaryColor[] = ["yellow", "lime", "amber"];
 
@@ -436,9 +434,20 @@ export function generateThemeVars(config: ThemeConfig): {
   const lightPrimaryFg = getPrimaryFg(p[lightStop], n[950]);
   const darkPrimaryFg = getPrimaryFg(p[darkStop], n[950]);
 
-  // Shadow: use neutral-300 (light) / neutral-950 (dark) with scaled alpha
-  const lightShadowAlpha = (config.shadowOpacity / 100) * 0.6; // 0–60 %, default 30 %
-  const darkShadowAlpha = (config.shadowOpacity / 100) * 0.8; // 0–80 %, default 40 %
+  // Shadow: depth controls darkness (lightness of shadow color),
+  // opacity controls transparency (alpha channel).
+  const depthFactor = config.shadowDepth / 100; // 0–1
+  const opacityFactor = config.shadowOpacity / 100; // 0–1
+
+  // Light mode: shadow color from neutral-300, darken with depth
+  const lightBase = n[300];
+  const lightShadowL = Math.round(lightBase[0] * (1 - depthFactor * 0.85) * 1000) / 1000;
+  const lightShadowC = Math.round(lightBase[1] * (1 - depthFactor * 0.7) * 1000) / 1000;
+  const lightShadowH = lightBase[2];
+  const lightShadowAlpha = opacityFactor * 0.55; // 0–55 %
+
+  // Dark mode: shadow color from neutral-950, modulate both depth and opacity
+  const darkShadowAlpha = depthFactor * opacityFactor * 0.75; // 0–75 %
 
   return {
     light: {
@@ -463,7 +472,9 @@ export function generateThemeVars(config: ThemeConfig): {
       "--border": fmt(n[200]),
       "--input": fmt(n[200]),
       "--ring": fmt(n[950]),
-      "--shadow-color": fmtA(n[300], lightShadowAlpha),
+      "--shadow-color": `oklch(${lightShadowL} ${lightShadowC} ${lightShadowH} / ${Math.round(
+        lightShadowAlpha * 100
+      )}%)`,
       "--chart-1": lightCharts[0],
       "--chart-2": lightCharts[1],
       "--chart-3": lightCharts[2],
@@ -499,7 +510,7 @@ export function generateThemeVars(config: ThemeConfig): {
       "--border": fmt(n[800]),
       "--input": fmt(n[800]),
       "--ring": fmt(n[300]),
-      "--shadow-color": fmtA(n[950], darkShadowAlpha),
+      "--shadow-color": `oklch(0 0 0 / ${Math.round(darkShadowAlpha * 100)}%)`,
       "--chart-1": darkCharts[0],
       "--chart-2": darkCharts[1],
       "--chart-3": darkCharts[2],
@@ -577,6 +588,8 @@ export function generateGlobalsCss(config: ThemeConfig): string {
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
 }
 
 :root {

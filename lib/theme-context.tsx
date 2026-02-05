@@ -27,8 +27,28 @@ function isValidConfig(value: unknown): value is ThemeConfig {
     typeof obj.neutral === "string" &&
     typeof obj.primary === "string" &&
     typeof obj.radius === "number" &&
+    typeof obj.shadowDepth === "number" &&
     typeof obj.shadowOpacity === "number"
   );
+}
+
+/** Migrate old configs that may be missing new fields. */
+function migrateConfig(raw: Record<string, unknown>): ThemeConfig | null {
+  if (
+    typeof raw.neutral !== "string" ||
+    typeof raw.primary !== "string" ||
+    typeof raw.radius !== "number"
+  )
+    return null;
+
+  return {
+    neutral: raw.neutral as ThemeConfig["neutral"],
+    primary: raw.primary as ThemeConfig["primary"],
+    radius: raw.radius as number,
+    shadowDepth: typeof raw.shadowDepth === "number" ? raw.shadowDepth : DEFAULT_CONFIG.shadowDepth,
+    shadowOpacity:
+      typeof raw.shadowOpacity === "number" ? raw.shadowOpacity : DEFAULT_CONFIG.shadowOpacity,
+  };
 }
 
 export function ThemeConfigProvider({ children }: { children: React.ReactNode }) {
@@ -44,6 +64,14 @@ export function ThemeConfigProvider({ children }: { children: React.ReactNode })
         if (isValidConfig(parsed)) {
           setConfigState(parsed);
           applyThemeToDOM(parsed);
+        } else if (typeof parsed === "object" && parsed !== null) {
+          // Attempt migration from older config format
+          const migrated = migrateConfig(parsed as Record<string, unknown>);
+          if (migrated) {
+            setConfigState(migrated);
+            applyThemeToDOM(migrated);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+          }
         }
       }
     } catch {

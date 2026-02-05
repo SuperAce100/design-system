@@ -37,7 +37,7 @@ export default function ComponentFrame({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl dark:shadow-none shadow-shade",
+        "flex flex-col gap-4 border dark:border-none rounded-3xl p-6 relative bg-card shadow-xl shadow-shade",
         className
       )}
       id={id}

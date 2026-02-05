@@ -252,7 +252,7 @@ export function Window({
   return hidden ? null : (
     <div
       className={cn(
-        "absolute select-none rounded-xl border border-border bg-card shadow-lg light:shadow-border/60 overflow-hidden",
+        "absolute select-none rounded-xl border border-border bg-card shadow-lg shadow-shade overflow-hidden",
         animateNext && !isInteracting && "transition-all duration-300 ease-out",
         isDragging && "cursor-grabbing",
         className

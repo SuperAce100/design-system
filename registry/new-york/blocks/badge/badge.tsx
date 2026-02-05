@@ -65,7 +65,7 @@ const badgeVariants = cva(
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:bg-border/50",
         fancy:
-          "bg-white dark:border-card dark:bg-background bg-radial-[at_40%_30%] shadow-md inset-shadow-sm dark:shadow-none shadow-shade inset-shadow-white/70 dark:inset-shadow-white/50 dark:inset-shadow-xs dark:to-transparent ",
+          "bg-white dark:border-card dark:bg-background bg-radial-[at_40%_30%] shadow-md inset-shadow-sm shadow-shade inset-shadow-white/70 dark:inset-shadow-white/50 dark:inset-shadow-xs dark:to-transparent ",
       },
     },
     defaultVariants: {

@@ -12,7 +12,7 @@ const userMessageVariants = cva("flex flex-col gap-2", {
   variants: {
     variant: {
       raised:
-        "bg-gradient-to-b from-primary to-primary/80 border border-primary text-primary-foreground shadow-lg shadow-shade dark:shadow-none max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
+        "bg-gradient-to-b from-primary to-primary/80 border border-primary text-primary-foreground shadow-lg shadow-shade max-w-2xs ml-auto rounded-xl px-4 py-2 font-medium",
       title: "font-semibold tracking-tight text-3xl mt-4 border-b border-primary/30 pb-1",
       default: "bg-primary/20 max-w-2xs ml-auto rounded-xl px-4 py-2",
     },
@@ -22,7 +22,7 @@ const assistantMessageVariants = cva("flex flex-col gap-2", {
   variants: {
     variant: {
       raised:
-        "bg-gradient-to-b from-muted to-muted/50 rounded-xl px-4 py-2 border shadow-md shadow-foreground/5 dark:shadow-none mr-8",
+        "bg-gradient-to-b from-muted to-muted/50 rounded-xl px-4 py-2 border shadow-md shadow-shade mr-8",
       paragraph: "",
       default: "bg-muted rounded-xl px-4 py-2 mr-8",
     },

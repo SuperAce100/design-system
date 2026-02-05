@@ -176,8 +176,25 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
           </div>
         </Section>
 
-        {/* Shadow */}
-        <Section title="Shadow">
+        {/* Shadow Depth */}
+        <Section title="Shadow Depth">
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={config.shadowDepth}
+              onChange={(e) => setConfig((p) => ({ ...p, shadowDepth: Number(e.target.value) }))}
+              className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
+            />
+            <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
+              {config.shadowDepth}
+            </span>
+          </div>
+        </Section>
+
+        {/* Shadow Opacity */}
+        <Section title="Shadow Opacity">
           <div className="flex items-center gap-3">
             <input
               type="range"
