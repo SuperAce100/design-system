@@ -3,13 +3,14 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { motion } from "motion/react";
+import { LayoutGroup, motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
 type SelectContextValue = {
   open: boolean;
-  layoutId: string;
+  layoutGroupId: string;
+  surfaceId: string;
 };
 
 const SelectContext = React.createContext<SelectContextValue | null>(null);
@@ -27,7 +28,8 @@ function Select({
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
   const isControlled = openProp !== undefined;
   const open = isControlled ? openProp : uncontrolledOpen;
-  const layoutId = React.useId();
+  const layoutGroupId = React.useId();
+  const surfaceId = React.useMemo(() => `${layoutGroupId}-surface`, [layoutGroupId]);
 
   const handleOpenChange = React.useCallback(
     (nextOpen: boolean) => {
@@ -38,8 +40,10 @@ function Select({
   );
 
   return (
-    <SelectContext.Provider value={{ open, layoutId }}>
-      <SelectPrimitive.Root data-slot="select" open={open} onOpenChange={handleOpenChange} {...props} />
+    <SelectContext.Provider value={{ open, layoutGroupId, surfaceId }}>
+      <LayoutGroup id={layoutGroupId}>
+        <SelectPrimitive.Root data-slot="select" open={open} onOpenChange={handleOpenChange} {...props} />
+      </LayoutGroup>
     </SelectContext.Provider>
   );
 }
@@ -61,7 +65,7 @@ function SelectTrigger({
   size?: "sm" | "default";
 }) {
   const selectContext = useSelectContext();
-  const surfaceId = selectContext ? `${selectContext.layoutId}-surface` : undefined;
+  const surfaceId = selectContext?.surfaceId;
   const isOpen = selectContext?.open ?? false;
   return (
     <SelectPrimitive.Trigger
@@ -104,7 +108,7 @@ function SelectContent({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   const selectContext = useSelectContext();
-  const surfaceId = selectContext ? `${selectContext.layoutId}-surface` : undefined;
+  const surfaceId = selectContext?.surfaceId;
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
