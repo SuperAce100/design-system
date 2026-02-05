@@ -1,4 +1,4 @@
-// Plain style fragment shader - soft glow rendering
+// Plain style fragment shader - crisp core with soft bloom
 import { shaderConstants, shapeUniforms, shapeFunctions } from "./utils";
 
 export const plainFragmentShader = `#version 300 es
@@ -36,24 +36,21 @@ void main() {
   
   float time = u_time;
   
-  // Multi-pass blur for smoother result
-  float blurAmount = 0.03;
-  float shape1 = blurredShape(uv, time, blurAmount);
-  float shape2 = blurredShape(uv, time, blurAmount * 2.0);
-  float shape3 = blurredShape(uv, time, blurAmount * 3.0);
-  
-  // Combine blur passes with different weights for glow effect
-  float shape = shape1 * 0.5 + shape2 * 0.3 + shape3 * 0.2;
-  
-  // Add extra glow falloff
-  float glow = pow(shape, 0.8);
-  
-  // Add inner brightness
   float core = getShape(uv, time);
-  float finalShape = mix(glow, core, 0.4);
+  float mask = 1.0 - smoothstep(0.7, 1.05, length(uv));
+  core *= mask;
   
-  // Soft edges
-  finalShape = smoothstep(0.0, 0.5, finalShape);
+  // Crisp core with a gentle bloom
+  float solid = smoothstep(0.2, 0.85, core);
+  float glow = blurredShape(uv, time, 0.018);
+  float halo = smoothstep(0.0, 0.6, glow) * 0.35;
+  float finalShape = clamp(solid + halo, 0.0, 1.0);
+  
+  // Subtle lighting for a more polished feel
+  float radial = 1.0 - smoothstep(0.2, 1.05, length(uv));
+  float highlight =
+      pow(max(0.0, 1.0 - length(uv - vec2(-0.25, 0.25))), 3.0);
+  float shade = clamp(0.75 + 0.25 * radial + 0.2 * highlight, 0.0, 1.15);
   
   // Mix colors with glow
   vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
@@ -61,7 +58,7 @@ void main() {
   vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
   float bgOpacity = u_colorBack.a;
   
-  vec3 color = fgColor * finalShape;
+  vec3 color = fgColor * shade * finalShape;
   float opacity = fgOpacity;
   
   color += bgColor * (1.0 - opacity);
