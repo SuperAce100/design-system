@@ -4,8 +4,10 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface AsciiWaveProps {
-  /** Path to the mask image (mountain silhouette) */
-  maskImage?: string;
+  /** Path to the left mask image */
+  leftImage?: string;
+  /** Path to the right mask image */
+  rightImage?: string;
   /** Character set to use for the wave animation */
   chars?: string;
   /** Cell width in pixels (default: 7) */
@@ -58,7 +60,8 @@ function colorDodge(base: number, blend: number): number {
 }
 
 export function AsciiWave({
-  maskImage = "/images/backgrounds/mountain-r-color.png",
+  leftImage = "/images/backgrounds/mountain-l-color.png",
+  rightImage = "/images/backgrounds/mountain-r-color.png",
   chars = "▅▃▁?ab018:. ",
   cellWidth = 7,
   cellHeight = 6,
@@ -74,9 +77,11 @@ export function AsciiWave({
   const animationRef = React.useRef<number>(0);
   const startTimeRef = React.useRef<number>(0);
 
-  // Image refs - no rotation, just store the original
-  const imageRef = React.useRef<HTMLImageElement | null>(null);
-  const imageDataRef = React.useRef<ImageData | null>(null);
+  // Image refs
+  const leftImageRef = React.useRef<HTMLImageElement | null>(null);
+  const rightImageRef = React.useRef<HTMLImageElement | null>(null);
+  const leftImageDataRef = React.useRef<ImageData | null>(null);
+  const rightImageDataRef = React.useRef<ImageData | null>(null);
 
   const { sin, floor, PI } = Math;
   const TAU = 2 * PI;
@@ -138,79 +143,87 @@ export function AsciiWave({
         rows,
       };
 
-      // Calculate image layout
+      // Calculate layouts for both images
       type ImageLayout = {
-        leftEdgeX: number;
-        rightEdgeX: number;
-        drawWidth: number;
-        drawHeight: number;
-        centerY: number;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
       };
-      let imageLayout: ImageLayout | null = null;
 
-      if (imageRef.current) {
-        const img = imageRef.current;
+      let leftLayout: ImageLayout | null = null;
+      let rightLayout: ImageLayout | null = null;
+
+      // Left image layout
+      if (leftImageRef.current) {
+        const img = leftImageRef.current;
         const imgAspect = img.width / img.height;
+        let drawWidth: number, drawHeight: number;
 
-        // Scale image to fit 85% of screen while maintaining aspect ratio
-        let drawWidth: number;
-        let drawHeight: number;
+        drawHeight = 0.85 * screenHeight;
+        drawWidth = drawHeight * imgAspect;
 
-        if (imgAspect > screenWidth / screenHeight) {
-          drawWidth = 0.85 * screenWidth;
-          drawHeight = drawWidth / imgAspect;
-        } else {
-          drawHeight = 0.85 * screenHeight;
-          drawWidth = drawHeight * imgAspect;
-        }
-
-        imageLayout = {
-          leftEdgeX: 0.05 * screenWidth,
-          rightEdgeX: 0.95 * screenWidth,
-          drawWidth,
-          drawHeight,
-          centerY: screenHeight / 2 - 0.1 * screenHeight,
+        leftLayout = {
+          x: 0,
+          y: screenHeight / 2 - drawHeight / 2 - 0.1 * screenHeight,
+          width: drawWidth,
+          height: drawHeight,
         };
       }
 
-      // Draw images on sides (no rotation - just positioned on edges)
-      if (imageRef.current && imageLayout) {
-        ctx.save();
-        ctx.globalAlpha = 0.4;
+      // Right image layout
+      if (rightImageRef.current) {
+        const img = rightImageRef.current;
+        const imgAspect = img.width / img.height;
+        let drawWidth: number, drawHeight: number;
 
-        const img = imageRef.current;
-        const { drawWidth, drawHeight, leftEdgeX, rightEdgeX, centerY } =
-          imageLayout;
+        drawHeight = 0.85 * screenHeight;
+        drawWidth = drawHeight * imgAspect;
 
-        // Draw on left side
-        ctx.drawImage(
-          img,
-          leftEdgeX,
-          centerY - drawHeight / 2,
-          drawWidth,
-          drawHeight
-        );
-
-        // Draw on right side (flipped horizontally)
-        ctx.save();
-        ctx.translate(rightEdgeX, centerY);
-        ctx.scale(-1, 1);
-        ctx.drawImage(img, 0, -drawHeight / 2, drawWidth, drawHeight);
-        ctx.restore();
-
-        ctx.restore();
-
-        // Apply top gradient fade
-        ctx.save();
-        const gradient = ctx.createLinearGradient(0, 0, 0, screenHeight);
-        gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
-        gradient.addColorStop(0.15, "rgba(255, 255, 255, 0)");
-        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, screenWidth, screenHeight);
-        ctx.restore();
+        rightLayout = {
+          x: screenWidth - drawWidth,
+          y: screenHeight / 2 - drawHeight / 2 - 0.1 * screenHeight,
+          width: drawWidth,
+          height: drawHeight,
+        };
       }
+
+      // Draw images
+      ctx.save();
+      ctx.globalAlpha = 0.4;
+
+      if (leftImageRef.current && leftLayout) {
+        ctx.drawImage(
+          leftImageRef.current,
+          leftLayout.x,
+          leftLayout.y,
+          leftLayout.width,
+          leftLayout.height
+        );
+      }
+
+      if (rightImageRef.current && rightLayout) {
+        ctx.drawImage(
+          rightImageRef.current,
+          rightLayout.x,
+          rightLayout.y,
+          rightLayout.width,
+          rightLayout.height
+        );
+      }
+
+      ctx.restore();
+
+      // Apply top gradient fade
+      ctx.save();
+      const gradient = ctx.createLinearGradient(0, 0, 0, screenHeight);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+      gradient.addColorStop(0.15, "rgba(255, 255, 255, 0)");
+      gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, screenWidth, screenHeight);
+      ctx.restore();
 
       // Setup text rendering
       ctx.font = `${fontSize}px monospace`;
@@ -224,114 +237,99 @@ export function AsciiWave({
         for (let col = 0; col < cols; col++) {
           const char = getChar({ x: col, y: row }, state);
 
-          // Skip bottom 25% of rows
           if (row > 0.75 * rows) continue;
 
           const normalizedRow = row / (0.75 * rows);
-          let charOpacity = 1;
+          let charOpacity = 0;
 
-          // Sample image for opacity if available
-          if (imageDataRef.current && imageRef.current && imageLayout) {
-            const imgWidth = imageRef.current.width;
-            const imgHeight = imageRef.current.height;
-            const pixelX = cellWidth * col;
-            const pixelY = cellHeight * row;
+          const pixelX = cellWidth * col;
+          const pixelY = cellHeight * row;
 
-            let sampleX = -1;
-            let sampleY = -1;
-
-            const { drawWidth, drawHeight, leftEdgeX, rightEdgeX, centerY } =
-              imageLayout;
-
-            // Left image region
-            const leftRegionX = leftEdgeX;
-            const leftRegionXEnd = leftEdgeX + drawWidth;
-            const leftRegionY = centerY - drawHeight / 2;
-            const leftRegionYEnd = centerY + drawHeight / 2;
-
+          // Sample left image
+          if (leftImageRef.current && leftImageDataRef.current && leftLayout) {
+            const img = leftImageRef.current;
             if (
-              pixelX >= leftRegionX &&
-              pixelX <= leftRegionXEnd &&
-              pixelY >= leftRegionY &&
-              pixelY <= leftRegionYEnd
+              pixelX >= leftLayout.x &&
+              pixelX <= leftLayout.x + leftLayout.width &&
+              pixelY >= leftLayout.y &&
+              pixelY <= leftLayout.y + leftLayout.height
             ) {
-              sampleX = Math.floor(
-                ((pixelX - leftRegionX) / drawWidth) * imgWidth
+              const sampleX = Math.floor(
+                ((pixelX - leftLayout.x) / leftLayout.width) * img.width
               );
-              sampleY = Math.floor(
-                ((pixelY - leftRegionY) / drawHeight) * imgHeight
+              const sampleY = Math.floor(
+                ((pixelY - leftLayout.y) / leftLayout.height) * img.height
               );
-            }
 
-            // Right image region (flipped)
-            const rightRegionX = rightEdgeX - drawWidth;
-            const rightRegionXEnd = rightEdgeX;
-            const rightRegionY = centerY - drawHeight / 2;
-            const rightRegionYEnd = centerY + drawHeight / 2;
+              if (
+                sampleX >= 0 &&
+                sampleX < img.width &&
+                sampleY >= 0 &&
+                sampleY < img.height
+              ) {
+                const pixelIndex = (sampleY * img.width + sampleX) * 4;
+                const r = leftImageDataRef.current.data[pixelIndex];
+                const g = leftImageDataRef.current.data[pixelIndex + 1];
+                const b = leftImageDataRef.current.data[pixelIndex + 2];
+                const luminance = (r + g + b) / 3;
 
-            if (
-              pixelX >= rightRegionX &&
-              pixelX <= rightRegionXEnd &&
-              pixelY >= rightRegionY &&
-              pixelY <= rightRegionYEnd
-            ) {
-              // Flip X for right side
-              sampleX = Math.floor(
-                ((rightRegionXEnd - pixelX) / drawWidth) * imgWidth
-              );
-              sampleY = Math.floor(
-                ((pixelY - rightRegionY) / drawHeight) * imgHeight
-              );
-            }
-
-            // Sample pixel and calculate opacity based on luminance
-            if (
-              sampleX >= 0 &&
-              sampleX < imgWidth &&
-              sampleY >= 0 &&
-              sampleY < imgHeight
-            ) {
-              const pixelIndex = (sampleY * imgWidth + sampleX) * 4;
-              const r = imageDataRef.current.data[pixelIndex];
-              const g = imageDataRef.current.data[pixelIndex + 1];
-              const b = imageDataRef.current.data[pixelIndex + 2];
-              const luminance = (r + g + b) / 3;
-
-              if (luminance >= 230) {
-                charOpacity = 0;
-              } else if (luminance >= 200) {
-                charOpacity = Math.pow(1 - (luminance - 200) / 30, 2);
-              } else {
-                charOpacity = Math.pow(1 - luminance / 200, 0.3);
+                if (luminance >= 230) {
+                  charOpacity = 0;
+                } else if (luminance >= 200) {
+                  charOpacity = Math.pow(1 - (luminance - 200) / 30, 2);
+                } else {
+                  charOpacity = Math.pow(1 - luminance / 200, 0.3);
+                }
               }
             }
           }
 
-          // Determine if pixel is in image region
-          let inImageRegion = 0;
-          if (imageRef.current && imageLayout) {
-            const pixelX = cellWidth * col;
-            const pixelY = cellHeight * row;
+          // Sample right image
+          if (
+            rightImageRef.current &&
+            rightImageDataRef.current &&
+            rightLayout
+          ) {
+            const img = rightImageRef.current;
+            if (
+              pixelX >= rightLayout.x &&
+              pixelX <= rightLayout.x + rightLayout.width &&
+              pixelY >= rightLayout.y &&
+              pixelY <= rightLayout.y + rightLayout.height
+            ) {
+              const sampleX = Math.floor(
+                ((pixelX - rightLayout.x) / rightLayout.width) * img.width
+              );
+              const sampleY = Math.floor(
+                ((pixelY - rightLayout.y) / rightLayout.height) * img.height
+              );
 
-            const { drawWidth, drawHeight, leftEdgeX, rightEdgeX, centerY } =
-              imageLayout;
+              if (
+                sampleX >= 0 &&
+                sampleX < img.width &&
+                sampleY >= 0 &&
+                sampleY < img.height
+              ) {
+                const pixelIndex = (sampleY * img.width + sampleX) * 4;
+                const r = rightImageDataRef.current.data[pixelIndex];
+                const g = rightImageDataRef.current.data[pixelIndex + 1];
+                const b = rightImageDataRef.current.data[pixelIndex + 2];
+                const luminance = (r + g + b) / 3;
 
-            // Left region
-            const inLeft =
-              pixelX >= leftEdgeX &&
-              pixelX <= leftEdgeX + drawWidth &&
-              pixelY >= centerY - drawHeight / 2 &&
-              pixelY <= centerY + drawHeight / 2;
-
-            // Right region
-            const inRight =
-              pixelX >= rightEdgeX - drawWidth &&
-              pixelX <= rightEdgeX &&
-              pixelY >= centerY - drawHeight / 2 &&
-              pixelY <= centerY + drawHeight / 2;
-
-            if (inLeft || inRight) {
-              inImageRegion = charOpacity;
+                if (luminance >= 230) {
+                  charOpacity = Math.max(charOpacity, 0);
+                } else if (luminance >= 200) {
+                  charOpacity = Math.max(
+                    charOpacity,
+                    Math.pow(1 - (luminance - 200) / 30, 2)
+                  );
+                } else {
+                  charOpacity = Math.max(
+                    charOpacity,
+                    Math.pow(1 - luminance / 200, 0.3)
+                  );
+                }
+              }
             }
           }
 
@@ -340,29 +338,26 @@ export function AsciiWave({
           if (normalizedRow < 0.15) {
             topFade = normalizedRow / 0.15;
           }
-          inImageRegion *= topFade;
+          charOpacity *= topFade;
 
           // Only render if visible
-          if (inImageRegion > 0.025) {
-            // Wave-based coloring
+          if (charOpacity > 0.025) {
             const waveValue = 0.5 * sin(3 * normalizedRow * TAU) + 0.5;
             const waveColor = getWaveColor(waveValue);
 
-            // Color dodge blending
             const blended = {
               r: colorDodge(baseColor.r, waveColor.r),
               g: colorDodge(baseColor.g, waveColor.g),
               b: colorDodge(baseColor.b, waveColor.b),
             };
 
-            // Mix colors
             const finalColor = {
               r: Math.round(baseColor.r + (blended.r - baseColor.r) * 0.8),
               g: Math.round(baseColor.g + (blended.g - baseColor.g) * 0.8),
               b: Math.round(baseColor.b + (blended.b - baseColor.b) * 0.8),
             };
 
-            ctx.fillStyle = `rgba(${finalColor.r}, ${finalColor.g}, ${finalColor.b}, ${inImageRegion})`;
+            ctx.fillStyle = `rgba(${finalColor.r}, ${finalColor.g}, ${finalColor.b}, ${charOpacity})`;
             ctx.fillText(char, cellWidth * col, cellHeight * row);
           }
         }
@@ -373,16 +368,15 @@ export function AsciiWave({
     [getChar, cellWidth, cellHeight, fontSize, sin, TAU]
   );
 
-  // Load image (no rotation)
+  // Load left image
   React.useEffect(() => {
-    if (!maskImage) return;
+    if (!leftImage) return;
 
     const img = new Image();
-    img.src = maskImage;
+    img.src = leftImage;
     img.onload = () => {
-      imageRef.current = img;
+      leftImageRef.current = img;
 
-      // Extract pixel data for sampling
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = img.width;
       tempCanvas.height = img.height;
@@ -390,21 +384,47 @@ export function AsciiWave({
       if (tempCtx) {
         tempCtx.drawImage(img, 0, 0);
         try {
-          imageDataRef.current = tempCtx.getImageData(
+          leftImageDataRef.current = tempCtx.getImageData(
             0,
             0,
             img.width,
             img.height
           );
         } catch (e) {
-          console.error("Failed to extract image data:", e);
+          console.error("Failed to extract left image data:", e);
         }
       }
     };
-    img.onerror = () => {
-      console.error("Failed to load mask image:", maskImage);
+  }, [leftImage]);
+
+  // Load right image
+  React.useEffect(() => {
+    if (!rightImage) return;
+
+    const img = new Image();
+    img.src = rightImage;
+    img.onload = () => {
+      rightImageRef.current = img;
+
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      if (tempCtx) {
+        tempCtx.drawImage(img, 0, 0);
+        try {
+          rightImageDataRef.current = tempCtx.getImageData(
+            0,
+            0,
+            img.width,
+            img.height
+          );
+        } catch (e) {
+          console.error("Failed to extract right image data:", e);
+        }
+      }
     };
-  }, [maskImage]);
+  }, [rightImage]);
 
   // Start animation
   React.useEffect(() => {
