@@ -36,7 +36,7 @@ void main() {
   uv /= u_scale;
   
   float time = u_time;
-  float dist = length(uv * 2.0);
+  float dist = length(uv);
   
   // Multiple heavy blur passes for completely diffuse result
   float blurAmount = 0.05;
@@ -53,17 +53,17 @@ void main() {
   float powerCurve = (u_shape < 1.5) ? 0.6 : 0.5;
   float foggy = pow(shape, powerCurve);
   
-  // Apply shape-specific edge handling
+  // Apply shape-specific edge handling with extra padding
   float edgeFade = 1.0;
   if (u_shape < 1.5) {
-    // Sphere: soft radial fade for diffuse edges
-    edgeFade = 1.0 - smoothstep(0.5, 1.0, dist * 0.65);
+    // Sphere: soft radial fade with more breathing room
+    edgeFade = 1.0 - smoothstep(0.55, 0.88, dist);
   } else if (u_shape < 2.5) {
-    // Swirl: extend to fill same circle as plain/dither
-    edgeFade = 1.0 - smoothstep(0.95, 1.05, dist);
+    // Swirl: diffuse edges without hard cutoff
+    edgeFade = 1.0 - smoothstep(0.6, 0.92, dist);
   } else {
-    // Ripple: extend to fill same circle as plain/dither
-    edgeFade = 1.0 - smoothstep(0.95, 1.05, dist);
+    // Ripple: diffuse edges without hard cutoff
+    edgeFade = 1.0 - smoothstep(0.6, 0.92, dist);
   }
   foggy *= edgeFade;
   
