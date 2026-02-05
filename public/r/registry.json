@@ -504,16 +504,16 @@
       ]
     },
     {
-      "name": "shader-background",
+      "name": "ascii-wave",
       "type": "registry:component",
-      "title": "Shader Background",
-      "description": "An ethereal, flowing WebGL background with subtle animation. Inspired by exa.ai.",
+      "title": "ASCII Wave",
+      "description": "A flowing ASCII animation with wave-based coloring. Inspired by exa.ai.",
       "dependencies": [],
       "files": [
         {
-          "path": "registry/new-york/blocks/shader-background/shader-background.tsx",
+          "path": "registry/new-york/blocks/ascii-wave/ascii-wave.tsx",
           "type": "registry:component",
-          "target": "components/ui/shader-background.tsx"
+          "target": "components/ui/ascii-wave.tsx"
         }
       ]
     }

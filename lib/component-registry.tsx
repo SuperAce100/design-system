@@ -24,7 +24,7 @@ import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
 import CommandPromptDemo from "@/components/demos/command-prompt-demo";
 import LoaderDemo from "@/components/demos/loader-demo";
 import MorphingTextDemo from "@/components/demos/morphing-text-demo";
-import ShaderBackgroundDemo from "@/components/demos/shader-background-demo";
+import AsciiWaveDemo from "@/components/demos/ascii-wave-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -187,10 +187,10 @@ export const componentList: ComponentMeta[] = [
     description: "Text that smoothly animates character changes when the value updates.",
   },
   {
-    id: "shader-background",
-    name: "Shader Background",
+    id: "ascii-wave",
+    name: "ASCII Wave",
     section: "Effects",
-    description: "An ethereal, flowing WebGL background with subtle animation. Inspired by exa.ai.",
+    description: "A flowing ASCII animation with wave-based coloring. Inspired by exa.ai.",
   },
 ];
 
@@ -219,7 +219,7 @@ const demoMap: Record<string, React.ReactNode> = {
   "motion-blur-text": <MotionBlurTextDemo />,
   loader: <LoaderDemo />,
   "morphing-text": <MorphingTextDemo />,
-  "shader-background": <ShaderBackgroundDemo />,
+  "ascii-wave": <AsciiWaveDemo />,
 };
 
 export function getDemoById(id: string): React.ReactNode | null {
