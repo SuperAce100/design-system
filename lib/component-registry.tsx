@@ -24,6 +24,7 @@ import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
 import CommandPromptDemo from "@/components/demos/command-prompt-demo";
 import LoaderDemo from "@/components/demos/loader-demo";
 import MorphingTextDemo from "@/components/demos/morphing-text-demo";
+import ShaderBackgroundDemo from "@/components/demos/shader-background-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -176,13 +177,20 @@ export const componentList: ComponentMeta[] = [
     id: "loader",
     name: "Loader",
     section: "Primitives",
-    description: "Custom WebGL shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
+    description:
+      "Custom WebGL shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
   },
   {
     id: "morphing-text",
     name: "Morphing Text",
     section: "Effects",
     description: "Text that smoothly animates character changes when the value updates.",
+  },
+  {
+    id: "shader-background",
+    name: "Shader Background",
+    section: "Effects",
+    description: "An ethereal, flowing WebGL background with subtle animation. Inspired by exa.ai.",
   },
 ];
 
@@ -211,6 +219,7 @@ const demoMap: Record<string, React.ReactNode> = {
   "motion-blur-text": <MotionBlurTextDemo />,
   loader: <LoaderDemo />,
   "morphing-text": <MorphingTextDemo />,
+  "shader-background": <ShaderBackgroundDemo />,
 };
 
 export function getDemoById(id: string): React.ReactNode | null {

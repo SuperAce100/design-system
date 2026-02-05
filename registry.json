@@ -502,6 +502,20 @@
           "target": "components/ui/morphing-text.tsx"
         }
       ]
+    },
+    {
+      "name": "shader-background",
+      "type": "registry:component",
+      "title": "Shader Background",
+      "description": "An ethereal, flowing WebGL background with subtle animation. Inspired by exa.ai.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/shader-background/shader-background.tsx",
+          "type": "registry:component",
+          "target": "components/ui/shader-background.tsx"
+        }
+      ]
     }
   ]
 }
