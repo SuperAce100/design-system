@@ -111,8 +111,8 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b">
-        <h2 className="text-sm font-medium">Theme</h2>
+      <div className="flex items-center justify-between px-5 py-4">
+        <h2 className="text-xl font-medium tracking-tight">Edit Theme</h2>
         <button
           type="button"
           onClick={onClose}
@@ -126,7 +126,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-7">
         {/* Neutral */}
-        <Section title="Neutral">
+        <Section title="Neutral" description="The neutral scale of the theme">
           <div className="flex items-center gap-2">
             {(Object.keys(NEUTRAL_LABELS) as NeutralScale[]).map((scale) => (
               <ColorSwatch
@@ -141,7 +141,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Section>
 
         {/* Primary */}
-        <Section title="Primary">
+        <Section title="Primary" description="The primary color of the theme">
           <div className="flex flex-wrap gap-2">
             {(Object.keys(PRIMARY_LABELS) as PrimaryColor[]).map((color) => (
               <ColorSwatch
@@ -156,7 +156,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Section>
 
         {/* Radius */}
-        <Section title="Radius">
+        <Section title="Radius" description="How rounded the elements are">
           <div className="flex items-center gap-2">
             {RADIUS_PRESETS.map((r) => (
               <button
@@ -177,7 +177,10 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Section>
 
         {/* Shadow Depth */}
-        <Section title="Shadow Depth">
+        <Section
+          title="Shadow Depth"
+          description="How elevated the shadow is relative to the element"
+        >
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -194,7 +197,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Section>
 
         {/* Shadow Opacity */}
-        <Section title="Shadow Opacity">
+        <Section title="Shadow Opacity" description="How subtle the shadow is">
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -253,12 +256,21 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
 // Primitives
 // ---------------------------------------------------------------------------
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-2.5">
-      <label className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-        {title}
-      </label>
+      <div className="flex flex-col gap-0.5">
+        <label className="text-md font-medium tracking-tight text-foreground">{title}</label>
+        <label className="text-sm text-muted-foreground">{description}</label>
+      </div>
       {children}
     </div>
   );
