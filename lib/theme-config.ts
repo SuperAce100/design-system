@@ -26,20 +26,30 @@ export type PrimaryColor =
   | "pink"
   | "rose";
 
+export type BackgroundShade = 0 | 1 | 2;
+
 export type ThemeConfig = {
   neutral: NeutralScale;
   primary: PrimaryColor;
   radius: number; // rem value: 0 | 0.3 | 0.5 | 0.75 | 1.0
+  backgroundShade: BackgroundShade; // 0=white, 1=neutral-50, 2=neutral-100
   shadowDepth: number; // 0–100 slider (controls how dark the shadow is)
   shadowOpacity: number; // 0–100 slider (controls how transparent the shadow is)
 };
 
 export const RADIUS_PRESETS = [0, 0.3, 0.5, 0.75, 1.0] as const;
 
+export const BACKGROUND_PRESETS: { value: BackgroundShade; label: string }[] = [
+  { value: 0, label: "White" },
+  { value: 1, label: "50" },
+  { value: 2, label: "100" },
+];
+
 export const DEFAULT_CONFIG: ThemeConfig = {
   neutral: "neutral",
   primary: "sky",
   radius: 0.625,
+  backgroundShade: 0,
   shadowDepth: 50,
   shadowOpacity: 20,
 };
@@ -449,28 +459,46 @@ export function generateThemeVars(config: ThemeConfig): {
   // Dark mode: shadow color from neutral-950, modulate both depth and opacity
   const darkShadowAlpha = depthFactor * opacityFactor * 0.75; // 0–75 %
 
+  // Background shade mappings
+  // Light: shade 0 = white, 1 = neutral-50, 2 = neutral-100
+  // Dark:  shade 0 = 950,   1 = 900,        2 = 800
+  const shade = config.backgroundShade;
+
+  const lightBg = shade === 0 ? "oklch(1 0 0)" : shade === 1 ? fmt(n[50]) : fmt(n[100]);
+  const lightCard = shade === 0 ? "oklch(1 0 0)" : shade === 1 ? "oklch(1 0 0)" : fmt(n[50]);
+  const lightSecondary = shade === 0 ? n[100] : shade === 1 ? n[200] : n[200];
+  const lightBorder = shade === 0 ? n[200] : shade === 1 ? n[200] : n[300];
+  const lightSidebar = shade === 0 ? n[50] : shade === 1 ? n[100] : n[200];
+  const lightSidebarAccent = shade === 0 ? n[100] : shade === 1 ? n[200] : n[300];
+
+  const darkBgStops: Record<BackgroundShade, number> = { 0: 950, 1: 900, 2: 800 };
+  const darkCardStops: Record<BackgroundShade, number> = { 0: 900, 1: 800, 2: 700 };
+  const darkSecStops: Record<BackgroundShade, number> = { 0: 800, 1: 700, 2: 600 };
+  const darkBorderStops: Record<BackgroundShade, number> = { 0: 800, 1: 700, 2: 600 };
+  const darkSidebarStops: Record<BackgroundShade, number> = { 0: 900, 1: 800, 2: 700 };
+
   return {
     light: {
       "--radius": `${config.radius}rem`,
-      "--background": "oklch(1 0 0)",
+      "--background": lightBg,
       "--foreground": fmt(n[950]),
-      "--card": "oklch(1 0 0)",
+      "--card": lightCard,
       "--card-foreground": fmt(n[950]),
-      "--popover": "oklch(1 0 0)",
+      "--popover": lightCard,
       "--popover-foreground": fmt(n[950]),
       "--primary": fmt(p[lightStop]),
       "--primary-foreground": lightPrimaryFg,
-      "--secondary": fmt(n[100]),
+      "--secondary": fmt(lightSecondary),
       "--secondary-foreground": fmt(n[900]),
-      "--muted": fmt(n[100]),
+      "--muted": fmt(lightSecondary),
       "--muted-foreground": fmt(n[500]),
-      "--accent": fmt(n[100]),
+      "--accent": fmt(lightSecondary),
       "--accent-foreground": fmt(n[900]),
       "--destructive": "oklch(0.577 0.245 27.325)",
       "--success": "oklch(0.6959 0.1491 162.48)",
       "--success-foreground": "oklch(0.985 0 0)",
-      "--border": fmt(n[200]),
-      "--input": fmt(n[200]),
+      "--border": fmt(lightBorder),
+      "--input": fmt(lightBorder),
       "--ring": fmt(n[950]),
       "--shadow-color": `oklch(${lightShadowL} ${lightShadowC} ${lightShadowH} / ${Math.round(
         lightShadowAlpha * 100
@@ -480,35 +508,35 @@ export function generateThemeVars(config: ThemeConfig): {
       "--chart-3": lightCharts[2],
       "--chart-4": lightCharts[3],
       "--chart-5": lightCharts[4],
-      "--sidebar": fmt(n[50]),
+      "--sidebar": fmt(lightSidebar),
       "--sidebar-foreground": fmt(n[950]),
       "--sidebar-primary": fmt(n[900]),
       "--sidebar-primary-foreground": fmt(n[50]),
-      "--sidebar-accent": fmt(n[100]),
+      "--sidebar-accent": fmt(lightSidebarAccent),
       "--sidebar-accent-foreground": fmt(n[900]),
-      "--sidebar-border": fmt(n[200]),
+      "--sidebar-border": fmt(lightBorder),
       "--sidebar-ring": fmt(n[950]),
     },
     dark: {
-      "--background": fmt(n[950]),
+      "--background": fmt(n[darkBgStops[shade]]),
       "--foreground": fmt(n[50]),
-      "--card": fmt(n[900]),
+      "--card": fmt(n[darkCardStops[shade]]),
       "--card-foreground": fmt(n[50]),
-      "--popover": fmt(n[900]),
+      "--popover": fmt(n[darkCardStops[shade]]),
       "--popover-foreground": fmt(n[50]),
       "--primary": fmt(p[darkStop]),
       "--primary-foreground": darkPrimaryFg,
-      "--secondary": fmt(n[800]),
+      "--secondary": fmt(n[darkSecStops[shade]]),
       "--secondary-foreground": fmt(n[50]),
-      "--muted": fmt(n[800]),
+      "--muted": fmt(n[darkSecStops[shade]]),
       "--muted-foreground": fmt(n[400]),
-      "--accent": fmt(n[800]),
+      "--accent": fmt(n[darkSecStops[shade]]),
       "--accent-foreground": fmt(n[50]),
       "--destructive": "oklch(0.704 0.191 22.216)",
       "--success": "oklch(0.6959 0.1491 162.48)",
       "--success-foreground": "oklch(0.985 0 0)",
-      "--border": fmt(n[800]),
-      "--input": fmt(n[800]),
+      "--border": fmt(n[darkBorderStops[shade]]),
+      "--input": fmt(n[darkBorderStops[shade]]),
       "--ring": fmt(n[300]),
       "--shadow-color": `oklch(0 0 0 / ${Math.round(darkShadowAlpha * 100)}%)`,
       "--chart-1": darkCharts[0],
@@ -516,13 +544,13 @@ export function generateThemeVars(config: ThemeConfig): {
       "--chart-3": darkCharts[2],
       "--chart-4": darkCharts[3],
       "--chart-5": darkCharts[4],
-      "--sidebar": fmt(n[900]),
+      "--sidebar": fmt(n[darkSidebarStops[shade]]),
       "--sidebar-foreground": fmt(n[50]),
       "--sidebar-primary": fmt(p[500]),
       "--sidebar-primary-foreground": fmt(n[50]),
-      "--sidebar-accent": fmt(n[800]),
+      "--sidebar-accent": fmt(n[darkSecStops[shade]]),
       "--sidebar-accent-foreground": fmt(n[50]),
-      "--sidebar-border": fmt(n[800]),
+      "--sidebar-border": fmt(n[darkBorderStops[shade]]),
       "--sidebar-ring": fmt(n[300]),
     },
   };

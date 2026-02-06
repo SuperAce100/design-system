@@ -27,6 +27,7 @@ function isValidConfig(value: unknown): value is ThemeConfig {
     typeof obj.neutral === "string" &&
     typeof obj.primary === "string" &&
     typeof obj.radius === "number" &&
+    typeof obj.backgroundShade === "number" &&
     typeof obj.shadowDepth === "number" &&
     typeof obj.shadowOpacity === "number"
   );
@@ -45,6 +46,10 @@ function migrateConfig(raw: Record<string, unknown>): ThemeConfig | null {
     neutral: raw.neutral as ThemeConfig["neutral"],
     primary: raw.primary as ThemeConfig["primary"],
     radius: raw.radius as number,
+    backgroundShade:
+      typeof raw.backgroundShade === "number"
+        ? (raw.backgroundShade as ThemeConfig["backgroundShade"])
+        : DEFAULT_CONFIG.backgroundShade,
     shadowDepth: typeof raw.shadowDepth === "number" ? raw.shadowDepth : DEFAULT_CONFIG.shadowDepth,
     shadowOpacity:
       typeof raw.shadowOpacity === "number" ? raw.shadowOpacity : DEFAULT_CONFIG.shadowOpacity,

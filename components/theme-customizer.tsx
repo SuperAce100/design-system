@@ -7,11 +7,13 @@ import { useThemeConfig } from "@/lib/theme-context";
 import {
   type NeutralScale,
   type PrimaryColor,
+  type BackgroundShade,
   NEUTRAL_LABELS,
   PRIMARY_LABELS,
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
   RADIUS_PRESETS,
+  BACKGROUND_PRESETS,
   generateGlobalsCss,
 } from "@/lib/theme-config";
 
@@ -171,6 +173,29 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
                 )}
               >
                 {r}
+              </button>
+            ))}
+          </div>
+        </Section>
+
+        {/* Background */}
+        <Section title="Background" description="How dark the page background is">
+          <div className="flex items-center gap-2">
+            {BACKGROUND_PRESETS.map((preset) => (
+              <button
+                key={preset.value}
+                type="button"
+                onClick={() =>
+                  setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
+                }
+                className={cn(
+                  "flex items-center justify-center h-9 px-3 border-2 transition-colors rounded-lg text-xs font-mono",
+                  config.backgroundShade === preset.value
+                    ? "border-primary text-primary bg-primary/10"
+                    : "border-border text-muted-foreground hover:border-primary/50"
+                )}
+              >
+                {preset.label}
               </button>
             ))}
           </div>
