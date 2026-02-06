@@ -305,6 +305,20 @@
       ]
     },
     {
+      "name": "hold-to-delete",
+      "type": "registry:component",
+      "title": "Hold to Delete",
+      "description": "A hold-to-confirm delete button with clip-path progress.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/hold-to-delete/hold-to-delete.tsx",
+          "type": "registry:component",
+          "target": "components/ui/hold-to-delete.tsx"
+        }
+      ]
+    },
+    {
       "name": "reveal",
       "type": "registry:component",
       "title": "Reveal",
