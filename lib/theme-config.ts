@@ -35,6 +35,8 @@ export type ThemeConfig = {
   backgroundShade: BackgroundShade; // 0=white, 1=neutral-50, 2=neutral-100
   shadowDepth: number; // 0–100 slider (controls how dark the shadow is)
   shadowOpacity: number; // 0–100 slider (controls how transparent the shadow is)
+  /** Optional custom primary color as an oklch string (e.g. "oklch(0.6 0.2 250)"). Overrides `primary` when set. */
+  customPrimary?: string;
 };
 
 export const RADIUS_PRESETS = [0, 0.3, 0.5, 0.75, 1.0] as const;
@@ -406,6 +408,58 @@ function fmt(lch: LCH): string {
   return `oklch(${lch[0]} ${lch[1]} ${lch[2]})`;
 }
 
+/** Parse an oklch(L C H) string into an LCH tuple. Returns null on failure. */
+export function parseOklchString(input: string): LCH | null {
+  const m = input.trim().match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+  if (!m) return null;
+  return [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])];
+}
+
+/**
+ * Generate a full 50–950 color scale from a single OKLCH color.
+ * The input color is placed at the 500 shade. Other shades use
+ * proportional lightness targets and chroma multipliers derived
+ * from average Tailwind v4 palette distributions.
+ */
+export function generateScaleFromOklch(inputL: number, inputC: number, h: number): ColorScale {
+  const refL: Record<number, number> = {
+    50: 0.975,
+    100: 0.945,
+    200: 0.905,
+    300: 0.835,
+    400: 0.735,
+    500: 0.645,
+    600: 0.565,
+    700: 0.5,
+    800: 0.44,
+    900: 0.39,
+    950: 0.275,
+  };
+  const refCMult: Record<number, number> = {
+    50: 0.08,
+    100: 0.18,
+    200: 0.38,
+    300: 0.62,
+    400: 0.85,
+    500: 1.0,
+    600: 1.05,
+    700: 0.92,
+    800: 0.78,
+    900: 0.63,
+    950: 0.45,
+  };
+  const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+  const scale: ColorScale = {};
+  for (const shade of shades) {
+    if (shade === 500) {
+      scale[shade] = [inputL, inputC, h];
+    } else {
+      scale[shade] = [refL[shade], inputC * refCMult[shade], h];
+    }
+  }
+  return scale;
+}
+
 /** Very light primary colors need a darker stop for sufficient contrast. */
 const LIGHT_PRIMARIES: PrimaryColor[] = ["yellow", "lime", "amber"];
 
@@ -442,10 +496,26 @@ export function generateThemeVars(config: ThemeConfig): {
   dark: Record<string, string>;
 } {
   const n = neutralScales[config.neutral];
-  const p = primaryColors[config.primary];
 
-  const lightStop = getPrimaryStop(config.primary, "light");
-  const darkStop = getPrimaryStop(config.primary, "dark");
+  // Resolve the primary color scale: use custom if set, otherwise use preset
+  let p: ColorScale;
+  let isLightPrimary: boolean;
+  if (config.customPrimary) {
+    const parsed = parseOklchString(config.customPrimary);
+    if (parsed) {
+      p = generateScaleFromOklch(parsed[0], parsed[1], parsed[2]);
+      isLightPrimary = parsed[0] >= 0.75; // high lightness → needs darker stop
+    } else {
+      p = primaryColors[config.primary];
+      isLightPrimary = LIGHT_PRIMARIES.includes(config.primary);
+    }
+  } else {
+    p = primaryColors[config.primary];
+    isLightPrimary = LIGHT_PRIMARIES.includes(config.primary);
+  }
+
+  const lightStop = isLightPrimary ? 600 : 500;
+  const darkStop = 500;
 
   const primaryHue = p[500][2];
   const lightCharts = generateChartColors(primaryHue, "light");

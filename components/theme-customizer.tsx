@@ -17,6 +17,7 @@ import {
   getBackgroundDisplayColors,
   generateGlobalsCss,
 } from "@/lib/theme-config";
+import { ColorPicker } from "@/registry/new-york/blocks/color-picker/color-picker";
 
 // ---------------------------------------------------------------------------
 // Theme Customizer (collapsible drawer)
@@ -151,10 +152,23 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
                 key={color}
                 color={PRIMARY_DISPLAY_COLORS[color]}
                 label={PRIMARY_LABELS[color]}
-                active={config.primary === color}
-                onClick={() => setConfig((p) => ({ ...p, primary: color }))}
+                active={config.primary === color && !config.customPrimary}
+                onClick={() =>
+                  setConfig((p) => ({ ...p, primary: color, customPrimary: undefined }))
+                }
               />
             ))}
+          </div>
+          <div className="pt-1">
+            <label className="text-xs text-muted-foreground mb-1.5 block">Custom color</label>
+            <ColorPicker
+              value={config.customPrimary ?? PRIMARY_DISPLAY_COLORS[config.primary]}
+              onValueChange={(val) => {
+                setConfig((p) => ({ ...p, customPrimary: val }));
+              }}
+              format="oklch"
+              presets="tailwind"
+            />
           </div>
         </Section>
 

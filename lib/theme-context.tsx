@@ -42,7 +42,7 @@ function migrateConfig(raw: Record<string, unknown>): ThemeConfig | null {
   )
     return null;
 
-  return {
+  const config: ThemeConfig = {
     neutral: raw.neutral as ThemeConfig["neutral"],
     primary: raw.primary as ThemeConfig["primary"],
     radius: raw.radius as number,
@@ -54,6 +54,13 @@ function migrateConfig(raw: Record<string, unknown>): ThemeConfig | null {
     shadowOpacity:
       typeof raw.shadowOpacity === "number" ? raw.shadowOpacity : DEFAULT_CONFIG.shadowOpacity,
   };
+
+  // Preserve customPrimary if present
+  if (typeof raw.customPrimary === "string") {
+    config.customPrimary = raw.customPrimary;
+  }
+
+  return config;
 }
 
 export function ThemeConfigProvider({ children }: { children: React.ReactNode }) {
