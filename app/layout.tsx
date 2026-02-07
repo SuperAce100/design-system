@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Hedvig_Letters_Serif } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -26,6 +26,10 @@ const hedvigLettersSerif = Hedvig_Letters_Serif({
 export const metadata: Metadata = {
   title: "Asanshay's components",
   description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
+  metadataBase: new URL("https://ds.asanshay.com"),
+};
+
+export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
