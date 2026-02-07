@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeColorUpdater } from "@/components/theme-color-updater";
+import { ThemeConfigProvider } from "@/lib/theme-context";
+import { ThemeCustomizer } from "@/components/theme-customizer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,9 +48,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ThemeColorUpdater />
-          {children}
-          <AnimatedThemeToggler className="fixed top-4 right-4" />
+          <ThemeConfigProvider>
+            <ThemeColorUpdater />
+            {children}
+            <div className="fixed top-4 right-4 flex items-center gap-1 z-50">
+              <ThemeCustomizer />
+              <AnimatedThemeToggler />
+            </div>
+          </ThemeConfigProvider>
         </ThemeProvider>
         <Analytics />
       </body>

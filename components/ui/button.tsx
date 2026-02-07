@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/70 text-primary-foreground shadow-lg dark:shadow-none shadow-slate-200/50 hover:bg-white hover:shadow-lg active:bg-primary active:shadow-none hover:-translate-y-px active:translate-y-px dark:bg-primary dark:from-primary dark:to-primary/80 dark:hover:bg-primary/90",
+          "border border-primary bg-primary/30 bg-gradient-to-b from-primary to-primary/70 text-primary-foreground shadow-lg shadow-shade hover:bg-white hover:shadow-lg active:bg-primary active:shadow-none hover:-translate-y-px active:translate-y-px dark:bg-primary dark:from-primary dark:to-primary/80 dark:hover:bg-primary/90",
         fancy:
           "border border-primary bg-primary/30 bg-radial-[at_50%_25%] from-primary/40 to-primary text-primary-foreground shadow-md inset-shadow-sm inset-shadow-white/50 hover:bg-white hover:shadow-lg hover:inset-shadow-white active:bg-primary/30 active:shadow-none active:inset-shadow-primary/80  hover:-translate-y-px active:translate-y-px",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "border shadow-lg dark:shadow-none shadow-slate-200/50 bg-transparent text-primary hover:border-transparent hover:bg-primary/10 active:bg-primary/30",
+          "border shadow-lg shadow-shade bg-transparent text-primary hover:border-transparent hover:bg-primary/10 active:bg-primary/30",
         secondary:
           "border border-transparent bg-primary/10 text-primary hover:border-primary/50 hover:bg-transparent  active:border-transparent active:border-primary active:ring-1",
         ghost:

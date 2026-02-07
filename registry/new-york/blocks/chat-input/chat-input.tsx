@@ -82,7 +82,7 @@ export default function ChatInput({
                 {models.find((m) => m.id === model)?.name || "Select a model"}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent className="rounded-xl shadow-gray-200">
+            <SelectContent className="rounded-xl shadow-shade">
               {models.map((model) => (
                 <SelectItem
                   key={model.id}

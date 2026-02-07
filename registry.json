@@ -516,6 +516,26 @@
           "target": "components/ui/ascii-wave.tsx"
         }
       ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:component",
+      "title": "Color Picker",
+      "description": "A color picker with OKLCH, HSL, RGB, and HEX support, plus Tailwind CSS presets.",
+      "dependencies": [],
+      "registryDependencies": ["input"],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/color-picker/color-picker.tsx",
+          "type": "registry:component",
+          "target": "components/ui/color-picker.tsx"
+        },
+        {
+          "path": "registry/new-york/blocks/input/input.tsx",
+          "type": "registry:component",
+          "target": "components/ui/input.tsx"
+        }
+      ]
     }
   ]
 }
