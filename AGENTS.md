@@ -87,7 +87,7 @@ Use kebab-case for `name`/`id` (e.g., `fancy-toggle`). Provide a clear one-line 
 
 3. Rebuild the registry files so consumers can install your component:
 
-   - Run: `pnpm dlx shadcn@latest build`
+   - Run: `bunx shadcn@latest build`
    - Confirm the new artifact exists at: `public/r/fancy-toggle.json`
    - Locally you can fetch `http://localhost:3000/r/fancy-toggle.json` [[memory:4685016]]
    - Do not create `public/r/[id].json` (e.g., `button.json`) by hand. It is auto-generated.

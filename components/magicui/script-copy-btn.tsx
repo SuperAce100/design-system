@@ -11,14 +11,14 @@ interface ScriptCopyBtnProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function ScriptCopyBtn({ commandMap, className }: ScriptCopyBtnProps) {
-  const preferredOrder = ["pnpm", "npm", "yarn", "bun"];
+  const preferredOrder = ["bun", "npm", "yarn", "pnpm"];
   const provided = Object.keys(commandMap);
   const orderedPms = [
     ...preferredOrder.filter((pm) => provided.includes(pm)),
     ...provided.filter((pm) => !preferredOrder.includes(pm)),
   ];
   const [copied, setCopied] = useState(false);
-  const [activePm, setActivePm] = useState<string>(orderedPms[0] ?? "npm");
+  const [activePm, setActivePm] = useState<string>(orderedPms[0] ?? "bun");
   const activeCommand = useMemo(() => commandMap[activePm] ?? "", [commandMap, activePm]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -35,7 +35,7 @@ export function ScriptCopyBtn({ commandMap, className }: ScriptCopyBtnProps) {
 
   const renderHighlightedCmd = (cmd: string) => {
     const tokens = cmd.trim().split(/\s+/g);
-    const accentSet = new Set(["pnpm", "npm", "yarn", "bun", "npx", "bunx", "dlx"]);
+    const accentSet = new Set(["npm", "yarn", "bun", "pnpm", "npx", "bunx", "dlx"]);
     return (
       <>
         {tokens.map((tok, i) => {
