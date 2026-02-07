@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
+  type ThemeConfig,
   type NeutralScale,
   type PrimaryColor,
   type BackgroundShade,
@@ -262,7 +263,7 @@ function PrimarySection({
   setConfig,
 }: {
   config: { primary: PrimaryColor; customPrimary?: string };
-  setConfig: (fn: (prev: any) => any) => void;
+  setConfig: (fn: ThemeConfig | ((prev: ThemeConfig) => ThemeConfig)) => void;
 }) {
   const [pickerOpen, setPickerOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -311,7 +312,7 @@ function PrimarySection({
             label={PRIMARY_LABELS[color]}
             active={config.primary === color && !config.customPrimary}
             onClick={() => {
-              setConfig((p: any) => ({ ...p, primary: color, customPrimary: undefined }));
+              setConfig((p: ThemeConfig) => ({ ...p, primary: color, customPrimary: undefined }));
               setPickerOpen(false);
             }}
           />
@@ -365,7 +366,7 @@ function PrimarySection({
           <ColorPicker
             value={config.customPrimary ?? PRIMARY_DISPLAY_COLORS[config.primary]}
             onValueChange={(val) => {
-              setConfig((p: any) => ({ ...p, customPrimary: val }));
+              setConfig((p: ThemeConfig) => ({ ...p, customPrimary: val }));
             }}
             format="oklch"
             presets="tailwind"

@@ -463,11 +463,6 @@ export function generateScaleFromOklch(inputL: number, inputC: number, h: number
 /** Very light primary colors need a darker stop for sufficient contrast. */
 const LIGHT_PRIMARIES: PrimaryColor[] = ["yellow", "lime", "amber"];
 
-function getPrimaryStop(color: PrimaryColor, mode: "light" | "dark"): number {
-  if (mode === "light") return LIGHT_PRIMARIES.includes(color) ? 600 : 500;
-  return 500;
-}
-
 // --- WCAG Contrast Ratio Helpers --------------------------------------------
 
 /** Convert OKLCH to linear sRGB. */
