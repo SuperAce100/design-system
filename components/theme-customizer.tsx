@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
   type NeutralScale,
@@ -12,7 +13,6 @@ import {
   PRIMARY_LABELS,
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
-  RADIUS_PRESETS,
   BACKGROUND_PRESETS,
   generateGlobalsCss,
 } from "@/lib/theme-config";
@@ -159,22 +159,19 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
 
         {/* Radius */}
         <Section title="Radius" description="How rounded the elements are">
-          <div className="flex items-center gap-2">
-            {RADIUS_PRESETS.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setConfig((p) => ({ ...p, radius: r }))}
-                className={cn(
-                  "flex items-center justify-center size-9 border-2 transition-colors rounded-lg text-xs font-mono",
-                  config.radius === r
-                    ? "border-primary text-primary bg-primary/10"
-                    : "border-border text-muted-foreground hover:border-primary/50"
-                )}
-              >
-                {r}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.025}
+              value={config.radius}
+              onChange={(e) => setConfig((p) => ({ ...p, radius: Number(e.target.value) }))}
+              className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
+            />
+            <span className="text-xs text-muted-foreground tabular-nums w-10 text-right font-mono">
+              {config.radius.toFixed(2)}
+            </span>
           </div>
         </Section>
 
@@ -240,17 +237,8 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center gap-2 px-5 py-4 border-t">
-        <button
-          type="button"
-          onClick={handleCopyCss}
-          className={cn(
-            "flex-1 inline-flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-            copied
-              ? "border-success/50 bg-success/10 text-success"
-              : "border-border hover:bg-muted text-foreground"
-          )}
-        >
+      <div className="flex items-center gap-2 px-5 py-4">
+        <Button variant="ghost" size="sm" onClick={handleCopyCss} className="flex-1">
           {copied ? (
             <>
               <Check className="size-3.5" />
@@ -262,16 +250,17 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
               Copy CSS
             </>
           )}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={resetConfig}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           aria-label="Reset theme to defaults"
+          className="flex-1"
         >
           <RotateCcw className="size-3.5" />
           Reset
-        </button>
+        </Button>
       </div>
     </>
   );
