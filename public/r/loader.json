@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "loader",
+  "type": "registry:component",
   "title": "Loader",
   "description": "Custom WebGL shader loaders with 3 shapes (sphere, swirl, ripple) × 3 styles (plain, blur, dither).",
   "dependencies": [],
@@ -53,6 +54,5 @@
       "type": "registry:component",
       "target": "components/ui/shaders/dither.ts"
     }
-  ],
-  "type": "registry:component"
+  ]
 }

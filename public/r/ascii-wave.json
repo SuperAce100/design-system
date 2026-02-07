@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "ascii-wave",
+  "type": "registry:component",
   "title": "ASCII Wave",
   "description": "A flowing ASCII animation with wave-based coloring. Inspired by exa.ai.",
   "dependencies": [],
@@ -11,6 +12,5 @@
       "type": "registry:component",
       "target": "components/ui/ascii-wave.tsx"
     }
-  ],
-  "type": "registry:component"
+  ]
 }

@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "chat-message",
+  "type": "registry:component",
   "title": "Chat Message",
   "description": "A chat message component compatible with the Vercel AI SDK including markdown support, copying, etc.",
   "dependencies": [
@@ -45,6 +46,5 @@
       "type": "registry:component",
       "target": "components/ui/code-block.tsx"
     }
-  ],
-  "type": "registry:component"
+  ]
 }

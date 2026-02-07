@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "chat",
+  "type": "registry:component",
   "title": "Chat",
   "description": "A complete chat component that composes chat-message and chat-input and wires to /api/chat.",
   "dependencies": [
@@ -81,6 +82,5 @@
       "type": "registry:component",
       "target": "components/ui/textarea.tsx"
     }
-  ],
-  "type": "registry:component"
+  ]
 }

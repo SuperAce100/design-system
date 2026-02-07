@@ -649,7 +649,7 @@ function useDrag(onDrag: (x: number, y: number, rect: DOMRect) => void) {
 // =============================================================================
 
 /** Fixed content height for consistent layout across tabs */
-const CONTENT_H = "h-[232px]";
+const CONTENT_H = "h-48";
 
 function ColorArea({ color, onChange }: { color: OklchColor; onChange: (c: OklchColor) => void }) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -676,7 +676,7 @@ function ColorArea({ color, onChange }: { color: OklchColor; onChange: (c: Oklch
   return (
     <div
       ref={drag.ref}
-      className="relative w-full cursor-crosshair overflow-hidden rounded-lg border flex-1"
+      className="relative w-full cursor-crosshair  rounded-sm flex-1"
       onPointerDown={drag.handlePointerDown}
       onPointerMove={drag.handlePointerMove}
       onPointerUp={drag.handlePointerUp}
@@ -693,11 +693,11 @@ function ColorArea({ color, onChange }: { color: OklchColor; onChange: (c: Oklch
     >
       <canvas
         ref={canvasRef}
-        className="block h-full w-full"
+        className="block h-full w-full rounded-sm"
         style={{ imageRendering: "pixelated" }}
       />
       <div
-        className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.3)]"
+        className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-xs"
         style={{
           left: `${thumbX}%`,
           top: `${thumbY}%`,
@@ -728,7 +728,7 @@ function HueSlider({ hue, onChange }: { hue: number; onChange: (h: number) => vo
   return (
     <div
       ref={drag.ref}
-      className="relative h-3 w-full cursor-pointer overflow-hidden rounded-full border"
+      className="relative h-2 w-full cursor-pointer rounded-full"
       onPointerDown={drag.handlePointerDown}
       onPointerMove={drag.handlePointerMove}
       onPointerUp={drag.handlePointerUp}
@@ -744,9 +744,9 @@ function HueSlider({ hue, onChange }: { hue: number; onChange: (h: number) => vo
         else if (e.key === "ArrowLeft") onChange((hue - s + 360) % 360);
       }}
     >
-      <canvas ref={canvasRef} className="block h-full w-full" />
+      <canvas ref={canvasRef} className="block h-full w-full rounded-full" />
       <div
-        className="pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.3)]"
+        className="pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-sm"
         style={{ left: `${(hue / 360) * 100}%`, backgroundColor: `rgb(${r}, ${g}, ${b})` }}
       />
     </div>
@@ -773,7 +773,7 @@ function AlphaSlider({ color, onChange }: { color: OklchColor; onChange: (a: num
   return (
     <div
       ref={drag.ref}
-      className="relative h-3 w-full cursor-pointer overflow-hidden rounded-full border"
+      className="relative h-2 w-full cursor-pointer rounded-full"
       onPointerDown={drag.handlePointerDown}
       onPointerMove={drag.handlePointerMove}
       onPointerUp={drag.handlePointerUp}
@@ -789,9 +789,9 @@ function AlphaSlider({ color, onChange }: { color: OklchColor; onChange: (a: num
         else if (e.key === "ArrowLeft") onChange(clamp(color.a - s, 0, 1));
       }}
     >
-      <canvas ref={canvasRef} className="block h-full w-full" />
+      <canvas ref={canvasRef} className="block h-full w-full rounded-full" />
       <div
-        className="pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.3)]"
+        className="pointer-events-none absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-sm"
         style={{ left: `${color.a * 100}%`, backgroundColor: `rgba(${r}, ${g}, ${b}, ${color.a})` }}
       />
     </div>
@@ -872,13 +872,10 @@ function ValuesPanel({
   const bgColor = color.a < 1 ? `rgba(${r}, ${g}, ${b}, ${color.a})` : `rgb(${r}, ${g}, ${b})`;
 
   return (
-    <div className={cn(CONTENT_H, "flex flex-col gap-3 justify-center")}>
+    <div className={cn(CONTENT_H, "flex flex-col gap-3 justify-start")}>
       {/* Preview swatch */}
-      <div className="flex items-center gap-2.5">
-        <div
-          className="size-10 shrink-0 rounded-xl border shadow-sm"
-          style={{ backgroundColor: bgColor }}
-        />
+      <div className="flex items-center gap-3">
+        <div className="size-10 shrink-0 rounded-sm" style={{ backgroundColor: bgColor }} />
         <div className="flex flex-col gap-0.5 min-w-0 flex-1">
           <span className="text-[10px] font-medium text-muted-foreground uppercase">
             Current Color
@@ -897,7 +894,7 @@ function ValuesPanel({
             type="button"
             onClick={() => setMode(m)}
             className={cn(
-              "flex-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium uppercase transition-colors",
+              "flex-1 rounded-sm px-1.5 py-0.5 text-[10px] font-medium uppercase transition-colors",
               mode === m
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -1095,16 +1092,10 @@ function TailwindPanel({
   onSelect: (c: OklchColor) => void;
 }) {
   return (
-    <div className={cn(CONTENT_H, "overflow-x-auto overflow-y-hidden")}>
-      <div className="flex gap-px h-full py-0.5">
+    <div className={cn(CONTENT_H, "overflow-x-auto overflow-y-visible rounded-sm")}>
+      <div className="flex gap-px h-full">
         {TAILWIND_PALETTE.map((family) => (
           <div key={family.name} className="flex flex-col items-center gap-px shrink-0">
-            <span
-              className="text-[8px] font-medium text-muted-foreground leading-tight pb-0.5 w-[30px] text-center truncate"
-              title={family.name}
-            >
-              {family.name.slice(0, 3)}
-            </span>
             {SHADE_KEYS.map((shade) => {
               const [l, c, h] = family.shades[shade];
               const [r, g, b] = gamutMapOklch(l, c, h);
@@ -1119,10 +1110,10 @@ function TailwindPanel({
                   title={`${family.name} ${shade}`}
                   aria-label={`${family.name} ${shade}`}
                   className={cn(
-                    "w-[28px] flex-1 rounded-[3px] transition-all hover:scale-105 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                    "w-8 flex-1 rounded-xs transition-all hover:transition-none duration-300 hover:scale-105 focus-visible:border-2 focus-visible:border-foreground",
                     isActive
-                      ? "ring-1.5 ring-foreground ring-offset-1 ring-offset-background scale-105"
-                      : "hover:ring-1 hover:ring-foreground/20"
+                      ? "inset-ring-2 inset-ring-foreground/30"
+                      : "hover:border-foreground/20"
                   )}
                   style={{ backgroundColor: `rgb(${r}, ${g}, ${b})` }}
                   onClick={() => onSelect({ l, c, h, a: 1 })}
@@ -1156,7 +1147,7 @@ function CustomPresetsPanel({
             type="button"
             title={preset.label}
             aria-label={preset.label}
-            className="size-7 rounded-md border border-transparent transition-all hover:scale-110 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="size-7 rounded-sm border border-transparent transition-all hover:scale-110 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             style={{ backgroundColor: `rgb(${r}, ${g}, ${b})` }}
             onClick={() => onSelect(parsed)}
           />
@@ -1227,7 +1218,7 @@ function ColorPicker({
             type="button"
             onClick={() => setTopTab(tab.id)}
             className={cn(
-              "flex-1 py-2 text-[11px] font-medium transition-colors relative",
+              "flex-1 py-1 text-[11px] font-medium transition-colors relative",
               topTab === tab.id ? "text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -1246,15 +1237,15 @@ function ColorPicker({
             <ColorArea color={color} onChange={updateColor} />
             <div className="flex items-center gap-1.5">
               <div
-                className="size-7 shrink-0 rounded-lg border"
+                className="size-7 shrink-0 rounded-sm"
                 style={{
-                  backgroundColor: (() => {
+                  backgroundColor: ((): string => {
                     const [r, g, b] = gamutMapOklch(color.l, color.c, color.h);
                     return color.a < 1 ? `rgba(${r},${g},${b},${color.a})` : `rgb(${r},${g},${b})`;
                   })(),
                 }}
               />
-              <div className="flex flex-1 flex-col gap-1.5">
+              <div className="flex flex-1 flex-col gap-1.5 pr-2">
                 <HueSlider hue={color.h} onChange={(h) => updateColor({ ...color, h })} />
                 {showAlpha && (
                   <AlphaSlider color={color} onChange={(a) => updateColor({ ...color, a })} />

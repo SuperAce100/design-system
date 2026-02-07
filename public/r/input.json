@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "input",
+  "type": "registry:component",
   "title": "Input",
   "description": "A simple input component with a tactile feel.",
   "dependencies": [],
@@ -11,6 +12,5 @@
       "type": "registry:component",
       "target": "components/ui/input.tsx"
     }
-  ],
-  "type": "registry:component"
+  ]
 }
