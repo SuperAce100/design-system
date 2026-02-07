@@ -2,7 +2,7 @@ import * as React from "react";
 
 import BadgeDemo from "@/components/demos/badge-demo";
 import ButtonDemo from "@/components/demos/button-demo";
-import HoldToDeleteDemo from "@/components/demos/hold-to-delete-demo";
+import LongPressButtonDemo from "@/components/demos/long-press-button-demo";
 import RevealDemo from "@/components/demos/reveal-demo";
 import CardDemo from "@/components/demos/card-demo";
 import DescriptionListDemo from "@/components/demos/description-list-demo";
@@ -57,10 +57,10 @@ export const componentList: ComponentMeta[] = [
     description: "A button component that *feels* good to use.",
   },
   {
-    id: "hold-to-delete",
-    name: "Hold to Delete",
+    id: "long-press-button",
+    name: "Long Press Button",
     section: "Primitives",
-    description: "A hold-to-confirm delete button with clip-path progress.",
+    description: "A long-press action button with animated hold progress.",
   },
   {
     id: "code-block",
@@ -212,7 +212,7 @@ const demoMap: Record<string, React.ReactNode> = {
   window: <WindowDemo />,
   badge: <BadgeDemo />,
   button: <ButtonDemo />,
-  "hold-to-delete": <HoldToDeleteDemo />,
+  "long-press-button": <LongPressButtonDemo />,
   "code-block": <CodeBlockDemo />,
   markdown: <MarkdownDemo />,
   select: <SelectDemo />,

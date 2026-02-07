@@ -6,10 +6,11 @@ import { cn } from "@/lib/utils";
 
 const DEFAULT_HOLD_DURATION = 1600;
 
-export type HoldToDeleteProps = React.ComponentPropsWithoutRef<"button"> & {
+export type LongPressButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   holdDuration?: number;
   onHoldComplete?: () => void;
   onHoldCancel?: () => void;
+  progressClassName?: string;
 };
 
 const clamp = (value: number, min: number, max: number) =>
@@ -20,13 +21,14 @@ const getClipPath = (progress: number) => {
   return `inset(0 ${remaining}% 0 0)`;
 };
 
-const HoldToDelete = React.forwardRef<HTMLButtonElement, HoldToDeleteProps>(
+const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps>(
   (
     {
       holdDuration = DEFAULT_HOLD_DURATION,
       onHoldComplete,
       onHoldCancel,
       className,
+      progressClassName,
       disabled,
       type,
       children,
@@ -134,7 +136,7 @@ const HoldToDelete = React.forwardRef<HTMLButtonElement, HoldToDeleteProps>(
       <button
         ref={ref}
         type={type ?? "button"}
-        data-slot="hold-to-delete"
+        data-slot="long-press-button"
         data-state={state}
         disabled={disabled}
         className={cn(
@@ -200,17 +202,17 @@ const HoldToDelete = React.forwardRef<HTMLButtonElement, HoldToDeleteProps>(
       >
         <span
           aria-hidden="true"
-          className="absolute inset-0 bg-destructive/60"
+          className={cn("absolute inset-0 bg-destructive/60", progressClassName)}
           style={{ clipPath: getClipPath(progress) }}
         />
         <span className="relative z-10 flex items-center gap-2">
-          {children ?? "Hold to delete"}
+          {children ?? "Long press button"}
         </span>
       </button>
     );
   }
 );
 
-HoldToDelete.displayName = "HoldToDelete";
+LongPressButton.displayName = "LongPressButton";
 
-export { HoldToDelete };
+export { LongPressButton };

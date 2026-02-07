@@ -305,16 +305,16 @@
       ]
     },
     {
-      "name": "hold-to-delete",
+      "name": "long-press-button",
       "type": "registry:component",
-      "title": "Hold to Delete",
-      "description": "A hold-to-confirm delete button with clip-path progress.",
+      "title": "Long Press Button",
+      "description": "A long-press action button with animated hold progress.",
       "dependencies": [],
       "files": [
         {
-          "path": "registry/new-york/blocks/hold-to-delete/hold-to-delete.tsx",
+          "path": "registry/new-york/blocks/long-press-button/long-press-button.tsx",
           "type": "registry:component",
-          "target": "components/ui/hold-to-delete.tsx"
+          "target": "components/ui/long-press-button.tsx"
         }
       ]
     },
