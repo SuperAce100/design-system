@@ -45,6 +45,16 @@ export const BACKGROUND_PRESETS: { value: BackgroundShade; label: string }[] = [
   { value: 2, label: "100" },
 ];
 
+/** Returns display colors for the three background shade options based on the current neutral. */
+export function getBackgroundDisplayColors(neutral: NeutralScale): Record<BackgroundShade, string> {
+  const n = neutralScales[neutral];
+  return {
+    0: "oklch(1 0 0)", // white
+    1: fmt(n[50]),
+    2: fmt(n[100]),
+  };
+}
+
 export const DEFAULT_CONFIG: ThemeConfig = {
   neutral: "neutral",
   primary: "sky",

@@ -14,6 +14,7 @@ import {
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
   BACKGROUND_PRESETS,
+  getBackgroundDisplayColors,
   generateGlobalsCss,
 } from "@/lib/theme-config";
 
@@ -178,23 +179,20 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         {/* Background */}
         <Section title="Background" description="How dark the page background is">
           <div className="flex items-center gap-2">
-            {BACKGROUND_PRESETS.map((preset) => (
-              <button
-                key={preset.value}
-                type="button"
-                onClick={() =>
-                  setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
-                }
-                className={cn(
-                  "flex items-center justify-center h-9 px-3 border-2 transition-colors rounded-lg text-xs font-mono",
-                  config.backgroundShade === preset.value
-                    ? "border-primary text-primary bg-primary/10"
-                    : "border-border text-muted-foreground hover:border-primary/50"
-                )}
-              >
-                {preset.label}
-              </button>
-            ))}
+            {BACKGROUND_PRESETS.map((preset) => {
+              const bgColors = getBackgroundDisplayColors(config.neutral);
+              return (
+                <ColorSwatch
+                  key={preset.value}
+                  color={bgColors[preset.value]}
+                  label={preset.label}
+                  active={config.backgroundShade === preset.value}
+                  onClick={() =>
+                    setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
+                  }
+                />
+              );
+            })}
           </div>
         </Section>
 
