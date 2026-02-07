@@ -468,9 +468,58 @@ function getPrimaryStop(color: PrimaryColor, mode: "light" | "dark"): number {
   return 500;
 }
 
+// --- WCAG Contrast Ratio Helpers --------------------------------------------
+
+/** Convert OKLCH to linear sRGB. */
+function oklchToLinearSrgb(L: number, C: number, H: number): [number, number, number] {
+  const hRad = (H * Math.PI) / 180;
+  const a = C * Math.cos(hRad);
+  const b = C * Math.sin(hRad);
+
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+  const s_ = L - 0.0894841775 * a - 1.291485548 * b;
+  const l = l_ * l_ * l_;
+  const m = m_ * m_ * m_;
+  const s = s_ * s_ * s_;
+
+  return [
+    Math.max(0, +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+    Math.max(0, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+    Math.max(0, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s),
+  ];
+}
+
+/** Compute WCAG 2.x relative luminance from linear sRGB. */
+function relativeLuminance(lr: number, lg: number, lb: number): number {
+  return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+}
+
+/** WCAG contrast ratio between two relative luminances (returns ≥ 1). */
+function contrastRatio(lum1: number, lum2: number): number {
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Choose the best foreground color (white or dark neutral) for a primary
+ * background using WCAG contrast ratios. Targets ≥ 4.5:1 when possible.
+ */
 function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
-  // If the primary is bright (L >= 0.7), use a dark foreground for contrast.
-  return lch[0] >= 0.7 ? fmt(neutralDark) : "oklch(0.985 0 0)";
+  const [lr, lg, lb] = oklchToLinearSrgb(lch[0], lch[1], lch[2]);
+  const bgLum = relativeLuminance(lr, lg, lb);
+
+  // White foreground
+  const whiteLum = 1.0;
+  const whiteContrast = contrastRatio(bgLum, whiteLum);
+
+  // Dark neutral foreground
+  const [dr, dg, db] = oklchToLinearSrgb(neutralDark[0], neutralDark[1], neutralDark[2]);
+  const darkLum = relativeLuminance(dr, dg, db);
+  const darkContrast = contrastRatio(bgLum, darkLum);
+
+  return darkContrast > whiteContrast ? fmt(neutralDark) : "oklch(0.985 0 0)";
 }
 
 function generateChartColors(hue: number, mode: "light" | "dark"): string[] {

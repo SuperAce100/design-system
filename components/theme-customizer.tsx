@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Paintbrush, X, Check, Copy, RotateCcw } from "lucide-react";
+import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useThemeConfig } from "@/lib/theme-context";
@@ -145,32 +145,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Section>
 
         {/* Primary */}
-        <Section title="Primary" description="The primary color of the theme">
-          <div className="flex flex-wrap gap-2">
-            {(Object.keys(PRIMARY_LABELS) as PrimaryColor[]).map((color) => (
-              <ColorSwatch
-                key={color}
-                color={PRIMARY_DISPLAY_COLORS[color]}
-                label={PRIMARY_LABELS[color]}
-                active={config.primary === color && !config.customPrimary}
-                onClick={() =>
-                  setConfig((p) => ({ ...p, primary: color, customPrimary: undefined }))
-                }
-              />
-            ))}
-          </div>
-          <div className="pt-1">
-            <label className="text-xs text-muted-foreground mb-1.5 block">Custom color</label>
-            <ColorPicker
-              value={config.customPrimary ?? PRIMARY_DISPLAY_COLORS[config.primary]}
-              onValueChange={(val) => {
-                setConfig((p) => ({ ...p, customPrimary: val }));
-              }}
-              format="oklch"
-              presets="tailwind"
-            />
-          </div>
-        </Section>
+        <PrimarySection config={config} setConfig={setConfig} />
 
         {/* Radius */}
         <Section title="Radius" description="How rounded the elements are">
@@ -275,6 +250,129 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
         </Button>
       </div>
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Primary Section (with popover custom picker)
+// ---------------------------------------------------------------------------
+
+function PrimarySection({
+  config,
+  setConfig,
+}: {
+  config: { primary: PrimaryColor; customPrimary?: string };
+  setConfig: (fn: (prev: any) => any) => void;
+}) {
+  const [pickerOpen, setPickerOpen] = React.useState(false);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
+
+  // Close popover on outside click
+  React.useEffect(() => {
+    if (!pickerOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(target) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(target)
+      ) {
+        setPickerOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handler);
+    return () => window.removeEventListener("mousedown", handler);
+  }, [pickerOpen]);
+
+  // Close on ESC (capture so it doesn't close the drawer too)
+  React.useEffect(() => {
+    if (!pickerOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setPickerOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handler, true);
+    return () => window.removeEventListener("keydown", handler, true);
+  }, [pickerOpen]);
+
+  const isCustomActive = !!config.customPrimary;
+
+  return (
+    <Section title="Primary" description="The primary color of the theme">
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(PRIMARY_LABELS) as PrimaryColor[]).map((color) => (
+          <ColorSwatch
+            key={color}
+            color={PRIMARY_DISPLAY_COLORS[color]}
+            label={PRIMARY_LABELS[color]}
+            active={config.primary === color && !config.customPrimary}
+            onClick={() => {
+              setConfig((p: any) => ({ ...p, primary: color, customPrimary: undefined }));
+              setPickerOpen(false);
+            }}
+          />
+        ))}
+
+        {/* Custom color swatch – matches the other swatches in size/shape */}
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={() => setPickerOpen((v) => !v)}
+          className={cn(
+            "group relative size-8 rounded-full border-2 transition-all duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            isCustomActive
+              ? "border-foreground scale-110"
+              : "border-transparent hover:border-foreground/30"
+          )}
+          title="Custom color"
+          aria-label="Custom color"
+          aria-pressed={isCustomActive}
+        >
+          {isCustomActive ? (
+            <>
+              <span
+                className="absolute inset-[2px] rounded-full"
+                style={{ backgroundColor: config.customPrimary }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Check className="size-3.5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+              </span>
+            </>
+          ) : (
+            <>
+              <span
+                className="absolute inset-[2px] rounded-full"
+                style={{
+                  background:
+                    "conic-gradient(from 0deg, oklch(0.7 0.25 0), oklch(0.7 0.25 60), oklch(0.7 0.25 120), oklch(0.7 0.25 180), oklch(0.7 0.25 240), oklch(0.7 0.25 300), oklch(0.7 0.25 360))",
+                }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Plus className="size-3.5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+              </span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Color picker popover – renders below the swatch grid */}
+      {pickerOpen && (
+        <div ref={popoverRef} className="rounded-lg p-3 animate-in fade-in-0 zoom-in-95">
+          <ColorPicker
+            value={config.customPrimary ?? PRIMARY_DISPLAY_COLORS[config.primary]}
+            onValueChange={(val) => {
+              setConfig((p: any) => ({ ...p, customPrimary: val }));
+            }}
+            format="oklch"
+            presets="tailwind"
+          />
+        </div>
+      )}
+    </Section>
   );
 }
 
