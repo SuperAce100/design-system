@@ -25,6 +25,7 @@ import CommandPromptDemo from "@/components/demos/command-prompt-demo";
 import LoaderDemo from "@/components/demos/loader-demo";
 import MorphingTextDemo from "@/components/demos/morphing-text-demo";
 import AsciiWaveDemo from "@/components/demos/ascii-wave-demo";
+import ColorPickerDemo from "@/components/demos/color-picker-demo";
 
 export type ComponentMeta = {
   id: string;
@@ -192,6 +193,12 @@ export const componentList: ComponentMeta[] = [
     section: "Effects",
     description: "A flowing ASCII animation with wave-based coloring. Inspired by exa.ai.",
   },
+  {
+    id: "color-picker",
+    name: "Color Picker",
+    section: "Primitives",
+    description: "A color picker with OKLCH, HSL, RGB, and HEX support, plus Tailwind CSS presets.",
+  },
 ];
 
 const demoMap: Record<string, React.ReactNode> = {
@@ -220,6 +227,7 @@ const demoMap: Record<string, React.ReactNode> = {
   loader: <LoaderDemo />,
   "morphing-text": <MorphingTextDemo />,
   "ascii-wave": <AsciiWaveDemo />,
+  "color-picker": <ColorPickerDemo />,
 };
 
 export function getDemoById(id: string): React.ReactNode | null {
