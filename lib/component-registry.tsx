@@ -15,6 +15,7 @@ import InputDemo from "@/components/demos/input-demo";
 import TextareaDemo from "@/components/demos/textarea-demo";
 import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
+import SliderDemo from "@/components/demos/slider-demo";
 import ChatMessageDemo from "@/components/demos/chat-message-demo";
 import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
 import PointerDemo from "@/components/demos/pointer-demo";
@@ -79,6 +80,12 @@ export const componentList: ComponentMeta[] = [
     name: "Select",
     section: "Primitives",
     description: "A lightly skinned select component.",
+  },
+  {
+    id: "slider",
+    name: "Slider",
+    section: "Primitives",
+    description: "A bar-wave slider with keyboard support and inline value editing.",
   },
   {
     id: "input",
@@ -216,6 +223,7 @@ const demoMap: Record<string, React.ReactNode> = {
   "code-block": <CodeBlockDemo />,
   markdown: <MarkdownDemo />,
   select: <SelectDemo />,
+  slider: <SliderDemo />,
   input: <InputDemo />,
   "command-prompt": <CommandPromptDemo />,
   "invisible-input": <InvisibleInputDemo />,

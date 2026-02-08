@@ -143,6 +143,20 @@
       ]
     },
     {
+      "name": "slider",
+      "type": "registry:component",
+      "title": "Slider",
+      "description": "A bar-wave slider with keyboard support and inline value editing.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/slider/slider.tsx",
+          "type": "registry:component",
+          "target": "components/ui/slider.tsx"
+        }
+      ]
+    },
+    {
       "name": "input",
       "type": "registry:component",
       "title": "Input",
