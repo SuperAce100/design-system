@@ -4,6 +4,7 @@ This guide shows how to:
 
 - Add a new component to the registry (`registry.json`) and expose it as an installable item
 - Create a high-quality demo that renders on the component page
+- Build themeable components that adapt to consumer design tokens
 - Follow effective design principles for components in this system
 
 ### How the registry works (quick mental model)
@@ -166,6 +167,7 @@ Demo quality checklist:
 - Respect a small footprint; avoid wrapping in unrelated containers
 - Prefer realistic copy over lorem ipsum; keep text short
 - Keyboard operable; confirm focus styles and ARIA labels are meaningful
+- Validate visual parity in at least two themes (for example light + dark or brand A + brand B)
 
 ### 3) Effective component design guidelines
 
@@ -189,6 +191,14 @@ Aim for components that are composable, accessible, predictable, and easy to ins
   - Keep sensible defaults; don’t require consumers to pass many props for a good look
   - Expose only essential variants; document defaults in the demo
 
+- Themeability
+
+  - Prefer semantic tokens (`bg-background`, `text-foreground`, `border-border`) over fixed palette classes (`bg-zinc-900`)
+  - Expose component-level CSS variables only for true customization points (for example `--button-ring`, `--card-accent`)
+  - Keep theming in CSS/tokens, not runtime JS conditionals, whenever possible
+  - Ensure interactive states (hover/focus/active/disabled) also resolve through semantic tokens
+  - If introducing new tokens, document their fallback values and intended scope in the component file comments
+
 - Composition and naming
 
   - Favor composition over configuration; expose small building blocks
@@ -204,13 +214,59 @@ Aim for components that are composable, accessible, predictable, and easy to ins
   - Avoid unnecessary state/effects; memoize expensive UI if needed
   - Keep re-renders tight; pass stable callbacks and values
 
-### 4) Quick end-to-end checklist
+### 4) Build themeable components (practical pattern)
+
+Themeable components should work across multiple visual systems without code changes.
+
+1. Use a semantic token first, then allow optional local override:
+
+```tsx
+export function Card({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "rounded-xl border bg-[var(--card-bg)] text-[var(--card-fg)] border-[var(--card-border)]",
+        className
+      )}
+      style={
+        {
+          "--card-bg": "var(--background)",
+          "--card-fg": "var(--foreground)",
+          "--card-border": "var(--border)",
+        } as React.CSSProperties
+      }
+      {...props}
+    />
+  );
+}
+```
+
+2. Define a small token contract and keep it stable:
+
+- Required tokens: must exist in all themes (`--background`, `--foreground`, `--border`)
+- Optional tokens: component-specific escape hatches (`--card-accent`, `--card-ring`)
+- State tokens: include hover/focus/disabled variants when visual treatment changes
+
+3. Keep variants orthogonal to themes:
+
+- Variants should describe intent (`size`, `tone`, `emphasis`) rather than palette-specific names (`blue`, `gray-dark`)
+- A theme swap should not require variant rewrites
+
+4. Demonstrate themeability in the demo:
+
+- Render at least two theme contexts side by side, or provide a deterministic toggle
+- Show one interactive state per theme (focus ring, hover tint, selected state)
+
+### 5) Quick end-to-end checklist
 
 - Add source under `registry/new-york/blocks/[id]/[id].tsx`
 - Register item in `registry.json` with `files`, `dependencies`, and optional `target`
 - Build registry and verify `public/r/[id].json` is created
 - Create `components/demos/[id]-demo.tsx`
 - Import demo and register in `demoMap`; add `componentList` meta (section + description)
+- Verify semantic token usage (no hard-coded palette classes for primary surfaces/text/borders)
+- Verify component states in at least two themes
 - Browse `/[id]` and validate UX, a11y, and visuals
 
 If you have questions or a tricky case (e.g., multi-file items, routes, or API-backed demos), mirror how `chat`, `chat-message`, and `markdown` are structured in both `registry.json` and `lib/component-registry.tsx`.
