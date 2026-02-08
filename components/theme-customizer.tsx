@@ -4,6 +4,7 @@ import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { Button as UiButton } from "@/components/ui/button";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
@@ -34,14 +35,15 @@ export function ThemeCustomizer() {
 
   return (
     <>
-      <button
-        type="button"
+      <UiButton
+        size="icon"
+        variant="ghost"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        className="text-foreground"
         aria-label="Customize theme"
       >
         <Paintbrush className="size-4" />
-      </button>
+      </UiButton>
       <ThemeDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
@@ -82,9 +84,9 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
             aria-modal="true"
             aria-label="Theme customizer"
             className="absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl will-change-transform sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent"
-            initial={{ x: 24, opacity: 0, scale: 0.985 }}
-            animate={{ x: 0, opacity: 1, scale: 1 }}
-            exit={{ x: 16, opacity: 0, scale: 0.985 }}
+            initial={{ x: "105%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "105%", opacity: 0 }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
             <DrawerContent onClose={onClose} />
