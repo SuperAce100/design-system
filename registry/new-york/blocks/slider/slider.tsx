@@ -112,6 +112,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const valueRange = safeMax - min;
     const keyboardStep = safeStep ?? Math.max((safeMax - min) / 100, 0.01);
     const isControlled = value !== undefined;
+    const initialResolvedValue = snapToStep(value ?? defaultValue ?? min, min, safeMax, safeStep);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState(() =>
       snapToStep(defaultValue ?? min, min, safeMax, safeStep)
@@ -123,6 +124,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const sliderRef = React.useRef<HTMLDivElement | null>(null);
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const pointerIdRef = React.useRef<number | null>(null);
+    const valueRef = React.useRef<number>(initialResolvedValue);
+    const rafRef = React.useRef<number | null>(null);
+    const pendingClientXRef = React.useRef<number | null>(null);
 
     const resolvedValue = snapToStep(
       isControlled ? value : uncontrolledValue,
@@ -158,6 +162,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     }, [resolvedValue, safeStep, valueRange, isEditing]);
 
     React.useEffect(() => {
+      valueRef.current = resolvedValue;
+    }, [resolvedValue]);
+
+    React.useEffect(() => {
       if (!isEditing) {
         return;
       }
@@ -169,13 +177,17 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const setValue = React.useCallback(
       (nextValue: number, options?: { commit?: boolean }) => {
         const snapped = snapToStep(nextValue, min, safeMax, safeStep);
-        const hasChanged = snapped !== resolvedValue;
+        const hasChanged = snapped !== valueRef.current;
 
         if (!isControlled && hasChanged) {
           setUncontrolledValue(snapped);
+          valueRef.current = snapped;
         }
 
         if (hasChanged) {
+          if (isControlled) {
+            valueRef.current = snapped;
+          }
           onValueChange?.(snapped);
         }
 
@@ -183,7 +195,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           onValueCommit?.(snapped);
         }
       },
-      [isControlled, min, onValueChange, onValueCommit, resolvedValue, safeMax, safeStep]
+      [isControlled, min, onValueChange, onValueCommit, safeMax, safeStep]
     );
 
     const valuePercent = getPercentFromValue(resolvedValue, min, safeMax);
@@ -209,9 +221,50 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       [min, safeMax, setValue]
     );
 
+    const flushPendingPointerUpdate = React.useCallback(
+      (options?: { commit?: boolean }) => {
+        if (pendingClientXRef.current === null) {
+          return;
+        }
+
+        const pendingClientX = pendingClientXRef.current;
+        pendingClientXRef.current = null;
+        updateFromClientX(pendingClientX, options);
+      },
+      [updateFromClientX]
+    );
+
+    const schedulePointerUpdate = React.useCallback(
+      (clientX: number) => {
+        pendingClientXRef.current = clientX;
+        if (rafRef.current !== null) {
+          return;
+        }
+
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null;
+          flushPendingPointerUpdate();
+        });
+      },
+      [flushPendingPointerUpdate]
+    );
+
     const stopDragging = React.useCallback(() => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      pendingClientXRef.current = null;
       pointerIdRef.current = null;
       setIsDragging(false);
+    }, []);
+
+    React.useEffect(() => {
+      return () => {
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+        }
+      };
     }, []);
 
     const commitDraft = React.useCallback(
@@ -289,7 +342,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             return;
           }
 
-          updateFromClientX(event.clientX);
+          schedulePointerUpdate(event.clientX);
         }}
         onPointerUp={(event) => {
           onPointerUp?.(event);
@@ -297,7 +350,13 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             return;
           }
 
-          updateFromClientX(event.clientX, { commit: true });
+          if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+          }
+
+          pendingClientXRef.current = event.clientX;
+          flushPendingPointerUpdate({ commit: true });
           if (event.currentTarget.hasPointerCapture(event.pointerId)) {
             event.currentTarget.releasePointerCapture(event.pointerId);
           }
@@ -375,7 +434,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             return (
               <span
                 key={`bar-${index}`}
-                className="flex-1 rounded-full bg-[var(--slider-bar)] transition-[height,opacity] duration-200 ease-out"
+                className={cn(
+                  "flex-1 rounded-full bg-[var(--slider-bar)] transition-[height,opacity] ease-out",
+                  isDragging ? "duration-0" : "duration-150"
+                )}
                 style={{
                   height: `${(height * 100).toFixed(2)}%`,
                   opacity,
@@ -391,7 +453,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           aria-live="polite"
         >
           <div
-            className="pointer-events-auto absolute top-[34%] -translate-x-1/2 -translate-y-1/2 transition-[left] duration-200 ease-out"
+            className={cn(
+              "pointer-events-auto absolute top-[34%] -translate-x-1/2 -translate-y-1/2 transition-[left] ease-out",
+              isDragging ? "duration-0" : "duration-150"
+            )}
             style={{ left: `${labelLeftPercent.toFixed(3)}%` }}
           >
             <div
