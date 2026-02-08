@@ -25,7 +25,7 @@ import {
 import { ColorPicker } from "@/registry/new-york/blocks/color-picker/color-picker";
 
 // ---------------------------------------------------------------------------
-// Theme Customizer (collapsible drawer)
+// Theme Customizer (floating panel)
 // ---------------------------------------------------------------------------
 
 export function ThemeCustomizer() {
@@ -47,7 +47,7 @@ export function ThemeCustomizer() {
 }
 
 // ---------------------------------------------------------------------------
-// Drawer
+// Floating panel
 // ---------------------------------------------------------------------------
 
 function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -83,7 +83,7 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       {/* Backdrop */}
       <div
         className={cn(
-          "absolute inset-0 bg-background/60 backdrop-blur-sm transition-opacity duration-200",
+          "absolute inset-0 bg-transparent transition-opacity duration-200",
           open ? "opacity-100" : "pointer-events-none opacity-0"
         )}
         onClick={onClose}
@@ -91,8 +91,8 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       {/* Panel */}
       <div
         className={cn(
-          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
-          open ? "translate-x-0" : "translate-x-full"
+          "absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl transition-[transform,opacity] duration-300 ease-out sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
+          open ? "translate-x-0 opacity-100 scale-100" : "translate-x-6 opacity-0 scale-[0.98]"
         )}
         onTransitionEnd={handleTransitionEnd}
       >
