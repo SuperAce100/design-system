@@ -45,7 +45,7 @@ export default function Home() {
                     key={component.id}
                     variant="ghost"
                     size="sm"
-                    className="justify-start bg-white no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
+                    className="justify-start bg-card no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
                     asChild
                   >
                     <Link

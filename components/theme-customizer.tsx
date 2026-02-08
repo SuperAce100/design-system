@@ -52,9 +52,29 @@ export function ThemeCustomizer() {
 
 function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [shouldRender, setShouldRender] = React.useState(open);
+  const closeTimerRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
-    if (open) setShouldRender(true);
+    if (open) {
+      setShouldRender(true);
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+      return;
+    }
+
+    closeTimerRef.current = window.setTimeout(() => {
+      setShouldRender(false);
+      closeTimerRef.current = null;
+    }, 320);
+
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
   }, [open]);
 
   // Close on ESC
@@ -64,17 +84,10 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handler);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", handler);
-      document.body.style.overflow = prev;
     };
   }, [open, onClose]);
-
-  const handleTransitionEnd = React.useCallback(() => {
-    if (!open) setShouldRender(false);
-  }, [open]);
 
   if (!shouldRender) return null;
 
@@ -91,10 +104,9 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       {/* Panel */}
       <div
         className={cn(
-          "absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl transition-[transform,opacity] duration-300 ease-out sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
-          open ? "translate-x-0 opacity-100 scale-100" : "translate-x-6 opacity-0 scale-[0.98]"
+          "absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl will-change-transform transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
+          open ? "translate-x-0 opacity-100 scale-100" : "translate-x-4 opacity-0 scale-[0.985]"
         )}
-        onTransitionEnd={handleTransitionEnd}
       >
         <DrawerContent onClose={onClose} />
       </div>
