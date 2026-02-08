@@ -91,7 +91,7 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       {/* Panel */}
       <div
         className={cn(
-          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out",
+          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
           open ? "translate-x-0" : "translate-x-full"
         )}
         onTransitionEnd={handleTransitionEnd}
@@ -419,10 +419,12 @@ function FontOptionPicker({
             key={font}
             type="button"
             size="xs"
-            variant={selectedFont === font ? "default" : "secondary"}
+            variant="ghost"
             className={cn(
-              "h-auto min-h-0 px-2 py-1 text-xs",
-              selectedFont === font && "ring-2 ring-ring ring-offset-1 ring-offset-background"
+              "h-auto min-h-0 rounded-md border px-2 py-1 text-xs shadow-none",
+              selectedFont === font
+                ? "border-transparent bg-foreground text-background hover:bg-foreground/90"
+                : "border-border bg-background text-foreground hover:bg-muted"
             )}
             onClick={() => onChange(font)}
             aria-pressed={selectedFont === font}
