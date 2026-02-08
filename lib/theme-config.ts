@@ -451,6 +451,10 @@ function resolveFontFamily(option: FontOption): string {
   return FONT_FAMILIES[option];
 }
 
+export function getFontFamilyForOption(option: FontOption): string {
+  return resolveFontFamily(option);
+}
+
 function fmt(lch: LCH): string {
   return `oklch(${lch[0]} ${lch[1]} ${lch[2]})`;
 }

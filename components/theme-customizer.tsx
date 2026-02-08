@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/registry/new-york/blocks/button/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
   type ThemeConfig,
@@ -19,6 +19,7 @@ import {
   PRIMARY_DISPLAY_COLORS,
   BACKGROUND_PRESETS,
   getBackgroundDisplayColors,
+  getFontFamilyForOption,
   generateGlobalsCss,
 } from "@/lib/theme-config";
 import { ColorPicker } from "@/registry/new-york/blocks/color-picker/color-picker";
@@ -414,20 +415,21 @@ function FontOptionPicker({
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
       <div className="flex flex-wrap gap-1.5">
         {FONT_OPTIONS.map((font) => (
-          <button
+          <Button
             key={font}
             type="button"
+            size="xs"
+            variant={selectedFont === font ? "default" : "secondary"}
             className={cn(
-              "rounded-md border px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-              selectedFont === font
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-background hover:bg-muted"
+              "h-auto min-h-0 px-2 py-1 text-xs",
+              selectedFont === font && "ring-2 ring-ring ring-offset-1 ring-offset-background"
             )}
             onClick={() => onChange(font)}
             aria-pressed={selectedFont === font}
+            style={{ fontFamily: getFontFamilyForOption(font) }}
           >
             {FONT_OPTION_LABELS[font]}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
