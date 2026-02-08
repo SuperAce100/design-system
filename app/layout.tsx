@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Hedvig_Letters_Serif } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Hedvig_Letters_Serif,
+  JetBrains_Mono,
+  Manrope,
+  Schibsted_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
@@ -23,6 +30,21 @@ const hedvigLettersSerif = Hedvig_Letters_Serif({
   subsets: ["latin"],
 });
 
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+const schibstedGrotesk = Schibsted_Grotesk({
+  variable: "--font-schibsted-grotesk",
+  subsets: ["latin"],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Asanshay's components",
   description: "A set of beautiful, flexible, and LLM-ready components for your next project.",
@@ -42,10 +64,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} ${manrope.variable} ${schibstedGrotesk.variable} ${jetBrainsMono.variable}`}
+    >
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

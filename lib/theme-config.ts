@@ -27,6 +27,13 @@ export type PrimaryColor =
   | "rose";
 
 export type BackgroundShade = 0 | 1 | 2;
+export type FontOption =
+  | "system"
+  | "geist"
+  | "manrope"
+  | "hedvig-letters-serif"
+  | "schibsted-grotesk"
+  | "jetbrains-mono";
 
 export type ThemeConfig = {
   neutral: NeutralScale;
@@ -35,6 +42,8 @@ export type ThemeConfig = {
   backgroundShade: BackgroundShade; // 0=white, 1=neutral-50, 2=neutral-100
   shadowDepth: number; // 0–100 slider (controls how dark the shadow is)
   shadowOpacity: number; // 0–100 slider (controls how transparent the shadow is)
+  headingFont: FontOption;
+  bodyFont: FontOption;
   /** Optional custom primary color as an oklch string (e.g. "oklch(0.6 0.2 250)"). Overrides `primary` when set. */
   customPrimary?: string;
 };
@@ -46,6 +55,24 @@ export const BACKGROUND_PRESETS: { value: BackgroundShade; label: string }[] = [
   { value: 1, label: "50" },
   { value: 2, label: "100" },
 ];
+
+export const FONT_OPTIONS: FontOption[] = [
+  "system",
+  "geist",
+  "manrope",
+  "hedvig-letters-serif",
+  "schibsted-grotesk",
+  "jetbrains-mono",
+];
+
+export const FONT_OPTION_LABELS: Record<FontOption, string> = {
+  system: "Default System Font",
+  geist: "Geist",
+  manrope: "Manrope",
+  "hedvig-letters-serif": "Hedvig Letters Serif",
+  "schibsted-grotesk": "Schibsted Grotesk",
+  "jetbrains-mono": "JetBrains Mono",
+};
 
 /** Returns display colors for the three background shade options based on the current neutral. */
 export function getBackgroundDisplayColors(neutral: NeutralScale): Record<BackgroundShade, string> {
@@ -64,6 +91,8 @@ export const DEFAULT_CONFIG: ThemeConfig = {
   backgroundShade: 0,
   shadowDepth: 50,
   shadowOpacity: 20,
+  headingFont: "system",
+  bodyFont: "system",
 };
 
 export const NEUTRAL_LABELS: Record<NeutralScale, string> = {
@@ -404,6 +433,28 @@ export const PRIMARY_DISPLAY_COLORS: Record<PrimaryColor, string> = Object.fromE
 
 // --- Helpers -----------------------------------------------------------------
 
+const SYSTEM_FONT_STACK =
+  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+
+const FONT_FAMILIES: Record<FontOption, string> = {
+  system: SYSTEM_FONT_STACK,
+  geist: "var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif)",
+  manrope: "var(--font-manrope, ui-sans-serif, system-ui, sans-serif)",
+  "hedvig-letters-serif":
+    'var(--font-hedvig-letters-serif, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif)',
+  "schibsted-grotesk": "var(--font-schibsted-grotesk, ui-sans-serif, system-ui, sans-serif)",
+  "jetbrains-mono":
+    'var(--font-jetbrains-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)',
+};
+
+function resolveFontFamily(option: FontOption): string {
+  return FONT_FAMILIES[option];
+}
+
+export function getFontFamilyForOption(option: FontOption): string {
+  return resolveFontFamily(option);
+}
+
 function fmt(lch: LCH): string {
   return `oklch(${lch[0]} ${lch[1]} ${lch[2]})`;
 }
@@ -540,6 +591,8 @@ export function generateThemeVars(config: ThemeConfig): {
   dark: Record<string, string>;
 } {
   const n = neutralScales[config.neutral];
+  const bodyFontFamily = resolveFontFamily(config.bodyFont);
+  const headingFontFamily = resolveFontFamily(config.headingFont);
 
   // Resolve the primary color scale: use custom if set, otherwise use preset
   let p: ColorScale;
@@ -604,6 +657,8 @@ export function generateThemeVars(config: ThemeConfig): {
   return {
     light: {
       "--radius": `${config.radius}rem`,
+      "--theme-font-sans": bodyFontFamily,
+      "--theme-font-heading": headingFontFamily,
       "--background": lightBg,
       "--foreground": fmt(n[950]),
       "--card": lightCard,
@@ -642,6 +697,8 @@ export function generateThemeVars(config: ThemeConfig): {
       "--sidebar-ring": fmt(n[950]),
     },
     dark: {
+      "--theme-font-sans": bodyFontFamily,
+      "--theme-font-heading": headingFontFamily,
       "--background": fmt(n[darkBgStops[shade]]),
       "--foreground": fmt(n[50]),
       "--card": fmt(n[darkCardStops[shade]]),
@@ -701,9 +758,8 @@ export function generateGlobalsCss(config: ThemeConfig): string {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Add your font variables here */
-  /* --font-sans: var(--font-geist-sans); */
-  /* --font-mono: var(--font-geist-mono); */
+  --font-sans: var(--theme-font-sans);
+  --font-heading: var(--theme-font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -758,6 +814,14 @@ ${darkVars}
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
   }
   html {
     @apply scroll-smooth;

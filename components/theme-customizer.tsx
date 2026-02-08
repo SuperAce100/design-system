@@ -3,19 +3,23 @@
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/registry/new-york/blocks/button/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
   type ThemeConfig,
   type NeutralScale,
   type PrimaryColor,
   type BackgroundShade,
+  type FontOption,
   NEUTRAL_LABELS,
   PRIMARY_LABELS,
+  FONT_OPTIONS,
+  FONT_OPTION_LABELS,
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
   BACKGROUND_PRESETS,
   getBackgroundDisplayColors,
+  getFontFamilyForOption,
   generateGlobalsCss,
 } from "@/lib/theme-config";
 import { ColorPicker } from "@/registry/new-york/blocks/color-picker/color-picker";
@@ -87,7 +91,7 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       {/* Panel */}
       <div
         className={cn(
-          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out",
+          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
           open ? "translate-x-0" : "translate-x-full"
         )}
         onTransitionEnd={handleTransitionEnd}
@@ -147,6 +151,22 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
 
         {/* Primary */}
         <PrimarySection config={config} setConfig={setConfig} />
+
+        {/* Typography */}
+        <Section title="Typography" description="Fonts for headings and body text">
+          <div className="flex flex-col gap-3">
+            <FontOptionPicker
+              label="Heading font"
+              selectedFont={config.headingFont}
+              onChange={(font) => setConfig((p) => ({ ...p, headingFont: font }))}
+            />
+            <FontOptionPicker
+              label="Body font"
+              selectedFont={config.bodyFont}
+              onChange={(font) => setConfig((p) => ({ ...p, bodyFont: font }))}
+            />
+          </div>
+        </Section>
 
         {/* Radius */}
         <Section title="Radius" description="How rounded the elements are">
@@ -374,6 +394,47 @@ function PrimarySection({
         </div>
       )}
     </Section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+
+function FontOptionPicker({
+  label,
+  selectedFont,
+  onChange,
+}: {
+  label: string;
+  selectedFont: FontOption;
+  onChange: (font: FontOption) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex flex-wrap gap-1.5">
+        {FONT_OPTIONS.map((font) => (
+          <Button
+            key={font}
+            type="button"
+            size="xs"
+            variant="ghost"
+            className={cn(
+              "h-auto min-h-0 rounded-md border px-2 py-1 text-xs shadow-none",
+              selectedFont === font
+                ? "border-transparent bg-foreground text-background hover:bg-foreground/90"
+                : "border-border bg-background text-foreground hover:bg-muted"
+            )}
+            onClick={() => onChange(font)}
+            aria-pressed={selectedFont === font}
+            style={{ fontFamily: getFontFamilyForOption(font) }}
+          >
+            {FONT_OPTION_LABELS[font]}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 }
 
