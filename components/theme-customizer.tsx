@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { useThemeConfig } from "@/lib/theme-context";
@@ -51,32 +52,6 @@ export function ThemeCustomizer() {
 // ---------------------------------------------------------------------------
 
 function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [shouldRender, setShouldRender] = React.useState(open);
-  const closeTimerRef = React.useRef<number | null>(null);
-
-  React.useEffect(() => {
-    if (open) {
-      setShouldRender(true);
-      if (closeTimerRef.current !== null) {
-        window.clearTimeout(closeTimerRef.current);
-        closeTimerRef.current = null;
-      }
-      return;
-    }
-
-    closeTimerRef.current = window.setTimeout(() => {
-      setShouldRender(false);
-      closeTimerRef.current = null;
-    }, 320);
-
-    return () => {
-      if (closeTimerRef.current !== null) {
-        window.clearTimeout(closeTimerRef.current);
-        closeTimerRef.current = null;
-      }
-    };
-  }, [open]);
-
   // Close on ESC
   React.useEffect(() => {
     if (!open) return;
@@ -89,28 +64,34 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
     };
   }, [open, onClose]);
 
-  if (!shouldRender) return null;
-
   return (
-    <div className="fixed inset-0 z-[60]">
-      {/* Backdrop */}
-      <div
-        className={cn(
-          "absolute inset-0 bg-transparent transition-opacity duration-200",
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-        onClick={onClose}
-      />
-      {/* Panel */}
-      <div
-        className={cn(
-          "absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl will-change-transform transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
-          open ? "translate-x-0 opacity-100 scale-100" : "translate-x-4 opacity-0 scale-[0.985]"
-        )}
-      >
-        <DrawerContent onClose={onClose} />
-      </div>
-    </div>
+    <AnimatePresence initial={false}>
+      {open ? (
+        <div className="fixed inset-0 z-[60]">
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0 bg-transparent"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          />
+          <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Theme customizer"
+            className="absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl will-change-transform sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent"
+            initial={{ x: 24, opacity: 0, scale: 0.985 }}
+            animate={{ x: 0, opacity: 1, scale: 1 }}
+            exit={{ x: 16, opacity: 0, scale: 0.985 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <DrawerContent onClose={onClose} />
+          </motion.aside>
+        </div>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
