@@ -52,7 +52,6 @@ const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps
     },
     ref
   ) => {
-    const buttonRef = React.useRef<HTMLButtonElement | null>(null);
     const contentRef = React.useRef<HTMLSpanElement | null>(null);
     const [progress, setProgress] = React.useState(0);
     const [isHolding, setIsHolding] = React.useState(false);
@@ -76,42 +75,20 @@ const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps
       }
     }, []);
 
-    const setRefs = React.useCallback(
-      (node: HTMLButtonElement | null) => {
-        buttonRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-          return;
-        }
-        if (ref) {
-          ref.current = node;
-        }
-      },
-      [ref]
-    );
-
     const playCompleteAnimation = React.useCallback(() => {
       if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         return;
       }
-
-      buttonRef.current?.animate(
+      const iconNode = contentRef.current?.querySelector("svg");
+      const target = iconNode ?? contentRef.current;
+      target?.animate(
         [
-          { transform: "translateX(0)" },
-          { transform: "translateX(-1px)" },
-          { transform: "translateX(1px)" },
-          { transform: "translateX(0)" },
+          { transform: "translateX(0) rotate(0deg)" },
+          { transform: "translateX(-1px) rotate(-6deg)" },
+          { transform: "translateX(1px) rotate(6deg)" },
+          { transform: "translateX(0) rotate(0deg)" },
         ],
         { duration: 220, easing: "ease-out" }
-      );
-
-      contentRef.current?.animate(
-        [
-          { transform: "translateY(0) scale(1)" },
-          { transform: "translateY(-2px) scale(1.08)" },
-          { transform: "translateY(0) scale(1)" },
-        ],
-        { duration: 260, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" }
       );
     }, []);
 
@@ -186,7 +163,7 @@ const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps
 
     return (
       <button
-        ref={setRefs}
+        ref={ref}
         type={type ?? "button"}
         data-slot="long-press-button"
         data-state={state}
