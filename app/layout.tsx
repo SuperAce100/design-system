@@ -64,10 +64,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} ${manrope.variable} ${schibstedGrotesk.variable} ${jetBrainsMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} ${manrope.variable} ${schibstedGrotesk.variable} ${jetBrainsMono.variable}`}
+    >
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
