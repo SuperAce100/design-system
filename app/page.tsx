@@ -36,7 +36,7 @@ export default function Home() {
           const anchor = section.toLowerCase();
           return (
             <section key={section} id={anchor} className="-mx-2">
-              <h2 className="text-lg font-medium mb-2 uppercase tracking-widest ml-3 text-muted-foreground/70">
+              <h2 className="text-lg font-sans font-medium mb-2 uppercase tracking-widest ml-3 text-muted-foreground/70">
                 {section}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -45,7 +45,7 @@ export default function Home() {
                     key={component.id}
                     variant="ghost"
                     size="sm"
-                    className="justify-start no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
+                    className="justify-start bg-white no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
                     asChild
                   >
                     <Link
