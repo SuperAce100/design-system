@@ -305,6 +305,20 @@
       ]
     },
     {
+      "name": "long-press-button",
+      "type": "registry:component",
+      "title": "Long Press Button",
+      "description": "A long-press action button with animated hold progress.",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/blocks/long-press-button/long-press-button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/long-press-button.tsx"
+        }
+      ]
+    },
+    {
       "name": "reveal",
       "type": "registry:component",
       "title": "Reveal",
