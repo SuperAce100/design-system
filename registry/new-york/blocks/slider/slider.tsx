@@ -167,6 +167,8 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
 
     const valuePercent = getPercentFromValue(resolvedValue, min, safeMax);
     const barCount = clamp(Math.round(bars), 12, 96);
+    const collapseActivation = smoothstep(0.06, 0.28, valuePercent);
+    const labelLeftPercent = clamp(valuePercent * 100, 7, 93);
 
     const updateFromClientX = React.useCallback(
       (clientX: number, options?: { commit?: boolean }) => {
@@ -215,15 +217,13 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const tokenStyle: React.CSSProperties = {
       // Token contract:
       // --slider-bg: container background (defaults to --muted)
-      // --slider-border: container and bubble border (defaults to --border)
+      // --slider-border: container border (defaults to --border)
       // --slider-bar: bar color (defaults to --foreground)
-      // --slider-pill-bg: value bubble background (defaults to --secondary)
-      // --slider-pill-fg: value bubble text color (defaults to --foreground)
+      // --slider-value-fg: inline value color (defaults to --foreground)
       "--slider-bg": "var(--muted)",
       "--slider-border": "var(--border)",
       "--slider-bar": "var(--foreground)",
-      "--slider-pill-bg": "var(--secondary)",
-      "--slider-pill-fg": "var(--foreground)",
+      "--slider-value-fg": "var(--foreground)",
       ...style,
     } as React.CSSProperties;
 
@@ -241,7 +241,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         aria-valuenow={resolvedValue}
         aria-valuetext={`${formatDisplayValue(resolvedValue, safeStep)}${valueSuffix}`}
         className={cn(
-          "relative h-[132px] w-full touch-none select-none rounded-[2rem] border border-[var(--slider-border)] bg-[var(--slider-bg)] px-4 pb-4 pt-10 outline-none transition-colors",
+          "relative h-[108px] w-full touch-none select-none rounded-[2rem] border border-[var(--slider-border)] bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
           "focus-visible:ring-2 focus-visible:ring-ring/40",
           "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-60",
           isDragging ? "cursor-grabbing" : "cursor-grab",
@@ -339,17 +339,21 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           }
         }}
       >
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 top-7 flex items-end gap-1">
+        <div className="pointer-events-none absolute inset-3 flex items-end gap-1">
           {Array.from({ length: barCount }, (_, index) => {
             const ratio = barCount <= 1 ? 0 : index / (barCount - 1);
             const distance = Math.abs(ratio - valuePercent);
-            const valley = Math.exp(-(distance * distance) / (2 * 0.11 * 0.11));
-            const rightRise = smoothstep(0.72, 1, ratio) * 0.35;
-            const height = clamp(0.74 - valley * 0.56 + rightRise, 0.1, 0.96);
-            const rightFade = 1 - ratio * 0.58;
-            const valleyFade = 1 - valley * 0.55;
-            const activeBoost = ratio <= valuePercent ? 1 : 0.88;
-            const opacity = clamp(rightFade * valleyFade * activeBoost, 0.12, 0.95);
+            const valleyWidth = 0.08 + collapseActivation * 0.06;
+            const valley =
+              collapseActivation === 0
+                ? 0
+                : Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
+            const height = clamp(0.72 - valley * 0.56 * collapseActivation, 0.1, 0.82);
+            const opacity = clamp(
+              1 - (ratio * 0.4 + valley * 0.35) * collapseActivation,
+              0.16,
+              1
+            );
 
             return (
               <span
@@ -365,52 +369,67 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         </div>
 
         <div
-          className="absolute -top-[54px] z-10 -translate-x-1/2 transition-[left] duration-200 ease-out"
-          style={{ left: `${(valuePercent * 100).toFixed(3)}%` }}
+          className="absolute inset-3 z-10 pointer-events-none"
+          aria-label="Slider value display"
+          aria-live="polite"
         >
           <div
-            className="flex min-w-14 flex-col items-center rounded-2xl border border-[var(--slider-border)] bg-[var(--slider-pill-bg)] px-2.5 py-1 text-[var(--slider-pill-fg)] shadow-md shadow-shade"
-            onDoubleClick={() => {
-              if (!editable || disabled) {
-                return;
-              }
-              setDraftValue(formatDisplayValue(resolvedValue, safeStep));
-              setIsEditing(true);
-            }}
+            className="pointer-events-auto absolute top-[34%] -translate-x-1/2 -translate-y-1/2 transition-[left] duration-200 ease-out"
+            style={{ left: `${labelLeftPercent.toFixed(3)}%` }}
           >
-            {isEditing ? (
-              <input
-                ref={inputRef}
-                value={draftValue}
-                inputMode="decimal"
-                aria-label="Slider value"
-                className="w-12 bg-transparent text-center text-4xl leading-none font-semibold outline-none"
-                onChange={(event) => {
-                  setDraftValue(event.target.value);
-                }}
-                onBlur={() => {
-                  commitDraft();
-                }}
-                onKeyDown={(event) => {
-                  event.stopPropagation();
-                  if (event.key === "Enter") {
-                    event.preventDefault();
+            <div
+              className="flex items-baseline gap-0.5 px-1 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
+              onPointerDown={(event) => {
+                event.stopPropagation();
+              }}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              onDoubleClick={(event) => {
+                event.stopPropagation();
+                if (!editable || disabled) {
+                  return;
+                }
+                setDraftValue(formatDisplayValue(resolvedValue, safeStep));
+                setIsEditing(true);
+              }}
+            >
+              {isEditing ? (
+                <input
+                  ref={inputRef}
+                  value={draftValue}
+                  inputMode="decimal"
+                  aria-label="Slider value"
+                  className="w-12 bg-transparent text-center text-3xl leading-none font-semibold tabular-nums outline-none"
+                  onChange={(event) => {
+                    setDraftValue(event.target.value);
+                  }}
+                  onBlur={() => {
                     commitDraft();
-                    return;
-                  }
+                  }}
+                  onKeyDown={(event) => {
+                    event.stopPropagation();
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      commitDraft();
+                      return;
+                    }
 
-                  if (event.key === "Escape") {
-                    event.preventDefault();
-                    commitDraft(true);
-                  }
-                }}
-              />
-            ) : (
-              <span className="text-4xl leading-none font-semibold tabular-nums">
-                {formatDisplayValue(resolvedValue, safeStep)}
-              </span>
-            )}
-            {valueSuffix ? <span className="text-lg leading-none">{valueSuffix}</span> : null}
+                    if (event.key === "Escape") {
+                      event.preventDefault();
+                      commitDraft(true);
+                    }
+                  }}
+                />
+              ) : (
+                <span className="text-3xl leading-none font-semibold tabular-nums">
+                  {formatDisplayValue(resolvedValue, safeStep)}
+                </span>
+              )}
+              {valueSuffix ? (
+                <span className="text-base leading-none font-medium opacity-80">{valueSuffix}</span>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
