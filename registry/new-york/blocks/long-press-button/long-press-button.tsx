@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_HOLD_DURATION = 1600;
-type ProgressDirection = "left-to-right" | "top-to-bottom";
+type ProgressDirection = "left-to-right" | "top-to-bottom" | "bottom-to-top";
 
 export type LongPressButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   holdDuration?: number;
@@ -22,6 +22,9 @@ const getClipPath = (progress: number, direction: ProgressDirection) => {
   const remaining = 100 - clamp(progress, 0, 1) * 100;
   if (direction === "top-to-bottom") {
     return `inset(0 0 ${remaining}% 0)`;
+  }
+  if (direction === "bottom-to-top") {
+    return `inset(${remaining}% 0 0 0)`;
   }
   return `inset(0 ${remaining}% 0 0)`;
 };
