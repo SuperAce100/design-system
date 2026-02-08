@@ -26,9 +26,17 @@ const getStepPrecision = (step: number) => {
   return decimals.length;
 };
 
-const snapToStep = (value: number, min: number, max: number, step: number) => {
+const trimTrailingZeros = (value: string) => value.replace(/\.?0+$/, "");
+
+const normalizeStep = (step: number | undefined) =>
+  Number.isFinite(step) && (step ?? 0) > 0 ? (step as number) : null;
+
+const snapToStep = (value: number, min: number, max: number, step: number | null) => {
   const normalized = clamp(value, min, max);
-  const nextStep = step > 0 ? step : 1;
+  if (step === null) {
+    return normalized;
+  }
+  const nextStep = step;
   const precision = Math.min(getStepPrecision(nextStep) + 2, 8);
   const snapped = Math.round((normalized - min) / nextStep) * nextStep + min;
   return Number(clamp(snapped, min, max).toFixed(precision));
@@ -41,12 +49,12 @@ const getPercentFromValue = (value: number, min: number, max: number) => {
   return clamp((value - min) / (max - min), 0, 1);
 };
 
-const formatDisplayValue = (value: number, step: number) => {
-  const precision = Math.min(getStepPrecision(step), 4);
+const formatDisplayValue = (value: number, step: number | null) => {
+  const precision = Math.min(step === null ? 2 : getStepPrecision(step), 4);
   if (precision === 0) {
     return `${Math.round(value)}`;
   }
-  return value.toFixed(precision);
+  return trimTrailingZeros(value.toFixed(precision));
 };
 
 export type SliderProps = Omit<React.ComponentPropsWithoutRef<"div">, "defaultValue"> & {
@@ -71,11 +79,11 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       defaultValue,
       min = 0,
       max = 100,
-      step = 1,
+      step,
       bars = 36,
       editable = true,
       disabled = false,
-      valueSuffix = "%",
+      valueSuffix = "",
       onValueChange,
       onValueCommit,
       style,
@@ -88,8 +96,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     },
     ref
   ) => {
-    const safeStep = step > 0 ? step : 1;
-    const safeMax = max > min ? max : min + safeStep;
+    const safeStep = normalizeStep(step);
+    const safeMax = max > min ? max : min + (safeStep ?? 1);
+    const keyboardStep = safeStep ?? Math.max((safeMax - min) / 100, 0.01);
     const isControlled = value !== undefined;
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState(() =>
@@ -168,7 +177,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const valuePercent = getPercentFromValue(resolvedValue, min, safeMax);
     const barCount = clamp(Math.round(bars), 12, 96);
     const collapseActivation = smoothstep(0.06, 0.28, valuePercent);
-    const labelLeftPercent = clamp(valuePercent * 100, 7, 93);
+    const labelLeftPercent = clamp(valuePercent * 100, 8, 92);
 
     const updateFromClientX = React.useCallback(
       (clientX: number, options?: { commit?: boolean }) => {
@@ -239,9 +248,13 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         aria-valuemin={min}
         aria-valuemax={safeMax}
         aria-valuenow={resolvedValue}
-        aria-valuetext={`${formatDisplayValue(resolvedValue, safeStep)}${valueSuffix}`}
+        aria-valuetext={
+          valueSuffix
+            ? `${formatDisplayValue(resolvedValue, safeStep)}${valueSuffix}`
+            : formatDisplayValue(resolvedValue, safeStep)
+        }
         className={cn(
-          "relative h-[108px] w-full touch-none select-none rounded-[2rem] border border-[var(--slider-border)] bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
+          "relative h-[108px] w-full touch-none select-none rounded-2xl border border-[var(--slider-border)] bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
           "focus-visible:ring-2 focus-visible:ring-ring/40",
           "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-60",
           isDragging ? "cursor-grabbing" : "cursor-grab",
@@ -299,7 +312,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             return;
           }
 
-          const stepSize = event.shiftKey ? safeStep * 10 : safeStep;
+          const stepSize = event.shiftKey ? keyboardStep * 10 : keyboardStep;
 
           switch (event.key) {
             case "ArrowLeft":
@@ -316,12 +329,12 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             }
             case "PageDown": {
               event.preventDefault();
-              setValue(resolvedValue - safeStep * 10, { commit: true });
+              setValue(resolvedValue - keyboardStep * 10, { commit: true });
               break;
             }
             case "PageUp": {
               event.preventDefault();
-              setValue(resolvedValue + safeStep * 10, { commit: true });
+              setValue(resolvedValue + keyboardStep * 10, { commit: true });
               break;
             }
             case "Home": {
@@ -349,11 +362,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 ? 0
                 : Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
             const height = clamp(0.72 - valley * 0.56 * collapseActivation, 0.1, 0.82);
-            const opacity = clamp(
-              1 - (ratio * 0.4 + valley * 0.35) * collapseActivation,
-              0.16,
-              1
-            );
+            const opacity = clamp(1 - valley * 0.42 * collapseActivation, 0.2, 1);
 
             return (
               <span
