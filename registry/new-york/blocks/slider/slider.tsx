@@ -6,11 +6,6 @@ import { cn } from "@/lib/utils";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-const smoothstep = (edge0: number, edge1: number, value: number) => {
-  const x = clamp((value - edge0) / (edge1 - edge0), 0, 1);
-  return x * x * (3 - 2 * x);
-};
-
 const getStepPrecision = (step: number) => {
   if (!Number.isFinite(step)) {
     return 0;
@@ -49,8 +44,24 @@ const getPercentFromValue = (value: number, min: number, max: number) => {
   return clamp((value - min) / (max - min), 0, 1);
 };
 
-const formatDisplayValue = (value: number, step: number | null) => {
-  const precision = Math.min(step === null ? 2 : getStepPrecision(step), 4);
+const getRangePrecision = (range: number) => {
+  if (!Number.isFinite(range) || range <= 0) {
+    return 0;
+  }
+
+  if (range <= 5) {
+    return 2;
+  }
+
+  if (range <= 20) {
+    return 1;
+  }
+
+  return 0;
+};
+
+const formatDisplayValue = (value: number, step: number | null, range: number) => {
+  const precision = Math.min(step === null ? getRangePrecision(range) : getStepPrecision(step), 4);
   if (precision === 0) {
     return `${Math.round(value)}`;
   }
@@ -98,6 +109,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
   ) => {
     const safeStep = normalizeStep(step);
     const safeMax = max > min ? max : min + (safeStep ?? 1);
+    const valueRange = safeMax - min;
     const keyboardStep = safeStep ?? Math.max((safeMax - min) / 100, 0.01);
     const isControlled = value !== undefined;
 
@@ -141,9 +153,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
 
     React.useEffect(() => {
       if (!isEditing) {
-        setDraftValue(formatDisplayValue(resolvedValue, safeStep));
+        setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
       }
-    }, [resolvedValue, safeStep, isEditing]);
+    }, [resolvedValue, safeStep, valueRange, isEditing]);
 
     React.useEffect(() => {
       if (!isEditing) {
@@ -176,7 +188,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
 
     const valuePercent = getPercentFromValue(resolvedValue, min, safeMax);
     const barCount = clamp(Math.round(bars), 12, 96);
-    const collapseActivation = smoothstep(0.06, 0.28, valuePercent);
     const labelLeftPercent = clamp(valuePercent * 100, 8, 92);
 
     const updateFromClientX = React.useCallback(
@@ -206,7 +217,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const commitDraft = React.useCallback(
       (cancel = false) => {
         if (cancel) {
-          setDraftValue(formatDisplayValue(resolvedValue, safeStep));
+          setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
           setIsEditing(false);
           return;
         }
@@ -215,12 +226,12 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         if (!Number.isNaN(parsed)) {
           setValue(parsed, { commit: true });
         } else {
-          setDraftValue(formatDisplayValue(resolvedValue, safeStep));
+          setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
         }
 
         setIsEditing(false);
       },
-      [draftValue, resolvedValue, safeStep, setValue]
+      [draftValue, resolvedValue, safeStep, setValue, valueRange]
     );
 
     const tokenStyle: React.CSSProperties = {
@@ -250,8 +261,8 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         aria-valuenow={resolvedValue}
         aria-valuetext={
           valueSuffix
-            ? `${formatDisplayValue(resolvedValue, safeStep)}${valueSuffix}`
-            : formatDisplayValue(resolvedValue, safeStep)
+            ? `${formatDisplayValue(resolvedValue, safeStep, valueRange)}${valueSuffix}`
+            : formatDisplayValue(resolvedValue, safeStep, valueRange)
         }
         className={cn(
           "relative h-[108px] w-full touch-none select-none rounded-2xl border border-[var(--slider-border)] bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
@@ -356,13 +367,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           {Array.from({ length: barCount }, (_, index) => {
             const ratio = barCount <= 1 ? 0 : index / (barCount - 1);
             const distance = Math.abs(ratio - valuePercent);
-            const valleyWidth = 0.08 + collapseActivation * 0.06;
-            const valley =
-              collapseActivation === 0
-                ? 0
-                : Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
-            const height = clamp(0.72 - valley * 0.56 * collapseActivation, 0.1, 0.82);
-            const opacity = clamp(1 - valley * 0.42 * collapseActivation, 0.2, 1);
+            const valleyWidth = 0.1;
+            const valley = Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
+            const height = clamp(0.72 - valley * 0.56, 0.1, 0.82);
+            const opacity = clamp(1 - valley * 0.42, 0.2, 1);
 
             return (
               <span
@@ -399,7 +407,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 if (!editable || disabled) {
                   return;
                 }
-                setDraftValue(formatDisplayValue(resolvedValue, safeStep));
+                setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
                 setIsEditing(true);
               }}
             >
@@ -432,7 +440,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 />
               ) : (
                 <span className="text-3xl leading-none font-semibold tabular-nums">
-                  {formatDisplayValue(resolvedValue, safeStep)}
+                  {formatDisplayValue(resolvedValue, safeStep, valueRange)}
                 </span>
               )}
               {valueSuffix ? (
