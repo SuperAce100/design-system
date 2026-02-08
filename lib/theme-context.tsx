@@ -3,7 +3,9 @@
 import * as React from "react";
 import {
   type ThemeConfig,
+  type FontOption,
   DEFAULT_CONFIG,
+  FONT_OPTIONS,
   applyThemeToDOM,
   removeThemeFromDOM,
 } from "./theme-config";
@@ -20,6 +22,10 @@ type ThemeConfigContextValue = {
 
 const ThemeConfigContext = React.createContext<ThemeConfigContextValue | null>(null);
 
+function isFontOption(value: unknown): value is FontOption {
+  return typeof value === "string" && FONT_OPTIONS.includes(value as FontOption);
+}
+
 function isValidConfig(value: unknown): value is ThemeConfig {
   if (typeof value !== "object" || value === null) return false;
   const obj = value as Record<string, unknown>;
@@ -29,7 +35,9 @@ function isValidConfig(value: unknown): value is ThemeConfig {
     typeof obj.radius === "number" &&
     typeof obj.backgroundShade === "number" &&
     typeof obj.shadowDepth === "number" &&
-    typeof obj.shadowOpacity === "number"
+    typeof obj.shadowOpacity === "number" &&
+    isFontOption(obj.headingFont) &&
+    isFontOption(obj.bodyFont)
   );
 }
 
@@ -53,6 +61,8 @@ function migrateConfig(raw: Record<string, unknown>): ThemeConfig | null {
     shadowDepth: typeof raw.shadowDepth === "number" ? raw.shadowDepth : DEFAULT_CONFIG.shadowDepth,
     shadowOpacity:
       typeof raw.shadowOpacity === "number" ? raw.shadowOpacity : DEFAULT_CONFIG.shadowOpacity,
+    headingFont: isFontOption(raw.headingFont) ? raw.headingFont : DEFAULT_CONFIG.headingFont,
+    bodyFont: isFontOption(raw.bodyFont) ? raw.bodyFont : DEFAULT_CONFIG.bodyFont,
   };
 
   // Preserve customPrimary if present

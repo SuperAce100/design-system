@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Hedvig_Letters_Serif } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Hedvig_Letters_Serif,
+  JetBrains_Mono,
+  Manrope,
+  Schibsted_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
@@ -20,6 +27,21 @@ const geistMono = Geist_Mono({
 
 const hedvigLettersSerif = Hedvig_Letters_Serif({
   variable: "--font-hedvig-letters-serif",
+  subsets: ["latin"],
+});
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+const schibstedGrotesk = Schibsted_Grotesk({
+  variable: "--font-schibsted-grotesk",
+  subsets: ["latin"],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
@@ -44,7 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${hedvigLettersSerif.variable} ${manrope.variable} ${schibstedGrotesk.variable} ${jetBrainsMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

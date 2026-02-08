@@ -10,8 +10,11 @@ import {
   type NeutralScale,
   type PrimaryColor,
   type BackgroundShade,
+  type FontOption,
   NEUTRAL_LABELS,
   PRIMARY_LABELS,
+  FONT_OPTIONS,
+  FONT_OPTION_LABELS,
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
   BACKGROUND_PRESETS,
@@ -147,6 +150,22 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
 
         {/* Primary */}
         <PrimarySection config={config} setConfig={setConfig} />
+
+        {/* Typography */}
+        <Section title="Typography" description="Fonts for headings and body text">
+          <div className="flex flex-col gap-3">
+            <FontOptionPicker
+              label="Heading font"
+              selectedFont={config.headingFont}
+              onChange={(font) => setConfig((p) => ({ ...p, headingFont: font }))}
+            />
+            <FontOptionPicker
+              label="Body font"
+              selectedFont={config.bodyFont}
+              onChange={(font) => setConfig((p) => ({ ...p, bodyFont: font }))}
+            />
+          </div>
+        </Section>
 
         {/* Radius */}
         <Section title="Radius" description="How rounded the elements are">
@@ -374,6 +393,44 @@ function PrimarySection({
         </div>
       )}
     </Section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+
+function FontOptionPicker({
+  label,
+  selectedFont,
+  onChange,
+}: {
+  label: string;
+  selectedFont: FontOption;
+  onChange: (font: FontOption) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <div className="flex flex-wrap gap-1.5">
+        {FONT_OPTIONS.map((font) => (
+          <button
+            key={font}
+            type="button"
+            className={cn(
+              "rounded-md border px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+              selectedFont === font
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-background hover:bg-muted"
+            )}
+            onClick={() => onChange(font)}
+            aria-pressed={selectedFont === font}
+          >
+            {FONT_OPTION_LABELS[font]}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
