@@ -5,19 +5,24 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_HOLD_DURATION = 1600;
+type ProgressDirection = "left-to-right" | "top-to-bottom";
 
 export type LongPressButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   holdDuration?: number;
   onHoldComplete?: () => void;
   onHoldCancel?: () => void;
   progressClassName?: string;
+  progressDirection?: ProgressDirection;
 };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
-const getClipPath = (progress: number) => {
+const getClipPath = (progress: number, direction: ProgressDirection) => {
   const remaining = 100 - clamp(progress, 0, 1) * 100;
+  if (direction === "top-to-bottom") {
+    return `inset(0 0 ${remaining}% 0)`;
+  }
   return `inset(0 ${remaining}% 0 0)`;
 };
 
@@ -29,6 +34,7 @@ const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps
       onHoldCancel,
       className,
       progressClassName,
+      progressDirection = "left-to-right",
       disabled,
       type,
       children,
@@ -203,7 +209,7 @@ const LongPressButton = React.forwardRef<HTMLButtonElement, LongPressButtonProps
         <span
           aria-hidden="true"
           className={cn("absolute inset-0 bg-destructive/60", progressClassName)}
-          style={{ clipPath: getClipPath(progress) }}
+          style={{ clipPath: getClipPath(progress, progressDirection) }}
         />
         <span className="relative z-10 flex items-center gap-2">
           {children ?? "Long press button"}
