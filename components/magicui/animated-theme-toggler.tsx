@@ -1,7 +1,7 @@
 "use client";
 
 import { Moon, SunDim } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,18 +12,23 @@ type props = {
 };
 
 export const AnimatedThemeToggler = ({ className }: props) => {
-  const { theme, setTheme } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(theme === "dark");
-  useEffect(() => {
-    setIsDarkMode(theme === "dark");
-  }, [theme]);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDarkMode = resolvedTheme === "dark";
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+
   const changeTheme = async () => {
+    const nextTheme = isDarkMode ? "light" : "dark";
+
+    if (!("startViewTransition" in document)) {
+      setTheme(nextTheme);
+      return;
+    }
+
     if (!buttonRef.current) return;
 
     await document.startViewTransition(() => {
       flushSync(() => {
-        setTheme(theme === "dark" ? "light" : "dark");
+        setTheme(nextTheme);
       });
     }).ready;
 
@@ -53,6 +58,7 @@ export const AnimatedThemeToggler = ({ className }: props) => {
       onClick={changeTheme}
       className={cn(className, "text-foreground")}
       variant="ghost"
+      aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDarkMode ? <SunDim /> : <Moon />}
     </Button>
