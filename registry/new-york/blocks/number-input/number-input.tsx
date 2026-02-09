@@ -15,6 +15,7 @@ type NumberInputProps = Omit<
   max?: number;
   step?: number;
   dragSensitivity?: number;
+  icon?: React.ReactNode;
   onValueChange?: (value: number) => void;
 };
 
@@ -56,6 +57,7 @@ function NumberInput({
   max,
   step = 1,
   dragSensitivity = 8,
+  icon = <ArrowLeftRight className="size-4" />,
   onValueChange,
   onBlur,
   onClick,
@@ -250,7 +252,7 @@ function NumberInput({
         onLostPointerCapture={handlePointerEnd}
         aria-hidden="true"
       >
-        <ArrowLeftRight className="size-4" />
+        {icon}
       </div>
       <input
         data-slot="number-input-input"
