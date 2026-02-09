@@ -460,7 +460,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             style={{ left: `${labelLeftPercent.toFixed(3)}%` }}
           >
             <div
-              className="flex items-baseline gap-0.5 px-1 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
+              className="flex items-baseline gap-0.5 px-0.5 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
               onPointerDown={(event) => {
                 event.stopPropagation();
               }}
