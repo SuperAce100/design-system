@@ -12,6 +12,7 @@ import WindowDemo from "@/components/demos/window-demo";
 import CodeBlockDemo from "@/components/demos/code-block-demo";
 import MarkdownDemo from "@/components/demos/markdown-demo";
 import InputDemo from "@/components/demos/input-demo";
+import NumberInputDemo from "@/components/demos/number-input-demo";
 import TextareaDemo from "@/components/demos/textarea-demo";
 import ChatInputDemo from "@/components/demos/chat-input-demo";
 import SelectDemo from "@/components/demos/select-demo";
@@ -85,6 +86,13 @@ export const componentList: ComponentMeta[] = [
     name: "Input",
     section: "Primitives",
     description: "A simple input component with a tactile feel.",
+  },
+  {
+    id: "number-input",
+    name: "Number Input",
+    section: "Primitives",
+    description:
+      "A number input with keyboard stepping, bounds, and a drag handle for quick adjustments.",
   },
   {
     id: "command-prompt",
@@ -217,6 +225,7 @@ const demoMap: Record<string, React.ReactNode> = {
   markdown: <MarkdownDemo />,
   select: <SelectDemo />,
   input: <InputDemo />,
+  "number-input": <NumberInputDemo />,
   "command-prompt": <CommandPromptDemo />,
   "invisible-input": <InvisibleInputDemo />,
   textarea: <TextareaDemo />,
