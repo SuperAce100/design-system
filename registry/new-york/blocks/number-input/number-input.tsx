@@ -239,7 +239,7 @@ function NumberInput({
       <div
         data-slot="number-input-scrubber"
         className={cn(
-          "border-border/80 text-muted-foreground hover:text-foreground flex h-full shrink-0 items-center justify-center border-r px-3 transition-colors touch-none select-none",
+          "text-muted-foreground hover:text-foreground flex h-full shrink-0 items-center justify-center px-3 transition-colors touch-none select-none",
           disabled || readOnly ? "cursor-not-allowed" : "cursor-ew-resize",
           isDragging && "text-foreground"
         )}
