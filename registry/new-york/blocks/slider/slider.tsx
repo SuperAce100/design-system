@@ -33,6 +33,7 @@ const formatValue = (value: number, step: number) => {
   if (precision === 0) {
     return `${Math.round(value)}`;
   }
+
   return value.toFixed(precision).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
 };
 
@@ -55,6 +56,10 @@ const Slider = React.forwardRef<
       onValueChange,
       onValueCommit,
       onDoubleClick,
+      onPointerDown,
+      onPointerUp,
+      onPointerCancel,
+      onLostPointerCapture,
       ...props
     },
     ref
@@ -62,23 +67,14 @@ const Slider = React.forwardRef<
     const safeStep = resolveStep(step);
     const isControlled = value !== undefined;
 
-    const initialValues = React.useMemo(() => defaultValue ?? [min], [defaultValue, min]);
-    const [internalValues, setInternalValues] = React.useState<number[]>(initialValues);
-    const values = React.useMemo(
-      () => (isControlled ? (value ?? [min]) : internalValues),
-      [internalValues, isControlled, min, value]
-    );
+    const [internalValues, setInternalValues] = React.useState<number[]>(() => defaultValue ?? [min]);
+    const values = isControlled ? (value ?? [min]) : internalValues;
     const primaryValue = values[0] ?? min;
 
+    const [isDragging, setIsDragging] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
-    const [draftValue, setDraftValue] = React.useState(formatValue(primaryValue, safeStep));
+    const [draftValue, setDraftValue] = React.useState(() => formatValue(primaryValue, safeStep));
     const inputRef = React.useRef<HTMLInputElement | null>(null);
-
-    React.useEffect(() => {
-      if (!isControlled) {
-        setInternalValues(initialValues);
-      }
-    }, [initialValues, isControlled]);
 
     React.useEffect(() => {
       if (!isEditing) {
@@ -106,16 +102,6 @@ const Slider = React.forwardRef<
       }
     };
 
-    const handleDoubleClick: React.MouseEventHandler<HTMLElement> = (event) => {
-      (onDoubleClick as React.MouseEventHandler<HTMLElement> | undefined)?.(event);
-      if (event.defaultPrevented || disabled) {
-        return;
-      }
-
-      setDraftValue(formatValue(primaryValue, safeStep));
-      setIsEditing(true);
-    };
-
     const commitInput = (cancel = false) => {
       if (cancel) {
         setIsEditing(false);
@@ -134,43 +120,21 @@ const Slider = React.forwardRef<
       setIsEditing(false);
     };
 
-    if (isEditing) {
-      return (
-        <input
-          ref={inputRef}
-          type="number"
-          step={safeStep}
-          min={min}
-          max={max}
-          value={draftValue}
-          data-slot="slider-input"
-          className={cn(
-            "h-10 w-full px-3 py-2 text-center text-sm font-medium outline-none",
-            "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[3px]",
-            sliderSurfaceClassName,
-            className
-          )}
-          onChange={(event) => {
-            setDraftValue(event.target.value);
-          }}
-          onBlur={() => {
-            commitInput();
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              commitInput();
-              return;
-            }
+    const range = max - min;
+    const percent = range <= 0 ? 0 : ((clamp(primaryValue, min, max) - min) / range) * 100;
+    const labelLeft = clamp(percent, 8, 92);
 
-            if (event.key === "Escape") {
-              event.preventDefault();
-              commitInput(true);
-            }
-          }}
-        />
-      );
-    }
+    const handleDoubleClick: NonNullable<
+      React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>["onDoubleClick"]
+    > = (event) => {
+      onDoubleClick?.(event);
+      if (event.defaultPrevented || disabled) {
+        return;
+      }
+
+      setDraftValue(formatValue(primaryValue, safeStep));
+      setIsEditing(true);
+    };
 
     return (
       <SliderPrimitive.Root
@@ -183,7 +147,7 @@ const Slider = React.forwardRef<
         defaultValue={defaultValue}
         disabled={disabled}
         className={cn(
-          "relative flex h-10 w-full touch-none items-center px-1.5",
+          "relative flex h-10 w-full touch-none items-center overflow-hidden",
           "focus-within:border-primary focus-within:ring-primary/30 focus-within:ring-[3px]",
           "disabled:pointer-events-none disabled:opacity-50",
           sliderSurfaceClassName,
@@ -194,21 +158,85 @@ const Slider = React.forwardRef<
         }}
         onValueCommit={onValueCommit}
         onDoubleClick={handleDoubleClick}
+        onPointerDown={(event) => {
+          onPointerDown?.(event);
+          if (!event.defaultPrevented && !disabled && !isEditing) {
+            setIsDragging(true);
+          }
+        }}
+        onPointerUp={(event) => {
+          onPointerUp?.(event);
+          setIsDragging(false);
+        }}
+        onPointerCancel={(event) => {
+          onPointerCancel?.(event);
+          setIsDragging(false);
+        }}
+        onLostPointerCapture={(event) => {
+          onLostPointerCapture?.(event);
+          setIsDragging(false);
+        }}
         {...props}
       >
-        <SliderPrimitive.Track className="relative h-full w-full overflow-hidden rounded-[0.65rem]">
+        <SliderPrimitive.Track className="relative h-full w-full">
           <SliderPrimitive.Range className="absolute h-full bg-primary/30" />
         </SliderPrimitive.Track>
-        {(values.length ? values : [min]).map((_, index) => (
+
+        {(values.length > 0 ? values : [min]).map((_, index) => (
           <SliderPrimitive.Thumb
             key={`thumb-${index}`}
             className={cn(
-              "block w-0.5 rounded-full border-0 bg-primary",
-              "h-[calc(100%-8px)] shadow-none",
+              "z-10 block w-px border-0 bg-primary",
+              "h-[calc(100%_-_8px)]",
               "focus-visible:outline-none"
             )}
           />
         ))}
+
+        {(isDragging || isEditing) && (
+          <div
+            className="absolute top-1/2 z-20 -translate-y-1/2 -translate-x-1/2"
+            style={{ left: `${labelLeft.toFixed(3)}%` }}
+          >
+            {isEditing ? (
+              <input
+                ref={inputRef}
+                type="number"
+                step={safeStep}
+                min={min}
+                max={max}
+                value={draftValue}
+                data-slot="slider-inline-input"
+                className={cn(
+                  "h-7 w-16 rounded-md border border-input bg-background px-1 text-center text-xs font-medium outline-none",
+                  "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[2px]"
+                )}
+                onChange={(event) => {
+                  setDraftValue(event.target.value);
+                }}
+                onBlur={() => {
+                  commitInput();
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    commitInput();
+                    return;
+                  }
+
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    commitInput(true);
+                  }
+                }}
+              />
+            ) : (
+              <span className="rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-foreground shadow-sm">
+                {formatValue(primaryValue, safeStep)}
+              </span>
+            )}
+          </div>
+        )}
       </SliderPrimitive.Root>
     );
   }
