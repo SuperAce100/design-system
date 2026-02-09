@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { Button as UiButton } from "@/components/ui/button";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import { useThemeConfig } from "@/lib/theme-context";
 import {
@@ -25,7 +27,7 @@ import {
 import { ColorPicker } from "@/registry/new-york/blocks/color-picker/color-picker";
 
 // ---------------------------------------------------------------------------
-// Theme Customizer (collapsible drawer)
+// Theme Customizer (floating panel)
 // ---------------------------------------------------------------------------
 
 export function ThemeCustomizer() {
@@ -33,30 +35,25 @@ export function ThemeCustomizer() {
 
   return (
     <>
-      <button
-        type="button"
+      <UiButton
+        size="icon"
+        variant="ghost"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center justify-center rounded-lg size-8 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        className="text-foreground"
         aria-label="Customize theme"
       >
         <Paintbrush className="size-4" />
-      </button>
+      </UiButton>
       <ThemeDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Drawer
+// Floating panel
 // ---------------------------------------------------------------------------
 
 function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [shouldRender, setShouldRender] = React.useState(open);
-
-  React.useEffect(() => {
-    if (open) setShouldRender(true);
-  }, [open]);
-
   // Close on ESC
   React.useEffect(() => {
     if (!open) return;
@@ -64,41 +61,39 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handler);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", handler);
-      document.body.style.overflow = prev;
     };
   }, [open, onClose]);
 
-  const handleTransitionEnd = React.useCallback(() => {
-    if (!open) setShouldRender(false);
-  }, [open]);
-
-  if (!shouldRender) return null;
-
   return (
-    <div className="fixed inset-0 z-[60]">
-      {/* Backdrop */}
-      <div
-        className={cn(
-          "absolute inset-0 bg-background/60 backdrop-blur-sm transition-opacity duration-200",
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-        onClick={onClose}
-      />
-      {/* Panel */}
-      <div
-        className={cn(
-          "relative ml-auto flex h-full w-[340px] max-w-full flex-col border-l bg-background shadow-2xl transition-transform duration-300 ease-out [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-        onTransitionEnd={handleTransitionEnd}
-      >
-        <DrawerContent onClose={onClose} />
-      </div>
-    </div>
+    <AnimatePresence initial={false}>
+      {open ? (
+        <div className="fixed inset-0 z-[60]">
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0 bg-transparent"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          />
+          <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Theme customizer"
+            className="absolute right-3 top-3 bottom-3 flex w-[min(22rem,calc(100vw-1.5rem))] max-w-full flex-col rounded-2xl border bg-background shadow-2xl will-change-transform sm:right-4 sm:top-4 sm:bottom-4 sm:w-[360px] [&_button]:focus-visible:ring-0 [&_button]:focus-visible:ring-offset-0 [&_button]:focus-visible:border-transparent"
+            initial={{ x: "105%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "105%", opacity: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <DrawerContent onClose={onClose} />
+          </motion.aside>
+        </div>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
@@ -120,7 +115,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4">
+      <div className="flex items-center justify-between px-5 py-4 pb-2">
         <h2 className="text-xl font-medium tracking-tight">Edit Theme</h2>
         <button
           type="button"
@@ -133,119 +128,120 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-7">
-        {/* Neutral */}
-        <Section title="Neutral" description="The neutral scale of the theme">
-          <div className="flex items-center gap-2">
-            {(Object.keys(NEUTRAL_LABELS) as NeutralScale[]).map((scale) => (
-              <ColorSwatch
-                key={scale}
-                color={NEUTRAL_DISPLAY_COLORS[scale]}
-                label={NEUTRAL_LABELS[scale]}
-                active={config.neutral === scale}
-                onClick={() => setConfig((p) => ({ ...p, neutral: scale }))}
-              />
-            ))}
-          </div>
-        </Section>
-
-        {/* Primary */}
-        <PrimarySection config={config} setConfig={setConfig} />
-
-        {/* Typography */}
-        <Section title="Typography" description="Fonts for headings and body text">
-          <div className="flex flex-col gap-3">
-            <FontOptionPicker
-              label="Heading font"
-              selectedFont={config.headingFont}
-              onChange={(font) => setConfig((p) => ({ ...p, headingFont: font }))}
-            />
-            <FontOptionPicker
-              label="Body font"
-              selectedFont={config.bodyFont}
-              onChange={(font) => setConfig((p) => ({ ...p, bodyFont: font }))}
-            />
-          </div>
-        </Section>
-
-        {/* Radius */}
-        <Section title="Radius" description="How rounded the elements are">
-          <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.025}
-              value={config.radius}
-              onChange={(e) => setConfig((p) => ({ ...p, radius: Number(e.target.value) }))}
-              className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
-            />
-            <span className="text-xs text-muted-foreground tabular-nums w-10 text-right font-mono">
-              {config.radius.toFixed(2)}
-            </span>
-          </div>
-        </Section>
-
-        {/* Background */}
-        <Section title="Background" description="How dark the page background is">
-          <div className="flex items-center gap-2">
-            {BACKGROUND_PRESETS.map((preset) => {
-              const bgColors = getBackgroundDisplayColors(config.neutral);
-              return (
+      <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-8">
+        <SectionGroup title="Colors">
+          <Section title="Neutral" description="The neutral scale of the theme">
+            <div className="flex items-center gap-1">
+              {(Object.keys(NEUTRAL_LABELS) as NeutralScale[]).map((scale) => (
                 <ColorSwatch
-                  key={preset.value}
-                  color={bgColors[preset.value]}
-                  label={preset.label}
-                  active={config.backgroundShade === preset.value}
-                  onClick={() =>
-                    setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
-                  }
+                  key={scale}
+                  color={NEUTRAL_DISPLAY_COLORS[scale]}
+                  label={NEUTRAL_LABELS[scale]}
+                  active={config.neutral === scale}
+                  onClick={() => setConfig((p) => ({ ...p, neutral: scale }))}
                 />
-              );
-            })}
-          </div>
-        </Section>
+              ))}
+            </div>
+          </Section>
 
-        {/* Shadow Depth */}
-        <Section
-          title="Shadow Depth"
-          description="How elevated the shadow is relative to the element"
-        >
-          <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={config.shadowDepth}
-              onChange={(e) => setConfig((p) => ({ ...p, shadowDepth: Number(e.target.value) }))}
-              className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
-            />
-            <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
-              {config.shadowDepth}
-            </span>
-          </div>
-        </Section>
+          <Section title="Background" description="How dark the page background is">
+            <div className="flex items-center gap-2">
+              {BACKGROUND_PRESETS.map((preset) => {
+                const bgColors = getBackgroundDisplayColors(config.neutral);
+                return (
+                  <ColorSwatch
+                    key={preset.value}
+                    color={bgColors[preset.value]}
+                    label={preset.label}
+                    active={config.backgroundShade === preset.value}
+                    onClick={() =>
+                      setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
+                    }
+                  />
+                );
+              })}
+            </div>
+          </Section>
 
-        {/* Shadow Opacity */}
-        <Section title="Shadow Opacity" description="How subtle the shadow is">
-          <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={config.shadowOpacity}
-              onChange={(e) => setConfig((p) => ({ ...p, shadowOpacity: Number(e.target.value) }))}
-              className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
-            />
-            <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
-              {config.shadowOpacity}
-            </span>
-          </div>
-        </Section>
+          <PrimarySection config={config} setConfig={setConfig} />
+        </SectionGroup>
+
+        <SectionGroup title="Typography">
+          <Section title="Fonts" description="Fonts for headings and body text">
+            <div className="flex flex-col gap-3">
+              <FontOptionPicker
+                label="Heading font"
+                selectedFont={config.headingFont}
+                onChange={(font) => setConfig((p) => ({ ...p, headingFont: font }))}
+              />
+              <FontOptionPicker
+                label="Body font"
+                selectedFont={config.bodyFont}
+                onChange={(font) => setConfig((p) => ({ ...p, bodyFont: font }))}
+              />
+            </div>
+          </Section>
+        </SectionGroup>
+
+        <SectionGroup title="Styling">
+          <Section title="Radius" description="How rounded the elements are">
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.025}
+                value={config.radius}
+                onChange={(e) => setConfig((p) => ({ ...p, radius: Number(e.target.value) }))}
+                className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
+              />
+              <span className="text-xs text-muted-foreground tabular-nums w-10 text-right font-mono">
+                {config.radius.toFixed(2)}
+              </span>
+            </div>
+          </Section>
+
+          <Section
+            title="Shadow Depth"
+            description="How elevated the shadow is relative to the element"
+          >
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={config.shadowDepth}
+                onChange={(e) => setConfig((p) => ({ ...p, shadowDepth: Number(e.target.value) }))}
+                className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
+              />
+              <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
+                {config.shadowDepth}
+              </span>
+            </div>
+          </Section>
+
+          <Section title="Shadow Opacity" description="How subtle the shadow is">
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={config.shadowOpacity}
+                onChange={(e) =>
+                  setConfig((p) => ({ ...p, shadowOpacity: Number(e.target.value) }))
+                }
+                className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
+              />
+              <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
+                {config.shadowOpacity}
+              </span>
+            </div>
+          </Section>
+        </SectionGroup>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center gap-2 px-5 py-4">
+      <div className="flex items-center gap-2 px-5 py-4 pt-2">
         <Button variant="ghost" size="sm" onClick={handleCopyCss} className="flex-1">
           {copied ? (
             <>
@@ -324,7 +320,7 @@ function PrimarySection({
 
   return (
     <Section title="Primary" description="The primary color of the theme">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1">
         {(Object.keys(PRIMARY_LABELS) as PrimaryColor[]).map((color) => (
           <ColorSwatch
             key={color}
@@ -344,10 +340,8 @@ function PrimarySection({
           type="button"
           onClick={() => setPickerOpen((v) => !v)}
           className={cn(
-            "group relative size-8 rounded-full border-2 transition-all duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            isCustomActive
-              ? "border-foreground scale-110"
-              : "border-transparent hover:border-foreground/30"
+            "group relative h-8 w-15 rounded-xs transition-all duration-150 hover:scale-110",
+            isCustomActive && "inset-ring-2 inset-ring-foreground/30 scale-110"
           )}
           title="Custom color"
           aria-label="Custom color"
@@ -356,7 +350,7 @@ function PrimarySection({
           {isCustomActive ? (
             <>
               <span
-                className="absolute inset-[2px] rounded-full"
+                className="absolute inset-0 rounded-xs"
                 style={{ backgroundColor: config.customPrimary }}
               />
               <span className="absolute inset-0 flex items-center justify-center">
@@ -366,7 +360,7 @@ function PrimarySection({
           ) : (
             <>
               <span
-                className="absolute inset-[2px] rounded-full"
+                className="absolute inset-0 rounded-xs"
                 style={{
                   background:
                     "conic-gradient(from 0deg, oklch(0.7 0.25 0), oklch(0.7 0.25 60), oklch(0.7 0.25 120), oklch(0.7 0.25 180), oklch(0.7 0.25 240), oklch(0.7 0.25 300), oklch(0.7 0.25 360))",
@@ -419,13 +413,8 @@ function FontOptionPicker({
             key={font}
             type="button"
             size="xs"
-            variant="ghost"
-            className={cn(
-              "h-auto min-h-0 rounded-md border px-2 py-1 text-xs shadow-none",
-              selectedFont === font
-                ? "border-transparent bg-foreground text-background hover:bg-foreground/90"
-                : "border-border bg-background text-foreground hover:bg-muted"
-            )}
+            variant={selectedFont === font ? "secondary" : "ghost"}
+            className={cn("h-auto min-h-0 rounded-md px-2 py-1 text-xs")}
             onClick={() => onChange(font)}
             aria-pressed={selectedFont === font}
             style={{ fontFamily: getFontFamilyForOption(font) }}
@@ -435,6 +424,17 @@ function FontOptionPicker({
         ))}
       </div>
     </div>
+  );
+}
+
+function SectionGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-[11px] font-semibold uppercase font-sans tracking-[0.14em] text-muted-foreground/80">
+        {title}
+      </h3>
+      <div className="flex flex-col gap-6">{children}</div>
+    </section>
   );
 }
 
@@ -454,8 +454,8 @@ function Section({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-col gap-0.5">
-        <label className="text-md font-medium tracking-tight text-foreground">{title}</label>
-        <label className="text-sm text-muted-foreground">{description}</label>
+        <h4 className="text-sm font-medium tracking-tight text-foreground">{title}</h4>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       {children}
     </div>
@@ -467,10 +467,12 @@ function ColorSwatch({
   label,
   active,
   onClick,
+  darkText = false,
 }: {
   color: string;
   label: string;
   active: boolean;
+  darkText?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -478,19 +480,25 @@ function ColorSwatch({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative size-8 rounded-full border-2 transition-all duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        active ? "border-foreground scale-110" : "border-transparent hover:border-foreground/30"
+        "group relative h-8 w-15 rounded-xs transition-all duration-150 hover:scale-110",
+        active && "inset-ring-2 inset-ring-foreground/30"
       )}
       title={label}
       aria-label={label}
       aria-pressed={active}
     >
-      <span className="absolute inset-[2px] rounded-full" style={{ backgroundColor: color }} />
-      {active && (
-        <span className="absolute inset-0 flex items-center justify-center">
-          <Check className="size-3.5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
-        </span>
-      )}
+      <span className="absolute inset-0 rounded-xs" style={{ backgroundColor: color }} />
+      <div className="absolute inset-1 flex items-center justify-center">
+        {active && <Check className="size-3.5 text-white" />}
+        <div
+          className="text-[11px] w-full truncate"
+          style={{
+            color: darkText ? "var(--color-background)" : "var(--color-foreground)",
+          }}
+        >
+          {label}
+        </div>
+      </div>
     </button>
   );
 }
