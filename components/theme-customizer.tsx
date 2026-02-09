@@ -227,7 +227,9 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
                 min={0}
                 max={100}
                 value={config.shadowOpacity}
-                onChange={(e) => setConfig((p) => ({ ...p, shadowOpacity: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setConfig((p) => ({ ...p, shadowOpacity: Number(e.target.value) }))
+                }
                 className="w-full accent-primary h-1.5 rounded-full appearance-none bg-border cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow-sm"
               />
               <span className="text-xs text-muted-foreground tabular-nums w-7 text-right">
@@ -425,16 +427,10 @@ function FontOptionPicker({
   );
 }
 
-function SectionGroup({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function SectionGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
-      <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
+      <h3 className="text-[11px] font-semibold uppercase font-sans tracking-[0.14em] text-muted-foreground/80">
         {title}
       </h3>
       <div className="flex flex-col gap-6">{children}</div>
