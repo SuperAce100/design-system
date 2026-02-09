@@ -1,16 +1,13 @@
 "use client";
 
 import * as React from "react";
+import * as SliderPrimitive from "@radix-ui/react-slider";
 
 import { cn } from "@/lib/utils";
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const getStepPrecision = (step: number) => {
-  if (!Number.isFinite(step)) {
-    return 0;
-  }
-
   const stepText = step.toString();
   if (stepText.includes("e-")) {
     const [, exponent = "0"] = stepText.split("e-");
@@ -21,68 +18,31 @@ const getStepPrecision = (step: number) => {
   return decimals.length;
 };
 
-const trimTrailingZeros = (value: string) => value.replace(/\.?0+$/, "");
+const resolveStep = (step: number | undefined) =>
+  Number.isFinite(step) && (step ?? 0) > 0 ? (step as number) : 1;
 
-const normalizeStep = (step: number | undefined) =>
-  Number.isFinite(step) && (step ?? 0) > 0 ? (step as number) : null;
-
-const snapToStep = (value: number, min: number, max: number, step: number | null) => {
+const snapToStep = (value: number, min: number, max: number, step: number) => {
   const normalized = clamp(value, min, max);
-  if (step === null) {
-    return normalized;
-  }
-  const nextStep = step;
-  const precision = Math.min(getStepPrecision(nextStep) + 2, 8);
-  const snapped = Math.round((normalized - min) / nextStep) * nextStep + min;
+  const precision = Math.min(getStepPrecision(step) + 2, 8);
+  const snapped = Math.round((normalized - min) / step) * step + min;
   return Number(clamp(snapped, min, max).toFixed(precision));
 };
 
-const getPercentFromValue = (value: number, min: number, max: number) => {
-  if (max <= min) {
-    return 0;
-  }
-  return clamp((value - min) / (max - min), 0, 1);
-};
-
-const getRangePrecision = (range: number) => {
-  if (!Number.isFinite(range) || range <= 0) {
-    return 0;
-  }
-
-  if (range <= 5) {
-    return 2;
-  }
-
-  if (range <= 20) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const formatDisplayValue = (value: number, step: number | null, range: number) => {
-  const precision = Math.min(step === null ? getRangePrecision(range) : getStepPrecision(step), 4);
+const formatValue = (value: number, step: number) => {
+  const precision = Math.min(getStepPrecision(step), 4);
   if (precision === 0) {
     return `${Math.round(value)}`;
   }
-  return trimTrailingZeros(value.toFixed(precision));
+  return value.toFixed(precision).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
 };
 
-export type SliderProps = Omit<React.ComponentPropsWithoutRef<"div">, "defaultValue"> & {
-  value?: number;
-  defaultValue?: number;
-  min?: number;
-  max?: number;
-  step?: number;
-  bars?: number;
-  editable?: boolean;
-  disabled?: boolean;
-  valueSuffix?: string;
-  onValueChange?: (value: number) => void;
-  onValueCommit?: (value: number) => void;
-};
+const sliderSurfaceClassName =
+  "border-input dark:bg-input/30 rounded-xl border bg-transparent shadow-md shadow-shade transition-all duration-150 ease-out hover:bg-muted hover:border-border/0 hover:shadow-none";
 
-const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
+const Slider = React.forwardRef<
+  React.ElementRef<typeof SliderPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+>(
   (
     {
       className,
@@ -91,79 +51,40 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       min = 0,
       max = 100,
       step,
-      bars = 36,
-      editable = true,
-      disabled = false,
-      valueSuffix = "",
+      disabled,
       onValueChange,
       onValueCommit,
-      style,
-      onPointerDown,
-      onPointerMove,
-      onPointerUp,
-      onPointerCancel,
-      onKeyDown,
+      onDoubleClick,
       ...props
     },
     ref
   ) => {
-    const safeStep = normalizeStep(step);
-    const safeMax = max > min ? max : min + (safeStep ?? 1);
-    const valueRange = safeMax - min;
-    const keyboardStep = safeStep ?? Math.max((safeMax - min) / 100, 0.01);
+    const safeStep = resolveStep(step);
     const isControlled = value !== undefined;
-    const initialResolvedValue = snapToStep(value ?? defaultValue ?? min, min, safeMax, safeStep);
 
-    const [uncontrolledValue, setUncontrolledValue] = React.useState(() =>
-      snapToStep(defaultValue ?? min, min, safeMax, safeStep)
+    const initialValues = React.useMemo(() => defaultValue ?? [min], [defaultValue, min]);
+    const [internalValues, setInternalValues] = React.useState<number[]>(initialValues);
+    const values = React.useMemo(
+      () => (isControlled ? (value ?? [min]) : internalValues),
+      [internalValues, isControlled, min, value]
     );
+    const primaryValue = values[0] ?? min;
+
     const [isEditing, setIsEditing] = React.useState(false);
-    const [draftValue, setDraftValue] = React.useState("");
-    const [isDragging, setIsDragging] = React.useState(false);
-
-    const sliderRef = React.useRef<HTMLDivElement | null>(null);
+    const [draftValue, setDraftValue] = React.useState(formatValue(primaryValue, safeStep));
     const inputRef = React.useRef<HTMLInputElement | null>(null);
-    const pointerIdRef = React.useRef<number | null>(null);
-    const valueRef = React.useRef<number>(initialResolvedValue);
-    const rafRef = React.useRef<number | null>(null);
-    const pendingClientXRef = React.useRef<number | null>(null);
-
-    const resolvedValue = snapToStep(
-      isControlled ? value : uncontrolledValue,
-      min,
-      safeMax,
-      safeStep
-    );
-
-    const setSliderRef = React.useCallback(
-      (node: HTMLDivElement | null) => {
-        sliderRef.current = node;
-        if (typeof ref === "function") {
-          ref(node);
-          return;
-        }
-        if (ref) {
-          ref.current = node;
-        }
-      },
-      [ref]
-    );
 
     React.useEffect(() => {
       if (!isControlled) {
-        setUncontrolledValue((previous) => snapToStep(previous, min, safeMax, safeStep));
+        setInternalValues(initialValues);
       }
-    }, [isControlled, min, safeMax, safeStep]);
+    }, [initialValues, isControlled]);
 
     React.useEffect(() => {
       if (!isEditing) {
-        setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
+        setDraftValue(formatValue(primaryValue, safeStep));
       }
-    }, [resolvedValue, safeStep, valueRange, isEditing]);
-
-    React.useEffect(() => {
-      valueRef.current = resolvedValue;
-    }, [resolvedValue]);
+    }, [isEditing, primaryValue, safeStep]);
 
     React.useEffect(() => {
       if (!isEditing) {
@@ -174,342 +95,121 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       inputRef.current?.select();
     }, [isEditing]);
 
-    const setValue = React.useCallback(
-      (nextValue: number, options?: { commit?: boolean }) => {
-        const snapped = snapToStep(nextValue, min, safeMax, safeStep);
-        const hasChanged = snapped !== valueRef.current;
-
-        if (!isControlled && hasChanged) {
-          setUncontrolledValue(snapped);
-          valueRef.current = snapped;
-        }
-
-        if (hasChanged) {
-          if (isControlled) {
-            valueRef.current = snapped;
-          }
-          onValueChange?.(snapped);
-        }
-
-        if (options?.commit) {
-          onValueCommit?.(snapped);
-        }
-      },
-      [isControlled, min, onValueChange, onValueCommit, safeMax, safeStep]
-    );
-
-    const valuePercent = getPercentFromValue(resolvedValue, min, safeMax);
-    const barCount = clamp(Math.round(bars), 12, 96);
-    const labelLeftPercent = clamp(valuePercent * 100, 8, 92);
-
-    const updateFromClientX = React.useCallback(
-      (clientX: number, options?: { commit?: boolean }) => {
-        const sliderElement = sliderRef.current;
-        if (!sliderElement) {
-          return;
-        }
-
-        const rect = sliderElement.getBoundingClientRect();
-        if (rect.width <= 0) {
-          return;
-        }
-
-        const relativeX = clamp((clientX - rect.left) / rect.width, 0, 1);
-        const nextValue = min + relativeX * (safeMax - min);
-        setValue(nextValue, options);
-      },
-      [min, safeMax, setValue]
-    );
-
-    const flushPendingPointerUpdate = React.useCallback(
-      (options?: { commit?: boolean }) => {
-        if (pendingClientXRef.current === null) {
-          return;
-        }
-
-        const pendingClientX = pendingClientXRef.current;
-        pendingClientXRef.current = null;
-        updateFromClientX(pendingClientX, options);
-      },
-      [updateFromClientX]
-    );
-
-    const schedulePointerUpdate = React.useCallback(
-      (clientX: number) => {
-        pendingClientXRef.current = clientX;
-        if (rafRef.current !== null) {
-          return;
-        }
-
-        rafRef.current = requestAnimationFrame(() => {
-          rafRef.current = null;
-          flushPendingPointerUpdate();
-        });
-      },
-      [flushPendingPointerUpdate]
-    );
-
-    const stopDragging = React.useCallback(() => {
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+    const emitValues = (nextValues: number[], options?: { commit?: boolean }) => {
+      if (!isControlled) {
+        setInternalValues(nextValues);
       }
-      pendingClientXRef.current = null;
-      pointerIdRef.current = null;
-      setIsDragging(false);
-    }, []);
 
-    React.useEffect(() => {
-      return () => {
-        if (rafRef.current !== null) {
-          cancelAnimationFrame(rafRef.current);
-        }
-      };
-    }, []);
+      onValueChange?.(nextValues);
+      if (options?.commit) {
+        onValueCommit?.(nextValues);
+      }
+    };
 
-    const commitDraft = React.useCallback(
-      (cancel = false) => {
-        if (cancel) {
-          setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
-          setIsEditing(false);
-          return;
-        }
+    const handleDoubleClick: React.MouseEventHandler<HTMLElement> = (event) => {
+      (onDoubleClick as React.MouseEventHandler<HTMLElement> | undefined)?.(event);
+      if (event.defaultPrevented || disabled) {
+        return;
+      }
 
-        const parsed = Number.parseFloat(draftValue.trim());
-        if (!Number.isNaN(parsed)) {
-          setValue(parsed, { commit: true });
-        } else {
-          setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
-        }
+      setDraftValue(formatValue(primaryValue, safeStep));
+      setIsEditing(true);
+    };
 
+    const commitInput = (cancel = false) => {
+      if (cancel) {
         setIsEditing(false);
-      },
-      [draftValue, resolvedValue, safeStep, setValue, valueRange]
-    );
+        return;
+      }
 
-    const tokenStyle: React.CSSProperties = {
-      // Token contract:
-      // --slider-bg: container background (defaults to --muted)
-      // --slider-border: container border (defaults to --border)
-      // --slider-bar: bar color (defaults to --foreground)
-      // --slider-value-fg: inline value color (defaults to --foreground)
-      "--slider-bg": "var(--muted)",
-      "--slider-border": "var(--border)",
-      "--slider-bar": "var(--foreground)",
-      "--slider-value-fg": "var(--foreground)",
-      ...style,
-    } as React.CSSProperties;
+      const parsed = Number.parseFloat(draftValue);
+      if (Number.isNaN(parsed)) {
+        setIsEditing(false);
+        return;
+      }
+
+      const nextValues = values.length > 0 ? [...values] : [min];
+      nextValues[0] = snapToStep(parsed, min, max, safeStep);
+      emitValues(nextValues, { commit: true });
+      setIsEditing(false);
+    };
+
+    if (isEditing) {
+      return (
+        <input
+          ref={inputRef}
+          type="number"
+          step={safeStep}
+          min={min}
+          max={max}
+          value={draftValue}
+          data-slot="slider-input"
+          className={cn(
+            "h-10 w-full px-3 py-2 text-center text-sm font-medium outline-none",
+            "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[3px]",
+            sliderSurfaceClassName,
+            className
+          )}
+          onChange={(event) => {
+            setDraftValue(event.target.value);
+          }}
+          onBlur={() => {
+            commitInput();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              commitInput();
+              return;
+            }
+
+            if (event.key === "Escape") {
+              event.preventDefault();
+              commitInput(true);
+            }
+          }}
+        />
+      );
+    }
 
     return (
-      <div
-        {...props}
-        ref={setSliderRef}
+      <SliderPrimitive.Root
+        ref={ref}
         data-slot="slider"
-        data-disabled={disabled ? "true" : "false"}
-        role="slider"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled}
-        aria-valuemin={min}
-        aria-valuemax={safeMax}
-        aria-valuenow={resolvedValue}
-        aria-valuetext={
-          valueSuffix
-            ? `${formatDisplayValue(resolvedValue, safeStep, valueRange)}${valueSuffix}`
-            : formatDisplayValue(resolvedValue, safeStep, valueRange)
-        }
+        min={min}
+        max={max}
+        step={safeStep}
+        value={value}
+        defaultValue={defaultValue}
+        disabled={disabled}
         className={cn(
-          "relative h-20 w-full touch-none select-none rounded-xl bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
-          "focus-visible:ring-2 focus-visible:ring-ring/40",
-          "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-60",
-          isDragging ? "cursor-grabbing" : "cursor-grab",
+          "relative flex h-10 w-full touch-none items-center px-1.5",
+          "focus-within:border-primary focus-within:ring-primary/30 focus-within:ring-[3px]",
+          "disabled:pointer-events-none disabled:opacity-50",
+          sliderSurfaceClassName,
           className
         )}
-        style={tokenStyle}
-        onPointerDown={(event) => {
-          onPointerDown?.(event);
-          if (event.defaultPrevented || disabled || isEditing) {
-            return;
-          }
-
-          pointerIdRef.current = event.pointerId;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          setIsDragging(true);
-          updateFromClientX(event.clientX);
+        onValueChange={(nextValues) => {
+          emitValues(nextValues);
         }}
-        onPointerMove={(event) => {
-          onPointerMove?.(event);
-          if (event.defaultPrevented || pointerIdRef.current !== event.pointerId) {
-            return;
-          }
-
-          schedulePointerUpdate(event.clientX);
-        }}
-        onPointerUp={(event) => {
-          onPointerUp?.(event);
-          if (event.defaultPrevented || pointerIdRef.current !== event.pointerId) {
-            return;
-          }
-
-          if (rafRef.current !== null) {
-            cancelAnimationFrame(rafRef.current);
-            rafRef.current = null;
-          }
-
-          pendingClientXRef.current = event.clientX;
-          flushPendingPointerUpdate({ commit: true });
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
-          }
-          stopDragging();
-        }}
-        onPointerCancel={(event) => {
-          onPointerCancel?.(event);
-          if (event.defaultPrevented || pointerIdRef.current !== event.pointerId) {
-            return;
-          }
-
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
-          }
-          stopDragging();
-        }}
-        onLostPointerCapture={() => {
-          stopDragging();
-        }}
-        onKeyDown={(event) => {
-          onKeyDown?.(event);
-          if (event.defaultPrevented || disabled || isEditing) {
-            return;
-          }
-
-          const stepSize = event.shiftKey ? keyboardStep * 10 : keyboardStep;
-
-          switch (event.key) {
-            case "ArrowLeft":
-            case "ArrowDown": {
-              event.preventDefault();
-              setValue(resolvedValue - stepSize, { commit: true });
-              break;
-            }
-            case "ArrowRight":
-            case "ArrowUp": {
-              event.preventDefault();
-              setValue(resolvedValue + stepSize, { commit: true });
-              break;
-            }
-            case "PageDown": {
-              event.preventDefault();
-              setValue(resolvedValue - keyboardStep * 10, { commit: true });
-              break;
-            }
-            case "PageUp": {
-              event.preventDefault();
-              setValue(resolvedValue + keyboardStep * 10, { commit: true });
-              break;
-            }
-            case "Home": {
-              event.preventDefault();
-              setValue(min, { commit: true });
-              break;
-            }
-            case "End": {
-              event.preventDefault();
-              setValue(safeMax, { commit: true });
-              break;
-            }
-            default:
-              break;
-          }
-        }}
+        onValueCommit={onValueCommit}
+        onDoubleClick={handleDoubleClick}
+        {...props}
       >
-        <div className="pointer-events-none absolute inset-3 flex items-end gap-1">
-          {Array.from({ length: barCount }, (_, index) => {
-            const ratio = barCount <= 1 ? 0 : index / (barCount - 1);
-            const distance = Math.abs(ratio - valuePercent);
-            const valleyWidth = 0.075;
-            const valley = Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
-            const height = clamp(0.7 - valley * 0.45, 0.18, 0.78);
-            const opacity = clamp(1 - valley * 0.42, 0.2, 1);
-
-            return (
-              <span
-                key={`bar-${index}`}
-                className={cn(
-                  "flex-1 rounded-full bg-[var(--slider-bar)] transition-[height,opacity] ease-out",
-                  isDragging ? "duration-0" : "duration-150"
-                )}
-                style={{
-                  height: `${(height * 100).toFixed(2)}%`,
-                  opacity,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          aria-label="Slider value display"
-          aria-live="polite"
-        >
-          <div
+        <SliderPrimitive.Track className="relative h-full w-full overflow-hidden rounded-[0.65rem]">
+          <SliderPrimitive.Range className="absolute h-full bg-primary/30" />
+        </SliderPrimitive.Track>
+        {(values.length ? values : [min]).map((_, index) => (
+          <SliderPrimitive.Thumb
+            key={`thumb-${index}`}
             className={cn(
-              "pointer-events-auto absolute top-[38%] -translate-x-1/2 -translate-y-1/2 transition-[left] ease-out",
-              isDragging ? "duration-0" : "duration-150"
+              "block w-0.5 rounded-full border-0 bg-primary",
+              "h-[calc(100%-8px)] shadow-none",
+              "focus-visible:outline-none"
             )}
-            style={{ left: `${labelLeftPercent.toFixed(3)}%` }}
-          >
-            <div
-              className="flex items-baseline gap-0.5 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
-              data-slider-value="true"
-              onDoubleClick={(event) => {
-                event.stopPropagation();
-                if (!editable || disabled) {
-                  return;
-                }
-                setDraftValue(formatDisplayValue(resolvedValue, safeStep, valueRange));
-                setIsEditing(true);
-              }}
-            >
-              {isEditing ? (
-                <input
-                  ref={inputRef}
-                  value={draftValue}
-                  inputMode="decimal"
-                  aria-label="Slider value"
-                  className="w-9 bg-transparent text-center text-2xl leading-none font-semibold tabular-nums outline-none"
-                  onChange={(event) => {
-                    setDraftValue(event.target.value);
-                  }}
-                  onBlur={() => {
-                    commitDraft();
-                  }}
-                  onKeyDown={(event) => {
-                    event.stopPropagation();
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      commitDraft();
-                      return;
-                    }
-
-                    if (event.key === "Escape") {
-                      event.preventDefault();
-                      commitDraft(true);
-                    }
-                  }}
-                />
-              ) : (
-                <span className="text-2xl leading-none font-semibold tabular-nums">
-                  {formatDisplayValue(resolvedValue, safeStep, valueRange)}
-                </span>
-              )}
-              {valueSuffix ? (
-                <span className="text-sm leading-none font-medium opacity-80">{valueSuffix}</span>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
+          />
+        ))}
+      </SliderPrimitive.Root>
     );
   }
 );

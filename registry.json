@@ -146,8 +146,8 @@
       "name": "slider",
       "type": "registry:component",
       "title": "Slider",
-      "description": "A bar-wave slider with keyboard support and inline value editing.",
-      "dependencies": [],
+      "description": "An input-like slider with inline value editing on double click.",
+      "dependencies": ["@radix-ui/react-slider"],
       "files": [
         {
           "path": "registry/new-york/blocks/slider/slider.tsx",

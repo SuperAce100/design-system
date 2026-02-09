@@ -85,7 +85,7 @@ export const componentList: ComponentMeta[] = [
     id: "slider",
     name: "Slider",
     section: "Primitives",
-    description: "A bar-wave slider with keyboard support and inline value editing.",
+    description: "An input-like slider with inline value editing on double click.",
   },
   {
     id: "input",
