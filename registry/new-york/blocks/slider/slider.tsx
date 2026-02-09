@@ -318,7 +318,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             : formatDisplayValue(resolvedValue, safeStep, valueRange)
         }
         className={cn(
-          "relative h-[108px] w-full touch-none select-none rounded-2xl border border-[var(--slider-border)] bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
+          "relative h-20 w-full touch-none select-none rounded-xl bg-[var(--slider-bg)] px-3 py-3 outline-none transition-colors",
           "focus-visible:ring-2 focus-visible:ring-ring/40",
           "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-60",
           isDragging ? "cursor-grabbing" : "cursor-grab",
@@ -426,9 +426,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           {Array.from({ length: barCount }, (_, index) => {
             const ratio = barCount <= 1 ? 0 : index / (barCount - 1);
             const distance = Math.abs(ratio - valuePercent);
-            const valleyWidth = 0.1;
+            const valleyWidth = 0.075;
             const valley = Math.exp(-(distance * distance) / (2 * valleyWidth * valleyWidth));
-            const height = clamp(0.72 - valley * 0.56, 0.1, 0.82);
+            const height = clamp(0.7 - valley * 0.45, 0.18, 0.78);
             const opacity = clamp(1 - valley * 0.42, 0.2, 1);
 
             return (
@@ -448,25 +448,20 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         </div>
 
         <div
-          className="absolute inset-3 z-10 pointer-events-none"
+          className="absolute inset-0 z-10 pointer-events-none"
           aria-label="Slider value display"
           aria-live="polite"
         >
           <div
             className={cn(
-              "pointer-events-auto absolute top-[34%] -translate-x-1/2 -translate-y-1/2 transition-[left] ease-out",
+              "pointer-events-auto absolute top-[38%] -translate-x-1/2 -translate-y-1/2 transition-[left] ease-out",
               isDragging ? "duration-0" : "duration-150"
             )}
             style={{ left: `${labelLeftPercent.toFixed(3)}%` }}
           >
             <div
-              className="flex items-baseline gap-0.5 px-0.5 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
-              onPointerDown={(event) => {
-                event.stopPropagation();
-              }}
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
+              className="flex items-baseline gap-0.5 text-[var(--slider-value-fg)] drop-shadow-[0_1px_0_var(--slider-bg)]"
+              data-slider-value="true"
               onDoubleClick={(event) => {
                 event.stopPropagation();
                 if (!editable || disabled) {
@@ -482,7 +477,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   value={draftValue}
                   inputMode="decimal"
                   aria-label="Slider value"
-                  className="w-12 bg-transparent text-center text-3xl leading-none font-semibold tabular-nums outline-none"
+                  className="w-9 bg-transparent text-center text-2xl leading-none font-semibold tabular-nums outline-none"
                   onChange={(event) => {
                     setDraftValue(event.target.value);
                   }}
@@ -504,12 +499,12 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   }}
                 />
               ) : (
-                <span className="text-3xl leading-none font-semibold tabular-nums">
+                <span className="text-2xl leading-none font-semibold tabular-nums">
                   {formatDisplayValue(resolvedValue, safeStep, valueRange)}
                 </span>
               )}
               {valueSuffix ? (
-                <span className="text-base leading-none font-medium opacity-80">{valueSuffix}</span>
+                <span className="text-sm leading-none font-medium opacity-80">{valueSuffix}</span>
               ) : null}
             </div>
           </div>
