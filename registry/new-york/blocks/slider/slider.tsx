@@ -56,10 +56,6 @@ const Slider = React.forwardRef<
       onValueChange,
       onValueCommit,
       onDoubleClick,
-      onPointerDown,
-      onPointerUp,
-      onPointerCancel,
-      onLostPointerCapture,
       ...props
     },
     ref
@@ -71,7 +67,6 @@ const Slider = React.forwardRef<
     const values = isControlled ? (value ?? [min]) : internalValues;
     const primaryValue = values[0] ?? min;
 
-    const [isDragging, setIsDragging] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
     const [draftValue, setDraftValue] = React.useState(() => formatValue(primaryValue, safeStep));
     const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -120,10 +115,6 @@ const Slider = React.forwardRef<
       setIsEditing(false);
     };
 
-    const range = max - min;
-    const percent = range <= 0 ? 0 : ((clamp(primaryValue, min, max) - min) / range) * 100;
-    const labelLeft = clamp(percent, 8, 92);
-
     const handleDoubleClick: NonNullable<
       React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>["onDoubleClick"]
     > = (event) => {
@@ -158,24 +149,6 @@ const Slider = React.forwardRef<
         }}
         onValueCommit={onValueCommit}
         onDoubleClick={handleDoubleClick}
-        onPointerDown={(event) => {
-          onPointerDown?.(event);
-          if (!event.defaultPrevented && !disabled && !isEditing) {
-            setIsDragging(true);
-          }
-        }}
-        onPointerUp={(event) => {
-          onPointerUp?.(event);
-          setIsDragging(false);
-        }}
-        onPointerCancel={(event) => {
-          onPointerCancel?.(event);
-          setIsDragging(false);
-        }}
-        onLostPointerCapture={(event) => {
-          onLostPointerCapture?.(event);
-          setIsDragging(false);
-        }}
         {...props}
       >
         <SliderPrimitive.Track className="relative h-full w-full">
@@ -186,57 +159,52 @@ const Slider = React.forwardRef<
           <SliderPrimitive.Thumb
             key={`thumb-${index}`}
             className={cn(
-              "z-10 block w-px border-0 bg-primary",
-              "h-[calc(100%_-_8px)]",
+              "z-10 block w-[2px] border-0 bg-primary ring-1 ring-background/80",
+              "h-[calc(100%_-_6px)] rounded-full",
               "focus-visible:outline-none"
             )}
           />
         ))}
 
-        {(isDragging || isEditing) && (
-          <div
-            className="absolute top-1/2 z-20 -translate-y-1/2 -translate-x-1/2"
-            style={{ left: `${labelLeft.toFixed(3)}%` }}
-          >
-            {isEditing ? (
-              <input
-                ref={inputRef}
-                type="number"
-                step={safeStep}
-                min={min}
-                max={max}
-                value={draftValue}
-                data-slot="slider-inline-input"
-                className={cn(
-                  "h-7 w-16 rounded-md border border-input bg-background px-1 text-center text-xs font-medium outline-none",
-                  "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[2px]"
-                )}
-                onChange={(event) => {
-                  setDraftValue(event.target.value);
-                }}
-                onBlur={() => {
+        <div className="pointer-events-none absolute right-2 top-1/2 z-20 -translate-y-1/2">
+          {isEditing ? (
+            <input
+              ref={inputRef}
+              type="number"
+              step={safeStep}
+              min={min}
+              max={max}
+              value={draftValue}
+              data-slot="slider-inline-input"
+              className={cn(
+                "pointer-events-auto h-6 w-14 rounded-md border border-input bg-background px-1 text-right text-xs font-medium text-muted-foreground outline-none",
+                "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[2px]"
+              )}
+              onChange={(event) => {
+                setDraftValue(event.target.value);
+              }}
+              onBlur={() => {
+                commitInput();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
                   commitInput();
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    commitInput();
-                    return;
-                  }
+                  return;
+                }
 
-                  if (event.key === "Escape") {
-                    event.preventDefault();
-                    commitInput(true);
-                  }
-                }}
-              />
-            ) : (
-              <span className="rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-foreground shadow-sm">
-                {formatValue(primaryValue, safeStep)}
-              </span>
-            )}
-          </div>
-        )}
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  commitInput(true);
+                }
+              }}
+            />
+          ) : (
+            <span className="text-xs font-medium text-muted-foreground">
+              {formatValue(primaryValue, safeStep)}
+            </span>
+          )}
+        </div>
       </SliderPrimitive.Root>
     );
   }
