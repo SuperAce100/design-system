@@ -2,13 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 
 import ComponentFrame from "@/components/component-frame";
 import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { ComponentMeta } from "@/lib/component-registry";
 import { cn } from "@/lib/utils";
-import { Button } from "@/registry/new-york/blocks/button/button";
 import type { ComponentSourceFile } from "@/types/component-source";
 
 type ComponentSection = {
@@ -29,29 +27,9 @@ const pageAnchors = [
 ];
 
 export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
-  const [navOpen, setNavOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!navOpen) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setNavOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [navOpen]);
-
   return (
     <>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-12 pt-8">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 pb-32 pt-8 lg:pb-12">
         <header className="flex flex-col gap-3 px-1">
           <div className="text-sm text-muted-foreground">
             <Link href="/" className="transition-colors hover:text-foreground">
@@ -66,18 +44,6 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
               {meta.description ? (
                 <p className="text-lg text-muted-foreground">{meta.description}</p>
               ) : null}
-            </div>
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="sm:hidden"
-                onClick={() => setNavOpen(true)}
-                aria-label="Open component menu"
-              >
-                <Menu className="mr-2 h-4 w-4" />
-                Browse components
-              </Button>
             </div>
           </div>
         </header>
@@ -139,9 +105,7 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
           </div>
         </aside>
       </div>
-      <MobileNav open={navOpen} onClose={() => setNavOpen(false)}>
-        <ComponentNavList sections={sections} activeId={meta.id} onNavigate={() => setNavOpen(false)} />
-      </MobileNav>
+      <MobileBottomNav sections={sections} activeId={meta.id} />
     </>
   );
 }
@@ -149,11 +113,9 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
 function ComponentNavList({
   sections,
   activeId,
-  onNavigate,
 }: {
   sections: ComponentSection[];
   activeId: string;
-  onNavigate?: () => void;
 }) {
   if (!sections.length) return null;
 
@@ -166,20 +128,18 @@ function ComponentNavList({
           </span>
           <div className="flex flex-col gap-1">
             {section.components.map((component) => (
-              <Button
+              <Link
                 key={component.id}
-                variant="ghost"
-                size="sm"
+                href={`/${component.id}`}
                 className={cn(
-                  "w-full justify-start text-left",
-                  component.id === activeId && "bg-primary/10 text-foreground"
+                  "rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-foreground",
+                  component.id === activeId
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground"
                 )}
-                asChild
               >
-                <Link href={`/${component.id}`} onClick={onNavigate}>
-                  {component.name}
-                </Link>
-              </Button>
+                {component.name}
+              </Link>
             ))}
           </div>
         </React.Fragment>
@@ -188,55 +148,243 @@ function ComponentNavList({
   );
 }
 
-function MobileNav({
-  open,
-  onClose,
-  children,
+function MobileBottomNav({
+  sections,
+  activeId,
 }: {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+  sections: ComponentSection[];
+  activeId: string;
 }) {
-  const [shouldRender, setShouldRender] = React.useState(open);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const activeItemRef = React.useRef<HTMLAnchorElement>(null);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [scrollPosition, setScrollPosition] = React.useState(0);
+  const [containerWidth, setContainerWidth] = React.useState(0);
 
+  // Flatten all components for the bottom bar
+  const allComponents = React.useMemo(
+    () => sections.flatMap((section) => section.components),
+    [sections]
+  );
+
+  // Track scroll position for the circular effect
   React.useEffect(() => {
-    if (open) {
-      setShouldRender(true);
-    }
-  }, [open]);
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-  const handleTransitionEnd = React.useCallback(() => {
-    if (!open) {
-      setShouldRender(false);
-    }
-  }, [open]);
+    const handleScroll = () => {
+      setScrollPosition(container.scrollLeft);
+    };
 
-  if (!shouldRender) return null;
+    const handleResize = () => {
+      setContainerWidth(container.offsetWidth);
+    };
+
+    handleResize();
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Scroll to active item on mount
+  React.useEffect(() => {
+    if (activeItemRef.current && scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const activeItem = activeItemRef.current;
+      const cWidth = container.offsetWidth;
+      const itemLeft = activeItem.offsetLeft;
+      const itemWidth = activeItem.offsetWidth;
+
+      container.scrollTo({
+        left: itemLeft - cWidth / 2 + itemWidth / 2,
+        behavior: "instant",
+      });
+    }
+  }, [activeId]);
+
+  // Calculate transform for each item based on its position relative to center
+  const getItemTransform = React.useCallback((element: HTMLElement | null) => {
+    if (!element || !containerWidth) return { transform: "", opacity: 1, scale: 1 };
+
+    const itemLeft = element.offsetLeft;
+    const itemWidth = element.offsetWidth;
+    const itemCenter = itemLeft + itemWidth / 2 - scrollPosition;
+    const viewportCenter = containerWidth / 2;
+    const distanceFromCenter = itemCenter - viewportCenter;
+    const maxDistance = containerWidth / 2;
+
+    // Normalize distance (-1 to 1)
+    const normalizedDistance = Math.max(-1, Math.min(1, distanceFromCenter / maxDistance));
+    const absDistance = Math.abs(normalizedDistance);
+
+    // Arc effect: items curve down at edges like the rim of a wheel
+    // Using a circular arc formula: y = sqrt(1 - x^2) gives a semicircle
+    // We invert it so center is at top (y=0) and edges drop down
+    const arcHeight = 50; // Maximum drop in pixels
+    const arcY = arcHeight * (1 - Math.sqrt(1 - absDistance * absDistance));
+
+    // Rotation around Y axis - items turn away as they move to edges
+    const rotateY = normalizedDistance * 50;
+
+    // Slight tilt back for 3D effect
+    const rotateX = absDistance * 15;
+
+    // Scale: center items slightly larger
+    const scale = 1 - absDistance * 0.15;
+
+    // Opacity fade at edges
+    const opacity = 1 - absDistance * 0.4;
+
+    return {
+      transform: `translateY(${arcY}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(${scale})`,
+      opacity,
+      scale,
+    };
+  }, [containerWidth, scrollPosition]);
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className={cn(
-          "absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-200",
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-        onClick={onClose}
-      />
-      <div
-        className={cn(
-          "relative ml-auto flex h-full w-[320px] max-w-full flex-col border-l bg-background px-5 py-6 shadow-2xl transition-transform duration-300 ease-out",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-        onTransitionEnd={handleTransitionEnd}
+    <nav
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden transition-all duration-300 ease-out",
+        isExpanded ? "pb-8" : "pb-4"
+      )}
+    >
+      {/* Collapse/Expand handle */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 flex items-center justify-center w-12 h-6 rounded-t-xl bg-background border border-b-0 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">Browse components</p>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close menu">
-            <X className="h-4 w-4" />
-          </Button>
+        <svg
+          className={cn(
+            "w-4 h-4 transition-transform duration-300",
+            isExpanded ? "rotate-180" : ""
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+        </svg>
+      </button>
+
+      {/* Disk rotation container */}
+      <div
+        className={cn(
+          "relative overflow-hidden transition-all duration-300 ease-out",
+          isExpanded ? "h-40" : "h-24"
+        )}
+        style={{ perspective: "800px", perspectiveOrigin: "center 100%" }}
+      >
+        {/* Curved track indicator */}
+        <div 
+          className="absolute inset-x-0 bottom-0 h-full pointer-events-none overflow-hidden"
+          style={{
+            background: "radial-gradient(ellipse 100% 80% at 50% 120%, var(--primary) 0%, transparent 50%)",
+            opacity: 0.08,
+          }}
+        />
+        
+        <div
+          ref={scrollContainerRef}
+          className="flex items-start overflow-x-auto scrollbar-hide gap-2 h-full pt-2"
+          style={{
+            paddingLeft: `calc(50% - 50px)`,
+            paddingRight: `calc(50% - 50px)`,
+            transformStyle: "preserve-3d",
+          }}
+        >
+          {allComponents.map((component) => {
+            const isActive = component.id === activeId;
+            return (
+              <MobileNavItem
+                key={component.id}
+                component={component}
+                isActive={isActive}
+                isExpanded={isExpanded}
+                activeRef={isActive ? activeItemRef : undefined}
+                getItemTransform={getItemTransform}
+                scrollPosition={scrollPosition}
+              />
+            );
+          })}
         </div>
-        <div className="flex-1 overflow-y-auto pr-1">{children}</div>
+
+        {/* Center focus indicator */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-px h-3 bg-primary/40 pointer-events-none" />
       </div>
-    </div>
+    </nav>
+  );
+}
+
+function MobileNavItem({
+  component,
+  isActive,
+  isExpanded,
+  activeRef,
+  getItemTransform,
+  scrollPosition,
+}: {
+  component: ComponentMeta;
+  isActive: boolean;
+  isExpanded: boolean;
+  activeRef?: React.Ref<HTMLAnchorElement>;
+  getItemTransform: (element: HTMLElement | null) => { transform: string; opacity: number; scale: number };
+  scrollPosition: number;
+}) {
+  const itemRef = React.useRef<HTMLAnchorElement>(null);
+  const [style, setStyle] = React.useState({ transform: "", opacity: 1 });
+
+  // Combine refs
+  const setRefs = React.useCallback(
+    (node: HTMLAnchorElement | null) => {
+      itemRef.current = node;
+      if (activeRef && typeof activeRef === "function") {
+        activeRef(node);
+      } else if (activeRef && typeof activeRef === "object") {
+        (activeRef as React.MutableRefObject<HTMLAnchorElement | null>).current = node;
+      }
+    },
+    [activeRef]
+  );
+
+  // Update transform on scroll
+  React.useEffect(() => {
+    const result = getItemTransform(itemRef.current);
+    setStyle({ transform: result.transform, opacity: result.opacity });
+  }, [scrollPosition, getItemTransform]);
+
+  return (
+    <Link
+      ref={setRefs}
+      href={`/${component.id}`}
+      className={cn(
+        "flex-shrink-0 rounded-2xl px-4 text-sm font-medium whitespace-nowrap flex flex-col items-center justify-center gap-0.5 text-center origin-bottom",
+        isExpanded ? "py-3 min-w-[90px]" : "py-2",
+        isActive
+          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+          : "bg-muted/50 text-muted-foreground hover:bg-accent hover:text-foreground"
+      )}
+      style={{
+        transform: style.transform,
+        opacity: style.opacity,
+        transformStyle: "preserve-3d",
+        transition: "background-color 150ms, box-shadow 150ms",
+      }}
+    >
+      <span className={cn("transition-all", isExpanded ? "text-base font-semibold" : "text-sm")}>
+        {component.name}
+      </span>
+      {isExpanded && (
+        <span className="text-xs opacity-70 max-w-[100px] truncate">
+          {component.description}
+        </span>
+      )}
+    </Link>
   );
 }
