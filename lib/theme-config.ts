@@ -549,23 +549,41 @@ function contrastRatio(lum1: number, lum2: number): number {
 }
 
 /**
- * Choose the best foreground color (white or dark neutral) for a primary
- * background using WCAG contrast ratios. Targets ≥ 4.5:1 when possible.
+ * Choose a primary foreground with an explicit white-first rule:
+ * if white meets WCAG AA text contrast (4.5:1), prefer white.
+ * Otherwise fall back to a dark foreground, preferring a darker primary tone.
  */
 function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
+  const MIN_TEXT_CONTRAST = 4.5;
+  const WHITE = "oklch(0.985 0 0)";
+
   const [lr, lg, lb] = oklchToLinearSrgb(lch[0], lch[1], lch[2]);
   const bgLum = relativeLuminance(lr, lg, lb);
 
   // White foreground
   const whiteLum = 1.0;
   const whiteContrast = contrastRatio(bgLum, whiteLum);
+  if (whiteContrast >= MIN_TEXT_CONTRAST) return WHITE;
 
-  // Dark neutral foreground
+  // Fallback 1: darker version of the base primary (preferred when white fails)
+  const darkerPrimary: LCH = [
+    Math.max(0.2, Math.min(0.38, lch[0] - 0.42)),
+    Math.min(lch[1], 0.18),
+    lch[2],
+  ];
+  const [pr, pg, pb] = oklchToLinearSrgb(darkerPrimary[0], darkerPrimary[1], darkerPrimary[2]);
+  const darkerPrimaryLum = relativeLuminance(pr, pg, pb);
+  const darkerPrimaryContrast = contrastRatio(bgLum, darkerPrimaryLum);
+  if (darkerPrimaryContrast >= MIN_TEXT_CONTRAST) return fmt(darkerPrimary);
+
+  // Fallback 2: dark neutral foreground
   const [dr, dg, db] = oklchToLinearSrgb(neutralDark[0], neutralDark[1], neutralDark[2]);
   const darkLum = relativeLuminance(dr, dg, db);
   const darkContrast = contrastRatio(bgLum, darkLum);
+  if (darkContrast >= MIN_TEXT_CONTRAST) return fmt(neutralDark);
 
-  return darkContrast > whiteContrast ? fmt(neutralDark) : "oklch(0.985 0 0)";
+  // Last resort: pick the higher-contrast dark fallback when neither reaches AA.
+  return darkerPrimaryContrast >= darkContrast ? fmt(darkerPrimary) : fmt(neutralDark);
 }
 
 function generateChartColors(hue: number, mode: "light" | "dark"): string[] {
