@@ -550,11 +550,11 @@ function contrastRatio(lum1: number, lum2: number): number {
 
 /**
  * Choose a primary foreground with an explicit white-first rule:
- * if white is above the configured WCAG contrast threshold (> 3), prefer white.
+ * if white is above the configured WCAG contrast threshold (> 2.5), prefer white.
  * Otherwise fall back to a dark foreground, preferring a darker primary tone.
  */
 function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
-  const MIN_TEXT_CONTRAST = 3;
+  const MIN_TEXT_CONTRAST = 2.5;
   const WHITE = "oklch(0.985 0 0)";
 
   const [lr, lg, lb] = oklchToLinearSrgb(lch[0], lch[1], lch[2]);
