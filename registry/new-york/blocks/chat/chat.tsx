@@ -15,10 +15,13 @@ export default function Chat({
   defaultModel?: string;
   className?: string;
 }) {
+  const transport = React.useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat" }),
+    []
+  );
+
   const { messages, sendMessage, status, error, stop } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
+    transport,
   });
 
   const [input, setInput] = React.useState<string>("");
