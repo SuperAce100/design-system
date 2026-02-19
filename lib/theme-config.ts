@@ -550,11 +550,11 @@ function contrastRatio(lum1: number, lum2: number): number {
 
 /**
  * Choose a primary foreground with an explicit white-first rule:
- * if white meets WCAG AA text contrast (4.5:1), prefer white.
+ * if white is above the configured WCAG contrast threshold (> 3), prefer white.
  * Otherwise fall back to a dark foreground, preferring a darker primary tone.
  */
 function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
-  const MIN_TEXT_CONTRAST = 4.5;
+  const MIN_TEXT_CONTRAST = 3;
   const WHITE = "oklch(0.985 0 0)";
 
   const [lr, lg, lb] = oklchToLinearSrgb(lch[0], lch[1], lch[2]);
@@ -563,7 +563,7 @@ function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
   // White foreground
   const whiteLum = 1.0;
   const whiteContrast = contrastRatio(bgLum, whiteLum);
-  if (whiteContrast >= MIN_TEXT_CONTRAST) return WHITE;
+  if (whiteContrast > MIN_TEXT_CONTRAST) return WHITE;
 
   // Fallback 1: darker version of the base primary (preferred when white fails)
   const darkerPrimary: LCH = [
@@ -574,13 +574,13 @@ function getPrimaryFg(lch: LCH, neutralDark: LCH): string {
   const [pr, pg, pb] = oklchToLinearSrgb(darkerPrimary[0], darkerPrimary[1], darkerPrimary[2]);
   const darkerPrimaryLum = relativeLuminance(pr, pg, pb);
   const darkerPrimaryContrast = contrastRatio(bgLum, darkerPrimaryLum);
-  if (darkerPrimaryContrast >= MIN_TEXT_CONTRAST) return fmt(darkerPrimary);
+  if (darkerPrimaryContrast > MIN_TEXT_CONTRAST) return fmt(darkerPrimary);
 
   // Fallback 2: dark neutral foreground
   const [dr, dg, db] = oklchToLinearSrgb(neutralDark[0], neutralDark[1], neutralDark[2]);
   const darkLum = relativeLuminance(dr, dg, db);
   const darkContrast = contrastRatio(bgLum, darkLum);
-  if (darkContrast >= MIN_TEXT_CONTRAST) return fmt(neutralDark);
+  if (darkContrast > MIN_TEXT_CONTRAST) return fmt(neutralDark);
 
   // Last resort: pick the higher-contrast dark fallback when neither reaches AA.
   return darkerPrimaryContrast >= darkContrast ? fmt(darkerPrimary) : fmt(neutralDark);
