@@ -50,11 +50,19 @@ export type ThemeConfig = {
 
 export const RADIUS_PRESETS = [0, 0.3, 0.5, 0.75, 1.0] as const;
 
-export const BACKGROUND_PRESETS: { value: BackgroundShade; label: string }[] = [
+export const BACKGROUND_PRESETS_LIGHT: { value: BackgroundShade; label: string }[] = [
   { value: 0, label: "White" },
   { value: 1, label: "50" },
   { value: 2, label: "100" },
 ];
+
+export const BACKGROUND_PRESETS_DARK: { value: BackgroundShade; label: string }[] = [
+  { value: 0, label: "950" },
+  { value: 1, label: "900" },
+  { value: 2, label: "800" },
+];
+
+export const BACKGROUND_PRESETS = BACKGROUND_PRESETS_LIGHT;
 
 export const FONT_OPTIONS: FontOption[] = [
   "system",
@@ -74,11 +82,18 @@ export const FONT_OPTION_LABELS: Record<FontOption, string> = {
   "jetbrains-mono": "JetBrains Mono",
 };
 
-/** Returns display colors for the three background shade options based on the current neutral. */
-export function getBackgroundDisplayColors(neutral: NeutralScale): Record<BackgroundShade, string> {
+/** Returns display colors for the three background shade options based on the current neutral and mode. */
+export function getBackgroundDisplayColors(neutral: NeutralScale, mode: "light" | "dark" = "light"): Record<BackgroundShade, string> {
   const n = neutralScales[neutral];
+  if (mode === "dark") {
+    return {
+      0: fmt(n[950]),
+      1: fmt(n[900]),
+      2: fmt(n[800]),
+    };
+  }
   return {
-    0: "oklch(1 0 0)", // white
+    0: "oklch(1 0 0)",
     1: fmt(n[50]),
     2: fmt(n[100]),
   };

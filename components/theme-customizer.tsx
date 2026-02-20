@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Paintbrush, X, Check, Copy, RotateCcw, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Button as UiButton } from "@/components/ui/button";
 import { Button } from "@/registry/new-york/blocks/button/button";
@@ -19,7 +20,8 @@ import {
   FONT_OPTION_LABELS,
   NEUTRAL_DISPLAY_COLORS,
   PRIMARY_DISPLAY_COLORS,
-  BACKGROUND_PRESETS,
+  BACKGROUND_PRESETS_LIGHT,
+  BACKGROUND_PRESETS_DARK,
   getBackgroundDisplayColors,
   getFontFamilyForOption,
   generateGlobalsCss,
@@ -103,6 +105,8 @@ function ThemeDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
 
 function DrawerContent({ onClose }: { onClose: () => void }) {
   const { config, setConfig, resetConfig } = useThemeConfig();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [copied, setCopied] = React.useState(false);
 
   const handleCopyCss = React.useCallback(() => {
@@ -111,6 +115,9 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [config]);
+
+  const backgroundPresets = isDark ? BACKGROUND_PRESETS_DARK : BACKGROUND_PRESETS_LIGHT;
+  const bgColors = getBackgroundDisplayColors(config.neutral, isDark ? "dark" : "light");
 
   return (
     <>
@@ -146,9 +153,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
 
           <Section title="Background" description="How dark the page background is">
             <div className="flex items-center gap-2">
-              {BACKGROUND_PRESETS.map((preset) => {
-                const bgColors = getBackgroundDisplayColors(config.neutral);
-                return (
+              {backgroundPresets.map((preset) => (
                   <ColorSwatch
                     key={preset.value}
                     color={bgColors[preset.value]}
@@ -158,8 +163,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
                       setConfig((p) => ({ ...p, backgroundShade: preset.value as BackgroundShade }))
                     }
                   />
-                );
-              })}
+              ))}
             </div>
           </Section>
 
