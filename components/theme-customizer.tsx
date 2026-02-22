@@ -138,7 +138,7 @@ function DrawerContent({ onClose }: { onClose: () => void }) {
       <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-8">
         <SectionGroup title="Colors">
           <Section title="Neutral" description="The neutral scale of the theme">
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap gap-1">
               {(Object.keys(NEUTRAL_LABELS) as NeutralScale[]).map((scale) => (
                 <ColorSwatch
                   key={scale}
