@@ -22,7 +22,7 @@ export default function PointerDemo() {
   }, [moveTo]);
 
   return (
-    <div className="flex flex-col gap-4 w-full h-ful min-h-0 flex-1">
+    <div className="flex w-full min-h-0 flex-1 flex-col gap-4 h-full">
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={randomMove}>
           Random move

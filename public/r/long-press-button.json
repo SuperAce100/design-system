@@ -1,6 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "long-press-button",
+  "type": "registry:component",
   "title": "Long Press Button",
   "description": "A long-press action button with animated hold progress.",
   "dependencies": [],
@@ -11,6 +12,5 @@
       "type": "registry:component",
       "target": "components/ui/long-press-button.tsx"
     }
-  ],
-  "type": "registry:component"
+  ]
 }
