@@ -4,9 +4,15 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - "app/[component]/page.tsx"
-      - "app/demo/[component]/page.tsx"
-      - "components/demos/**"
+      - "registry/new-york/blocks/**"
+      - "lib/component-registry.tsx"
+      - "scripts/generate-component-og-images.sh"
+      - ".github/workflows/component-og-images.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "registry/new-york/blocks/**"
       - "lib/component-registry.tsx"
       - "scripts/generate-component-og-images.sh"
       - ".github/workflows/component-og-images.yml"
@@ -18,25 +24,88 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed components
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "has_components=true" >> "$GITHUB_OUTPUT"
+            echo "component_ids=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base_sha="${{ github.event.pull_request.base.sha }}"
+            head_sha="${{ github.event.pull_request.head.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            base_sha="${{ github.event.before }}"
+            head_sha="${{ github.sha }}"
+          else
+            echo "Unsupported event: ${{ github.event_name }}"
+            exit 1
+          fi
+
+          mapfile -t changed_files < <(git diff --name-only "$base_sha" "$head_sha")
+
+          declare -A seen=()
+          for file in "${changed_files[@]}"; do
+            if [[ "$file" =~ ^registry/new-york/blocks/([^/]+)/ ]]; then
+              seen["${BASH_REMATCH[1]}"]=1
+            fi
+          done
+
+          if [ "${#seen[@]}" -eq 0 ]; then
+            echo "No component source changes detected."
+            echo "has_components=false" >> "$GITHUB_OUTPUT"
+            echo "component_ids=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          component_ids="$(
+            printf '%s\n' "${!seen[@]}" \
+              | sort \
+              | paste -sd, -
+          )"
+
+          echo "has_components=true" >> "$GITHUB_OUTPUT"
+          echo "component_ids=$component_ids" >> "$GITHUB_OUTPUT"
+
+      - name: Log target components
+        if: steps.changes.outputs.has_components == 'true'
+        run: |
+          if [ -n "${{ steps.changes.outputs.component_ids }}" ]; then
+            echo "Generating OG images for: ${{ steps.changes.outputs.component_ids }}"
+          else
+            echo "Generating OG images for all components."
+          fi
 
       - name: Setup Node.js
+        if: steps.changes.outputs.has_components == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
+        if: steps.changes.outputs.has_components == 'true'
         run: npm install
 
       - name: Install ImageMagick
+        if: steps.changes.outputs.has_components == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y imagemagick
 
       - name: Install Playwright browser
-      - name: Install Playwright browser
+        if: steps.changes.outputs.has_components == 'true'
         run: npx --yes --package @playwright/cli playwright-cli install
 
       - name: Start app
+        if: steps.changes.outputs.has_components == 'true'
         run: |
           npm run dev -- --port 3105 > /tmp/dev.log 2>&1 &
           echo $! > /tmp/dev.pid
@@ -51,25 +120,41 @@ jobs:
           exit 1
 
       - name: Generate component OG images
+        if: steps.changes.outputs.has_components == 'true'
+        env:
+          COMPONENT_IDS: ${{ steps.changes.outputs.component_ids }}
         run: npm run og:components
 
       - name: Verify generated images are committed
+        if: steps.changes.outputs.has_components == 'true'
+        env:
+          COMPONENT_IDS: ${{ steps.changes.outputs.component_ids }}
         run: |
-          git diff --exit-code -- public/og/components || {
+          if [ -z "$COMPONENT_IDS" ]; then
+            check_paths=(public/og/components)
+          else
+            IFS=',' read -r -a ids <<< "$COMPONENT_IDS"
+            check_paths=()
+            for id in "${ids[@]}"; do
+              check_paths+=("public/og/components/$id.png")
+            done
+          fi
+
+          git diff --exit-code -- "${check_paths[@]}" || {
             echo "Generated OG images differ from committed files.";
             echo "Run: npm run og:components and commit updates.";
             exit 1;
           }
 
       - name: Upload generated images
-        if: always()
+        if: always() && steps.changes.outputs.has_components == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: component-og-images
           path: public/og/components
 
       - name: Stop app
-        if: always()
+        if: always() && steps.changes.outputs.has_components == 'true'
         run: |
           if [ -f /tmp/dev.pid ]; then
             kill $(cat /tmp/dev.pid) || true
