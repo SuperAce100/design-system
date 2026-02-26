@@ -97,6 +97,12 @@ function resolveBrowserColor(color: string): string | null {
 
   const probe = document.createElement("span");
   probe.style.color = color;
+
+  // If the browser rejected the color value, style.color will be empty
+  if (!probe.style.color) {
+    return null;
+  }
+
   probe.style.position = "absolute";
   probe.style.visibility = "hidden";
   probe.style.pointerEvents = "none";
