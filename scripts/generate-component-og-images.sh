@@ -6,6 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BASE_URL="${BASE_URL:-http://localhost:3105}"
 OUT_DIR="$ROOT_DIR/public/og/components"
 TMP_DIR="$ROOT_DIR/.tmp/og-components"
+COMPONENT_IDS="${COMPONENT_IDS:-}"
 
 if ! command -v npx >/dev/null 2>&1; then
   echo "npx is required to run playwright-cli."
@@ -51,12 +52,25 @@ fi
 
 theme_json='{"neutral":"slate","primary":"sky","radius":0.75,"backgroundShade":0,"shadowDepth":35,"shadowOpacity":14}'
 
+declare -A target_ids=()
+if [ -n "$COMPONENT_IDS" ]; then
+  IFS=',' read -r -a requested <<< "$COMPONENT_IDS"
+  for raw_id in "${requested[@]}"; do
+    id="$(echo "$raw_id" | xargs)"
+    [ -n "$id" ] && target_ids["$id"]=1
+  done
+fi
+
 pw close-all >/dev/null 2>&1 || true
 pw open "$BASE_URL" >/dev/null
 pw resize 1200 630 >/dev/null
 
+generated_count=0
 while IFS=$'\t' read -r id name; do
   [ -n "$id" ] || continue
+  if [ "${#target_ids[@]}" -gt 0 ] && [ -z "${target_ids[$id]+_}" ]; then
+    continue
+  fi
   out="$OUT_DIR/$id.png"
 
   pw goto "$BASE_URL" >/dev/null
@@ -68,8 +82,14 @@ while IFS=$'\t' read -r id name; do
   pw screenshot --filename "$out" >/dev/null
 
   echo "Generated $out"
+  generated_count=$((generated_count + 1))
 done <<< "$mapfile_output"
 
 pw close >/dev/null
+
+if [ "${#target_ids[@]}" -gt 0 ] && [ "$generated_count" -eq 0 ]; then
+  echo "No matching components found for COMPONENT_IDS='$COMPONENT_IDS'."
+  exit 1
+fi
 
 echo "Component Open Graph images generated in $OUT_DIR"
