@@ -6,11 +6,11 @@ import { Loader } from "@/registry/new-york/blocks/loader/loader";
 export default function LoaderDemo() {
   return (
     <div className="flex items-center justify-center gap-6 overflow-x-auto p-8">
-      <Loader shape="sphere" variant="blur" color="var(--color-primary)" />
-      <Loader shape="swirl" variant="plain" color="var(--color-foreground)" />
-      <Loader shape="sphere" variant="dither" color="var(--color-orange-600)" />
-      <Loader shape="ripple" variant="blur" color="var(--color-fuchsia-400)" />
-      <Loader shape="swirl" variant="dither" color="var(--color-rose-600)" />
+      <Loader shape="sphere" variant="blur" color="#0ea5e9" />
+      <Loader shape="swirl" variant="plain" color="#0a0a0a" />
+      <Loader shape="sphere" variant="dither" color="#ea580c" />
+      <Loader shape="ripple" variant="blur" color="#e879f9" />
+      <Loader shape="swirl" variant="dither" color="#e11d48" />
     </div>
   );
 }
