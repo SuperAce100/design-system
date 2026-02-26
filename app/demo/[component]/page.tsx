@@ -1,6 +1,13 @@
 import { notFound } from "next/navigation";
+import { Inter_Tight } from "next/font/google";
 
 import { getAllComponentIds, getComponentMeta, getDemoById } from "@/lib/component-registry";
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  variable: "--font-inter-tight",
+  weight: ["400", "500", "600", "700"],
+});
 
 export async function generateStaticParams() {
   return getAllComponentIds().map((id) => ({ component: id }));
@@ -55,10 +62,10 @@ export default async function DemoOnlyComponentPage({
         `}
       </style>
       <main
-        className="relative h-screen w-screen overflow-hidden bg-background"
+        className={`relative h-screen w-screen overflow-hidden bg-background ${interTight.variable}`}
         style={{
           fontFamily:
-            '"SF Pro Display","SF Pro Text","SF Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+            '"SF Pro Display","SF Pro Text","SF Pro",var(--font-inter-tight),-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
         }}
       >
         <div className="absolute left-12 top-10 text-[50px] leading-none">

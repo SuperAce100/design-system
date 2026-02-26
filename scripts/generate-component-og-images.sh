@@ -19,12 +19,10 @@ if ! curl -fsS "$BASE_URL" >/dev/null 2>&1; then
 fi
 
 export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-PWCLI="$CODEX_HOME/skills/playwright/scripts/playwright_cli.sh"
 
-if [ ! -x "$PWCLI" ]; then
-  echo "Playwright wrapper not found at $PWCLI"
-  exit 1
-fi
+pw() {
+  npx --yes --package @playwright/cli playwright-cli "$@"
+}
 
 mkdir -p "$OUT_DIR" "$TMP_DIR"
 
@@ -53,25 +51,25 @@ fi
 
 theme_json='{"neutral":"slate","primary":"sky","radius":0.75,"backgroundShade":0,"shadowDepth":35,"shadowOpacity":14}'
 
-"$PWCLI" close-all >/dev/null 2>&1 || true
-"$PWCLI" open "$BASE_URL" >/dev/null
-"$PWCLI" resize 1200 630 >/dev/null
+pw close-all >/dev/null 2>&1 || true
+pw open "$BASE_URL" >/dev/null
+pw resize 1200 630 >/dev/null
 
 while IFS=$'\t' read -r id name; do
   [ -n "$id" ] || continue
   out="$OUT_DIR/$id.png"
 
-  "$PWCLI" goto "$BASE_URL" >/dev/null
-  "$PWCLI" localstorage-set theme light >/dev/null
-  "$PWCLI" localstorage-set theme-config "$theme_json" >/dev/null
-  "$PWCLI" goto "$BASE_URL/demo/$id" >/dev/null
-  "$PWCLI" reload >/dev/null
-  "$PWCLI" run-code 'async (page) => { await page.waitForTimeout(180); }' >/dev/null
-  "$PWCLI" screenshot --filename "$out" >/dev/null
+  pw goto "$BASE_URL" >/dev/null
+  pw localstorage-set theme light >/dev/null
+  pw localstorage-set theme-config "$theme_json" >/dev/null
+  pw goto "$BASE_URL/demo/$id" >/dev/null
+  pw reload >/dev/null
+  pw run-code 'async (page) => { await page.waitForTimeout(180); }' >/dev/null
+  pw screenshot --filename "$out" >/dev/null
 
   echo "Generated $out"
 done <<< "$mapfile_output"
 
-"$PWCLI" close >/dev/null
+pw close >/dev/null
 
 echo "Component Open Graph images generated in $OUT_DIR"
