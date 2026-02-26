@@ -1,0 +1,76 @@
+name: Component Open Graph Images
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "app/[component]/page.tsx"
+      - "app/demo/[component]/page.tsx"
+      - "components/demos/**"
+      - "lib/component-registry.tsx"
+      - "scripts/generate-component-og-images.sh"
+      - ".github/workflows/component-og-images.yml"
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Install Playwright browser
+      - name: Install Playwright browser
+        run: npx --yes --package @playwright/cli playwright-cli install
+
+      - name: Start app
+        run: |
+          npm run dev -- --port 3105 > /tmp/dev.log 2>&1 &
+          echo $! > /tmp/dev.pid
+          for i in $(seq 1 120); do
+            if curl -fsS http://localhost:3105 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "App failed to start"
+          cat /tmp/dev.log || true
+          exit 1
+
+      - name: Generate component OG images
+        run: npm run og:components
+
+      - name: Verify generated images are committed
+        run: |
+          git diff --exit-code -- public/og/components || {
+            echo "Generated OG images differ from committed files.";
+            echo "Run: npm run og:components and commit updates.";
+            exit 1;
+          }
+
+      - name: Upload generated images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-og-images
+          path: public/og/components
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f /tmp/dev.pid ]; then
+            kill $(cat /tmp/dev.pid) || true
+          fi
