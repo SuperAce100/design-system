@@ -70,6 +70,50 @@ function Loader({
   const fragmentShader = shaderMap[variant];
   const shapeValue = shapeMap[shape];
   const scale = variant === "blur" ? 0.52 : 0.6;
+  const usesCssVariables = color.includes("var(") || colorBack.includes("var(");
+  const [cssVariableEpoch, setCssVariableEpoch] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!usesCssVariables || typeof document === "undefined") {
+      return;
+    }
+
+    const bumpCssVariableEpoch = () => {
+      setCssVariableEpoch((value) => value + 1);
+    };
+
+    // Resolve once after mount, then re-resolve on theme/token changes.
+    bumpCssVariableEpoch();
+
+    const attributeFilter = ["class", "style", "data-theme"];
+    const observer = new MutationObserver(bumpCssVariableEpoch);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter,
+    });
+    if (document.body) {
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter,
+      });
+    }
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", bumpCssVariableEpoch);
+    } else {
+      media.addListener(bumpCssVariableEpoch);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (typeof media.removeEventListener === "function") {
+        media.removeEventListener("change", bumpCssVariableEpoch);
+      } else {
+        media.removeListener(bumpCssVariableEpoch);
+      }
+    };
+  }, [usesCssVariables]);
 
   const uniforms = React.useMemo(
     () => ({
@@ -79,7 +123,7 @@ function Loader({
       u_scale: scale,
       u_pxSize: 2, // Pixel size for dithering
     }),
-    [color, colorBack, shapeValue, scale]
+    [color, colorBack, shapeValue, scale, cssVariableEpoch]
   );
 
   return (
