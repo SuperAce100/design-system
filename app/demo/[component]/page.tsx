@@ -19,6 +19,22 @@ export default async function DemoOnlyComponentPage({
     notFound();
   }
 
+  const scaleByComponent: Record<string, number> = {
+    badge: 1.5,
+    "chat-input": 1.5,
+    "color-picker": 1.5,
+    "page-header": 1.5,
+    card: 1,
+    "chat-message": 1,
+    "code-block": 1,
+    "description-list": 1,
+    pointer: 1,
+    window: 1,
+    markdown: 0.5,
+  };
+  const scale = scaleByComponent[id] ?? 2;
+  const needsFlexColumnParent = id === "pointer" || id === "window";
+
   return (
     <>
       <style>
@@ -53,8 +69,15 @@ export default async function DemoOnlyComponentPage({
           ds.asanshay.com
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          <div className="flex min-h-[40vh] min-w-[40vw] origin-center scale-[2] items-center justify-center">
-            {demo}
+          <div
+            className="flex min-h-[40vh] min-w-[40vw] origin-center items-center justify-center"
+            style={{ transform: `scale(${scale})` }}
+          >
+            {needsFlexColumnParent ? (
+              <div className="flex h-[40vh] w-[40vw] flex-col">{demo}</div>
+            ) : (
+              demo
+            )}
           </div>
         </div>
       </main>
