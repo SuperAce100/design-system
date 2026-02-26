@@ -56,7 +56,7 @@ float getShape(vec2 uv, float time) {
 }
 `;
 
-const transparentRgba: readonly [number, number, number, number] = [0, 0, 0, 0] as const;
+const transparentRgba: [number, number, number, number] = [0, 0, 0, 0];
 
 function parseHexColor(color: string): [number, number, number, number] | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color.trim());
