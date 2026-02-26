@@ -56,21 +56,88 @@ float getShape(vec2 uv, float time) {
 }
 `;
 
-// Helper to convert hex color to RGBA array
-export function hexToRgba(hex: string): [number, number, number, number] {
-  // Handle transparent
-  if (hex === "transparent" || hex === "") {
-    return [0, 0, 0, 0];
+const transparentRgba: [number, number, number, number] = [0, 0, 0, 0];
+
+function parseHexColor(color: string): [number, number, number, number] | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color.trim());
+  if (!result) {
+    return null;
   }
-  
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (result) {
-    return [
-      parseInt(result[1], 16) / 255,
-      parseInt(result[2], 16) / 255,
-      parseInt(result[3], 16) / 255,
-      1.0,
-    ];
+
+  return [
+    parseInt(result[1], 16) / 255,
+    parseInt(result[2], 16) / 255,
+    parseInt(result[3], 16) / 255,
+    1.0,
+  ];
+}
+
+function parseRgbColor(color: string): [number, number, number, number] | null {
+  const rgbResult =
+    /^rgba?\(\s*([\d.]+)(?:\s*,\s*|\s+)([\d.]+)(?:\s*,\s*|\s+)([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/i.exec(
+      color.trim()
+    );
+
+  if (!rgbResult) {
+    return null;
   }
-  return [0, 0, 0, 0];
+
+  return [
+    Math.min(255, Math.max(0, Number(rgbResult[1]))) / 255,
+    Math.min(255, Math.max(0, Number(rgbResult[2]))) / 255,
+    Math.min(255, Math.max(0, Number(rgbResult[3]))) / 255,
+    rgbResult[4] ? Math.min(1, Math.max(0, Number(rgbResult[4]))) : 1.0,
+  ];
+}
+
+function resolveBrowserColor(color: string): string | null {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return null;
+  }
+
+  const probe = document.createElement("span");
+  probe.style.color = color;
+  probe.style.position = "absolute";
+  probe.style.visibility = "hidden";
+  probe.style.pointerEvents = "none";
+
+  document.body.appendChild(probe);
+  const resolvedColor = window.getComputedStyle(probe).color;
+  probe.remove();
+
+  return resolvedColor || null;
+}
+
+// Helper to convert CSS color values to RGBA array
+export function hexToRgba(color: string): [number, number, number, number] {
+  const normalizedColor = color.trim();
+
+  if (!normalizedColor || normalizedColor === "transparent") {
+    return transparentRgba;
+  }
+
+  const fromHex = parseHexColor(normalizedColor);
+  if (fromHex) {
+    return fromHex;
+  }
+
+  const fromRgb = parseRgbColor(normalizedColor);
+  if (fromRgb) {
+    return fromRgb;
+  }
+
+  const resolvedColor = resolveBrowserColor(normalizedColor);
+  if (resolvedColor) {
+    const resolvedFromHex = parseHexColor(resolvedColor);
+    if (resolvedFromHex) {
+      return resolvedFromHex;
+    }
+
+    const resolvedFromRgb = parseRgbColor(resolvedColor);
+    if (resolvedFromRgb) {
+      return resolvedFromRgb;
+    }
+  }
+
+  return transparentRgba;
 }
