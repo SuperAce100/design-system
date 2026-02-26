@@ -56,7 +56,9 @@ float getShape(vec2 uv, float time) {
 }
 `;
 
-const transparentRgba: [number, number, number, number] = [0, 0, 0, 0];
+function createTransparentRgba(): [number, number, number, number] {
+  return [0, 0, 0, 0];
+}
 
 function parseHexColor(color: string): [number, number, number, number] | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color.trim());
@@ -119,7 +121,7 @@ export function hexToRgba(color: string): [number, number, number, number] {
   const normalizedColor = color.trim();
 
   if (!normalizedColor || normalizedColor === "transparent") {
-    return transparentRgba;
+    return createTransparentRgba();
   }
 
   const fromHex = parseHexColor(normalizedColor);
@@ -145,5 +147,5 @@ export function hexToRgba(color: string): [number, number, number, number] {
     }
   }
 
-  return transparentRgba;
+  return createTransparentRgba();
 }
