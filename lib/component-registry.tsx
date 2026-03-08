@@ -216,6 +216,150 @@ export const componentList: ComponentMeta[] = [
   },
 ];
 
+export type ComponentDemoLayout = {
+  demoPageScale?: number;
+  homepageScale?: number;
+  needsFlexColumnParent?: boolean;
+  homepageContainerClassName?: string;
+  homepageOffsetX?: number;
+  homepageOffsetY?: number;
+};
+
+const demoLayoutMap: Record<string, ComponentDemoLayout> = {
+  badge: {
+    demoPageScale: 1.5,
+    homepageScale: 0.95,
+  },
+  button: {
+    homepageScale: 0.82,
+  },
+  "long-press-button": {
+    homepageScale: 0.78,
+  },
+  "code-block": {
+    demoPageScale: 1,
+    homepageScale: 0.5,
+    homepageContainerClassName: "w-[28rem]",
+  },
+  markdown: {
+    demoPageScale: 0.5,
+    homepageScale: 0.24,
+    homepageContainerClassName: "w-[44rem]",
+    homepageOffsetY: -12,
+  },
+  select: {
+    homepageScale: 0.72,
+  },
+  input: {
+    homepageScale: 0.82,
+  },
+  "number-input": {
+    homepageScale: 0.72,
+  },
+  "command-prompt": {
+    demoPageScale: 2,
+    homepageScale: 0.5,
+    homepageContainerClassName: "w-[32rem]",
+  },
+  "invisible-input": {
+    demoPageScale: 2,
+    homepageScale: 0.72,
+    homepageContainerClassName: "w-[20rem]",
+  },
+  textarea: {
+    demoPageScale: 2,
+    homepageScale: 0.58,
+    homepageContainerClassName: "w-[26rem]",
+  },
+  card: {
+    demoPageScale: 1,
+    homepageScale: 0.38,
+    homepageContainerClassName: "w-[36rem]",
+  },
+  "description-list": {
+    demoPageScale: 1,
+    homepageScale: 0.54,
+    homepageContainerClassName: "w-[24rem]",
+  },
+  "page-header": {
+    demoPageScale: 1.5,
+    homepageScale: 0.55,
+    homepageContainerClassName: "w-[30rem]",
+  },
+  chat: {
+    demoPageScale: 2,
+    homepageScale: 0.38,
+    homepageContainerClassName: "h-[18rem] w-[24rem]",
+  },
+  "chat-input": {
+    demoPageScale: 1.5,
+    homepageScale: 0.48,
+    homepageContainerClassName: "w-[30rem]",
+  },
+  "chat-message": {
+    demoPageScale: 1,
+    homepageScale: 0.34,
+    homepageContainerClassName: "w-[40rem]",
+  },
+  "chat-reasoning": {
+    demoPageScale: 2,
+    homepageScale: 0.7,
+  },
+  "chat-tool": {
+    demoPageScale: 2,
+    homepageScale: 0.52,
+    homepageContainerClassName: "w-[24rem]",
+  },
+  "jsx-preview": {
+    demoPageScale: 2,
+    homepageScale: 0.56,
+    homepageContainerClassName: "w-[22rem]",
+  },
+  pointer: {
+    demoPageScale: 1,
+    homepageScale: 0.42,
+    needsFlexColumnParent: true,
+    homepageContainerClassName: "h-[18rem] w-[22rem]",
+  },
+  window: {
+    demoPageScale: 1,
+    homepageScale: 0.34,
+    needsFlexColumnParent: true,
+    homepageContainerClassName: "h-[18rem] w-[24rem]",
+  },
+  reveal: {
+    demoPageScale: 2,
+    homepageScale: 0.44,
+    homepageContainerClassName: "w-[26rem]",
+  },
+  "motion-blur-text": {
+    demoPageScale: 2,
+    homepageScale: 0.4,
+    homepageContainerClassName: "w-[26rem]",
+  },
+  loader: {
+    demoPageScale: 2,
+    homepageScale: 0.55,
+    homepageContainerClassName: "w-[26rem]",
+  },
+  "morphing-text": {
+    demoPageScale: 2,
+    homepageScale: 0.48,
+    homepageContainerClassName: "w-[24rem]",
+  },
+  "ascii-wave": {
+    demoPageScale: 2,
+    homepageScale: 0.22,
+    homepageContainerClassName: "w-[46rem]",
+    homepageOffsetY: -18,
+  },
+  "color-picker": {
+    demoPageScale: 1.5,
+    homepageScale: 0.4,
+    homepageContainerClassName: "w-[25rem]",
+  },
+};
+
 const demoMap: Record<string, React.ReactNode> = {
   window: <WindowDemo />,
   badge: <BadgeDemo />,
@@ -249,6 +393,10 @@ const demoMap: Record<string, React.ReactNode> = {
 
 export function getDemoById(id: string): React.ReactNode | null {
   return demoMap[id] ?? null;
+}
+
+export function getDemoLayoutById(id: string): ComponentDemoLayout {
+  return demoLayoutMap[id] ?? {};
 }
 
 export function getComponentMeta(id: string): ComponentMeta | undefined {

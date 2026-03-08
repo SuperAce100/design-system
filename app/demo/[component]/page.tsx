@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
 import { Inter_Tight } from "next/font/google";
 
-import { getAllComponentIds, getComponentMeta, getDemoById } from "@/lib/component-registry";
+import {
+  getAllComponentIds,
+  getComponentMeta,
+  getDemoById,
+  getDemoLayoutById,
+} from "@/lib/component-registry";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -26,21 +31,9 @@ export default async function DemoOnlyComponentPage({
     notFound();
   }
 
-  const scaleByComponent: Record<string, number> = {
-    badge: 1.5,
-    "chat-input": 1.5,
-    "color-picker": 1.5,
-    "page-header": 1.5,
-    card: 1,
-    "chat-message": 1,
-    "code-block": 1,
-    "description-list": 1,
-    pointer: 1,
-    window: 1,
-    markdown: 0.5,
-  };
-  const scale = scaleByComponent[id] ?? 2;
-  const needsFlexColumnParent = id === "pointer" || id === "window";
+  const layout = getDemoLayoutById(id);
+  const scale = layout.demoPageScale ?? 2;
+  const needsFlexColumnParent = layout.needsFlexColumnParent ?? false;
 
   return (
     <>
