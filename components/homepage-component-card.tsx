@@ -61,7 +61,7 @@ export function HomepageComponentCard({ component }: HomepageComponentCardProps)
             </div>
           ) : null}
 
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card via-card/80 to-transparent" />
         </div>
 
         <div className="flex flex-1 flex-col px-4 pb-4 pt-4">
