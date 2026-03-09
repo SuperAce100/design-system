@@ -12,12 +12,6 @@ type HomepageComponentCardProps = {
   component: ComponentMeta;
 };
 
-const sectionGlowStyles: Record<ComponentMeta["section"], string> = {
-  Primitives: "from-primary/10 via-transparent to-transparent",
-  AI: "from-primary/15 via-primary/5 to-transparent",
-  Effects: "from-primary/10 via-transparent to-primary/10",
-};
-
 export function HomepageComponentCard({ component }: HomepageComponentCardProps) {
   const demo = getDemoById(component.id);
   const layout = getDemoLayoutById(component.id);
@@ -32,14 +26,7 @@ export function HomepageComponentCard({ component }: HomepageComponentCardProps)
         variant="outline"
         className="min-h-[19rem] gap-0 overflow-hidden bg-card/90 p-0 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-lg group-hover:shadow-primary/5"
       >
-        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-background via-background to-muted/30">
-          <div
-            className={cn(
-              "absolute inset-0 bg-gradient-to-br opacity-70 transition-transform duration-500 group-hover:scale-105",
-              sectionGlowStyles[component.section]
-            )}
-          />
-
+        <div className="relative h-48 overflow-hidden bg-muted/20">
           {demo ? (
             <div
               aria-hidden="true"
