@@ -1,17 +1,18 @@
-import { sectionOrder, componentList } from "@/lib/component-registry";
-import { Button } from "@/registry/new-york/blocks/button/button";
-import Link from "next/link";
+import { HomepageComponentCard } from "@/components/homepage-component-card";
+import { componentList, sectionOrder, type ComponentMeta } from "@/lib/component-registry";
 
 export default function Home() {
-  const componentsBySection = componentList.reduce<Record<string, typeof componentList>>(
-    (acc, component) => {
-      const section = component.section;
-      if (!acc[section]) acc[section] = [] as unknown as typeof componentList;
-      acc[section].push(component);
+  const componentsBySection = sectionOrder.reduce<Record<ComponentMeta["section"], ComponentMeta[]>>(
+    (acc, section) => {
+      acc[section] = [];
       return acc;
     },
-    {} as Record<string, typeof componentList>
+    {} as Record<ComponentMeta["section"], ComponentMeta[]>
   );
+
+  componentList.forEach((component) => {
+    componentsBySection[component.section].push(component);
+  });
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col min-h-screen px-4 pt-8 gap-8">
@@ -39,25 +40,9 @@ export default function Home() {
               <h2 className="text-lg font-sans font-medium mb-2 uppercase tracking-widest ml-3 text-muted-foreground/70">
                 {section}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {comps.map((component) => (
-                  <Button
-                    key={component.id}
-                    variant="ghost"
-                    size="sm"
-                    className="justify-start bg-card no-underline rounded-xl p-4 duration-500 hover:duration-75 active:scale-95 active:bg-primary/10"
-                    asChild
-                  >
-                    <Link
-                      href={`/${component.id}`}
-                      className="flex flex-col gap-1 justify-start items-start"
-                    >
-                      <h3 className="text-xl font-medium text-primary">{component.name}</h3>
-                      <p className="max-w-full text-wrap text-muted-foreground/70 text-sm">
-                        {component.description}
-                      </p>
-                    </Link>
-                  </Button>
+                  <HomepageComponentCard key={component.id} component={component} />
                 ))}
               </div>
             </section>
