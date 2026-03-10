@@ -53,6 +53,12 @@ import LoaderMain from "@/components/demos/loader-main";
 import LoaderShapes from "@/components/demos/loader-shapes";
 import LoaderSizes from "@/components/demos/loader-sizes";
 
+import BadgePreview from "@/components/demos/badge-preview";
+import CodeBlockPreview from "@/components/demos/code-block-preview";
+import MarkdownPreview from "@/components/demos/markdown-preview";
+import ChatMessagePreview from "@/components/demos/chat-message-preview";
+import MorphingTextPreview from "@/components/demos/morphing-text-preview";
+
 export type ComponentMeta = {
   id: string;
   name: string;
@@ -264,63 +270,54 @@ export type ComponentDemoLayout = {
 const demoLayoutMap: Record<string, ComponentDemoLayout> = {
   badge: {
     demoPageScale: 1.5,
-    homepageScale: 0.95,
   },
-  button: {
-    homepageScale: 0.82,
-  },
-  "long-press-button": {
-    homepageScale: 0.78,
-  },
+  button: {},
+  "long-press-button": {},
   "code-block": {
     demoPageScale: 1,
-    homepageScale: 0.5,
-    homepageContainerClassName: "w-[28rem]",
+    homepageScale: 0.7,
+    homepageContainerClassName: "w-[18rem]",
   },
   markdown: {
     demoPageScale: 0.5,
-    homepageScale: 0.24,
-    homepageContainerClassName: "w-[44rem]",
-    homepageOffsetY: -12,
+    homepageScale: 0.6,
+    homepageContainerClassName: "w-[18rem]",
+    homepageOffsetY: -10,
   },
   select: {
-    homepageScale: 0.72,
+    homepageContainerClassName: "w-[12rem]",
   },
   input: {
-    homepageScale: 0.82,
+    homepageContainerClassName: "w-[14rem]",
   },
-  "number-input": {
-    homepageScale: 0.72,
-  },
+  "number-input": {},
   "command-prompt": {
     demoPageScale: 2,
-    homepageScale: 0.5,
-    homepageContainerClassName: "w-[32rem]",
+    homepageScale: 0.6,
+    homepageContainerClassName: "w-[20rem]",
   },
   "invisible-input": {
     demoPageScale: 2,
-    homepageScale: 0.72,
-    homepageContainerClassName: "w-[20rem]",
+    homepageScale: 0.9,
+    homepageContainerClassName: "w-[14rem]",
   },
   textarea: {
     demoPageScale: 2,
-    homepageScale: 0.58,
-    homepageContainerClassName: "w-[26rem]",
+    homepageScale: 0.8,
+    homepageContainerClassName: "w-[14rem]",
   },
   card: {
     demoPageScale: 1,
-    homepageScale: 0.38,
-    homepageContainerClassName: "w-[36rem]",
+    homepageScale: 0.75,
   },
   "description-list": {
     demoPageScale: 1,
-    homepageScale: 0.54,
-    homepageContainerClassName: "w-[24rem]",
+    homepageScale: 0.85,
   },
   "page-header": {
     demoPageScale: 1.5,
-    homepageScale: 0.55,
-    homepageContainerClassName: "w-[30rem]",
+    homepageScale: 0.7,
+    homepageContainerClassName: "w-[20rem]",
   },
   chat: {
     demoPageScale: 2,
@@ -329,27 +326,25 @@ const demoLayoutMap: Record<string, ComponentDemoLayout> = {
   },
   "chat-input": {
     demoPageScale: 1.5,
-    homepageScale: 0.48,
-    homepageContainerClassName: "w-[30rem]",
+    homepageScale: 0.55,
+    homepageContainerClassName: "w-[22rem]",
   },
   "chat-message": {
     demoPageScale: 1,
-    homepageScale: 0.34,
-    homepageContainerClassName: "w-[40rem]",
+    homepageScale: 0.6,
+    homepageContainerClassName: "w-[20rem]",
   },
   "chat-reasoning": {
     demoPageScale: 2,
-    homepageScale: 0.7,
+    homepageScale: 0.8,
   },
   "chat-tool": {
     demoPageScale: 2,
-    homepageScale: 0.52,
-    homepageContainerClassName: "w-[24rem]",
   },
   "jsx-preview": {
     demoPageScale: 2,
-    homepageScale: 0.56,
-    homepageContainerClassName: "w-[22rem]",
+    homepageScale: 0.65,
+    homepageContainerClassName: "w-[18rem]",
   },
   pointer: {
     demoPageScale: 1,
@@ -365,23 +360,19 @@ const demoLayoutMap: Record<string, ComponentDemoLayout> = {
   },
   reveal: {
     demoPageScale: 2,
-    homepageScale: 0.44,
-    homepageContainerClassName: "w-[26rem]",
+    homepageScale: 0.6,
   },
   "motion-blur-text": {
     demoPageScale: 2,
-    homepageScale: 0.4,
-    homepageContainerClassName: "w-[26rem]",
+    homepageScale: 0.5,
+    homepageContainerClassName: "w-[18rem]",
   },
   loader: {
     demoPageScale: 2,
-    homepageScale: 0.55,
-    homepageContainerClassName: "w-[26rem]",
   },
   "morphing-text": {
     demoPageScale: 2,
-    homepageScale: 0.48,
-    homepageContainerClassName: "w-[24rem]",
+    homepageScale: 0.7,
   },
   "ascii-wave": {
     demoPageScale: 2,
@@ -391,38 +382,38 @@ const demoLayoutMap: Record<string, ComponentDemoLayout> = {
   },
   "color-picker": {
     demoPageScale: 1.5,
-    homepageScale: 0.4,
-    homepageContainerClassName: "w-[25rem]",
+    homepageScale: 0.45,
+    homepageContainerClassName: "w-[20rem]",
   },
 };
 
 const previewDemoMap: Record<string, React.ReactNode> = {
   window: <WindowDemo />,
-  badge: <BadgeDemo />,
-  button: <ButtonDemo />,
-  "long-press-button": <LongPressButtonDemo />,
-  "code-block": <CodeBlockDemo />,
-  markdown: <MarkdownDemo />,
+  badge: <BadgePreview />,
+  button: <ButtonMain />,
+  "long-press-button": <LongPressButtonMain />,
+  "code-block": <CodeBlockPreview />,
+  markdown: <MarkdownPreview />,
   select: <SelectDemo />,
   input: <InputDemo />,
   "number-input": <NumberInputDemo />,
   "command-prompt": <CommandPromptDemo />,
-  "invisible-input": <InvisibleInputDemo />,
+  "invisible-input": <InvisibleInputMain />,
   textarea: <TextareaDemo />,
-  card: <CardDemo />,
-  "description-list": <DescriptionListDemo />,
-  "page-header": <PageHeaderDemo />,
+  card: <CardMain />,
+  "description-list": <DescriptionListMain />,
+  "page-header": <PageHeaderMain />,
   "chat-input": <ChatInputDemo />,
-  "chat-message": <ChatMessageDemo />,
+  "chat-message": <ChatMessagePreview />,
   "chat-reasoning": <ChatReasoningDemo />,
-  "chat-tool": <ChatToolDemo />,
+  "chat-tool": <ChatToolMain />,
   chat: <ChatDemo />,
   "jsx-preview": <JSXPreviewDemo />,
   pointer: <PointerDemo />,
   reveal: <RevealDemo />,
   "motion-blur-text": <MotionBlurTextDemo />,
-  loader: <LoaderDemo />,
-  "morphing-text": <MorphingTextDemo />,
+  loader: <LoaderMain />,
+  "morphing-text": <MorphingTextPreview />,
   "ascii-wave": <AsciiWaveDemo />,
   "color-picker": <ColorPickerDemo />,
 };
