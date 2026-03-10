@@ -4,10 +4,11 @@ import {
   getAllComponentIds,
   getComponentMeta,
   getDemoById,
+  getComponentDemos,
   sectionOrder,
   componentList,
 } from "@/lib/component-registry";
-import { getComponentSourceFiles } from "@/lib/component-sources";
+import { getDemoSources } from "@/lib/component-sources";
 import ComponentDocsPage from "@/components/component-docs-page";
 
 export async function generateStaticParams() {
@@ -61,12 +62,32 @@ export default async function ComponentPage({
 }) {
   const { component: id } = await params;
   const meta = getComponentMeta(id);
-  const demo = getDemoById(id);
-  const sourceFiles = await getComponentSourceFiles(id);
+  const demos = getComponentDemos(id);
+  const previewDemo = getDemoById(id);
 
-  if (!meta || !demo) {
+  if (!meta || !demos || !previewDemo) {
     notFound();
   }
+
+  const filePaths = [
+    demos.main.file,
+    ...(demos.examples ?? []).map((e) => e.file),
+  ];
+  const sources = await getDemoSources(filePaths);
+
+  const mainDemo = {
+    name: demos.main.name,
+    description: demos.main.description,
+    component: demos.main.component,
+    source: sources[demos.main.file],
+  };
+
+  const examples = (demos.examples ?? []).map((ex) => ({
+    name: ex.name,
+    description: ex.description,
+    component: ex.component,
+    source: sources[ex.file],
+  }));
 
   const sections = sectionOrder
     .map((section) => ({
@@ -78,9 +99,9 @@ export default async function ComponentPage({
   return (
     <ComponentDocsPage
       meta={meta}
-      demo={demo}
+      mainDemo={mainDemo}
+      examples={examples}
       sections={sections}
-      sourceFiles={sourceFiles}
     />
   );
 }
