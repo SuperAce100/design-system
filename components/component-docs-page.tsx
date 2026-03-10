@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import ComponentFrame from "@/components/component-frame";
 import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { ComponentMeta } from "@/lib/component-registry";
+import { type ComponentPageDemo } from "@/lib/component-demos";
 import { cn } from "@/lib/utils";
 import { Button } from "@/registry/new-york/blocks/button/button";
 import type { ComponentSourceFile } from "@/types/component-source";
@@ -18,18 +19,21 @@ type ComponentSection = {
 
 type ComponentDocsPageProps = {
   meta: ComponentMeta;
-  demo: React.ReactNode;
+  demos: Array<ComponentPageDemo & { sourceFiles?: ComponentSourceFile[] }>;
   sections: ComponentSection[];
-  sourceFiles?: ComponentSourceFile[];
 };
 
-const pageAnchors = [
-  { id: "preview", label: "Preview" },
-  { id: "installation", label: "Installation" },
-];
-
-export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
+export default function ComponentDocsPage({ meta, demos, sections }: ComponentDocsPageProps) {
   const [navOpen, setNavOpen] = React.useState(false);
+  const [mainDemo, ...additionalDemos] = demos;
+  const pageAnchors = [
+    { id: mainDemo?.slug ?? "basic", label: mainDemo?.title ?? "Basic" },
+    ...additionalDemos.map((demo) => ({
+      id: demo.slug,
+      label: demo.title,
+    })),
+    { id: "installation", label: "Installation" },
+  ];
 
   React.useEffect(() => {
     if (!navOpen) return;
@@ -86,16 +90,7 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
             <ComponentNavList sections={sections} activeId={meta.id} />
           </nav>
           <div className="flex min-w-0 flex-col gap-10">
-            <section id="preview" className="px-1">
-              <ComponentFrame
-                key={meta.id}
-                id={meta.id}
-                className="rounded-none border-0 bg-transparent p-0 shadow-none"
-                sourceFiles={sourceFiles}
-              >
-                {demo}
-              </ComponentFrame>
-            </section>
+            {mainDemo ? <DemoSection demo={mainDemo} /> : null}
             <section id="installation" className="px-1">
               <h2 className="mb-2 text-xl font-medium">Installation</h2>
               <p className="mb-3 text-sm text-muted-foreground">Install using the shadcn CLI</p>
@@ -108,6 +103,9 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
                 }}
               />
             </section>
+            {additionalDemos.map((demo) => (
+              <DemoSection key={demo.slug} demo={demo} />
+            ))}
           </div>
           <aside className="sticky top-6 hidden flex-col gap-2 lg:flex">
             <span className="text-xs uppercase tracking-widest text-muted-foreground">On this page</span>
@@ -143,6 +141,18 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
         <ComponentNavList sections={sections} activeId={meta.id} onNavigate={() => setNavOpen(false)} />
       </MobileNav>
     </>
+  );
+}
+
+function DemoSection({ demo }: { demo: ComponentPageDemo & { sourceFiles?: ComponentSourceFile[] } }) {
+  return (
+    <section id={demo.slug} className="px-1">
+      <div className="mb-4">
+        <h2 className="text-xl font-medium">{demo.title}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{demo.description}</p>
+      </div>
+      <ComponentFrame sourceFiles={demo.sourceFiles}>{demo.demo}</ComponentFrame>
+    </section>
   );
 }
 

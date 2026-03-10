@@ -4,9 +4,9 @@ import { Inter_Tight } from "next/font/google";
 import {
   getAllComponentIds,
   getComponentMeta,
-  getDemoById,
   getDemoLayoutById,
 } from "@/lib/component-registry";
+import { getPreviewDemoById } from "@/lib/component-demos";
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default async function DemoOnlyComponentPage({
 }) {
   const { component: id } = await params;
   const meta = getComponentMeta(id);
-  const demo = getDemoById(id);
+  const demo = getPreviewDemoById(id);
 
   if (!meta || !demo) {
     notFound();
@@ -76,7 +76,7 @@ export default async function DemoOnlyComponentPage({
             {needsFlexColumnParent ? (
               <div className="flex h-[40vh] w-[40vw] flex-col">{demo}</div>
             ) : (
-              demo
+              <>{demo}</>
             )}
           </div>
         </div>

@@ -1,34 +1,3 @@
-import * as React from "react";
-
-import BadgeDemo from "@/components/demos/badge-demo";
-import ButtonDemo from "@/components/demos/button-demo";
-import LongPressButtonDemo from "@/components/demos/long-press-button-demo";
-import RevealDemo from "@/components/demos/reveal-demo";
-import CardDemo from "@/components/demos/card-demo";
-import DescriptionListDemo from "@/components/demos/description-list-demo";
-import PageHeaderDemo from "@/components/demos/page-header-demo";
-import MotionBlurTextDemo from "@/components/demos/motion-blur-text";
-import WindowDemo from "@/components/demos/window-demo";
-import CodeBlockDemo from "@/components/demos/code-block-demo";
-import MarkdownDemo from "@/components/demos/markdown-demo";
-import InputDemo from "@/components/demos/input-demo";
-import NumberInputDemo from "@/components/demos/number-input-demo";
-import TextareaDemo from "@/components/demos/textarea-demo";
-import ChatInputDemo from "@/components/demos/chat-input-demo";
-import SelectDemo from "@/components/demos/select-demo";
-import ChatMessageDemo from "@/components/demos/chat-message-demo";
-import JSXPreviewDemo from "@/components/demos/jsx-preview-demo";
-import PointerDemo from "@/components/demos/pointer-demo";
-import ChatReasoningDemo from "@/components/demos/chat-reasoning-demo";
-import ChatToolDemo from "@/components/demos/chat-tool-demo";
-import ChatDemo from "@/components/demos/chat-demo";
-import InvisibleInputDemo from "@/components/demos/invisible-input-demo";
-import CommandPromptDemo from "@/components/demos/command-prompt-demo";
-import LoaderDemo from "@/components/demos/loader-demo";
-import MorphingTextDemo from "@/components/demos/morphing-text-demo";
-import AsciiWaveDemo from "@/components/demos/ascii-wave-demo";
-import ColorPickerDemo from "@/components/demos/color-picker-demo";
-
 export type ComponentMeta = {
   id: string;
   name: string;
@@ -359,41 +328,6 @@ const demoLayoutMap: Record<string, ComponentDemoLayout> = {
     homepageContainerClassName: "w-[25rem]",
   },
 };
-
-const demoMap: Record<string, React.ReactNode> = {
-  window: <WindowDemo />,
-  badge: <BadgeDemo />,
-  button: <ButtonDemo />,
-  "long-press-button": <LongPressButtonDemo />,
-  "code-block": <CodeBlockDemo />,
-  markdown: <MarkdownDemo />,
-  select: <SelectDemo />,
-  input: <InputDemo />,
-  "number-input": <NumberInputDemo />,
-  "command-prompt": <CommandPromptDemo />,
-  "invisible-input": <InvisibleInputDemo />,
-  textarea: <TextareaDemo />,
-  card: <CardDemo />,
-  "description-list": <DescriptionListDemo />,
-  "page-header": <PageHeaderDemo />,
-  "chat-input": <ChatInputDemo />,
-  "chat-message": <ChatMessageDemo />,
-  "chat-reasoning": <ChatReasoningDemo />,
-  "chat-tool": <ChatToolDemo />,
-  chat: <ChatDemo />,
-  "jsx-preview": <JSXPreviewDemo />,
-  pointer: <PointerDemo />,
-  reveal: <RevealDemo />,
-  "motion-blur-text": <MotionBlurTextDemo />,
-  loader: <LoaderDemo />,
-  "morphing-text": <MorphingTextDemo />,
-  "ascii-wave": <AsciiWaveDemo />,
-  "color-picker": <ColorPickerDemo />,
-};
-
-export function getDemoById(id: string): React.ReactNode | null {
-  return demoMap[id] ?? null;
-}
 
 export function getDemoLayoutById(id: string): ComponentDemoLayout {
   return demoLayoutMap[id] ?? {};

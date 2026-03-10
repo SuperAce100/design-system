@@ -15,24 +15,33 @@ async function readFileIfExists(filePath: string) {
   }
 }
 
-async function getDemoSourceFile(id: string): Promise<ComponentSourceFile | null> {
-  const candidates = [`${id}-demo.tsx`, `${id}.tsx`];
-  for (const candidate of candidates) {
-    const absolutePath = path.join(demoDir, candidate);
-    const content = await readFileIfExists(absolutePath);
-    if (content !== null) {
-      return {
-        path: path.posix.join("components", "demos", candidate),
-        content,
-      };
-    }
-  }
-  return null;
-}
+const getSourceFileByPath = cache(async function getSourceFileByPath(
+  relativePath: string
+): Promise<ComponentSourceFile | null> {
+  const normalizedPath = relativePath.replace(/^components\/demos\//, "");
+  const absolutePath = path.join(demoDir, normalizedPath);
+  const content = await readFileIfExists(absolutePath);
 
-export const getComponentSourceFiles = cache(async function getComponentSourceFiles(
-  id: string
-): Promise<ComponentSourceFile[]> {
-  const demoFile = await getDemoSourceFile(id);
-  return demoFile ? [demoFile] : [];
+  if (content === null) {
+    return null;
+  }
+
+  return {
+    path: path.posix.join("components", "demos", normalizedPath),
+    content,
+  };
 });
+
+export async function getComponentSourceFiles(
+  relativePaths: string[]
+): Promise<Record<string, ComponentSourceFile>> {
+  const uniquePaths = Array.from(new Set(relativePaths));
+  const sourceFiles = await Promise.all(
+    uniquePaths.map(async (relativePath) => {
+      const sourceFile = await getSourceFileByPath(relativePath);
+      return sourceFile ? [relativePath, sourceFile] : null;
+    })
+  );
+
+  return Object.fromEntries(sourceFiles.filter((entry): entry is [string, ComponentSourceFile] => entry !== null));
+}

@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import {
   getAllComponentIds,
   getComponentMeta,
-  getDemoById,
   sectionOrder,
   componentList,
 } from "@/lib/component-registry";
+import { getComponentPageDemos } from "@/lib/component-demos";
 import { getComponentSourceFiles } from "@/lib/component-sources";
 import ComponentDocsPage from "@/components/component-docs-page";
 
@@ -61,12 +61,17 @@ export default async function ComponentPage({
 }) {
   const { component: id } = await params;
   const meta = getComponentMeta(id);
-  const demo = getDemoById(id);
-  const sourceFiles = await getComponentSourceFiles(id);
+  const demos = getComponentPageDemos(id);
+  const sourceFilesByPath = await getComponentSourceFiles(demos.map((demo) => demo.sourcePath));
 
-  if (!meta || !demo) {
+  if (!meta || demos.length === 0) {
     notFound();
   }
+
+  const demosWithSource = demos.map((demo) => ({
+    ...demo,
+    sourceFiles: sourceFilesByPath[demo.sourcePath] ? [sourceFilesByPath[demo.sourcePath]] : [],
+  }));
 
   const sections = sectionOrder
     .map((section) => ({
@@ -78,9 +83,8 @@ export default async function ComponentPage({
   return (
     <ComponentDocsPage
       meta={meta}
-      demo={demo}
+      demos={demosWithSource}
       sections={sections}
-      sourceFiles={sourceFiles}
     />
   );
 }

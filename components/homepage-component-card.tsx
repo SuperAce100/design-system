@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { getDemoById, getDemoLayoutById, type ComponentMeta } from "@/lib/component-registry";
+import { getDemoLayoutById, type ComponentMeta } from "@/lib/component-registry";
+import { getPreviewDemoById } from "@/lib/component-demos";
 import { cn } from "@/lib/utils";
 import { Card } from "@/registry/new-york/blocks/card/card";
 
@@ -9,7 +10,7 @@ type HomepageComponentCardProps = {
 };
 
 export function HomepageComponentCard({ component }: HomepageComponentCardProps) {
-  const demo = getDemoById(component.id);
+  const demo = getPreviewDemoById(component.id);
   const layout = getDemoLayoutById(component.id);
   const homepageScale = layout.homepageScale ?? 0.64;
 
