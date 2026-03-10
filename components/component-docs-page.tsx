@@ -9,27 +9,49 @@ import { ScriptCopyBtn } from "@/components/magicui/script-copy-btn";
 import { ComponentMeta } from "@/lib/component-registry";
 import { cn } from "@/lib/utils";
 import { Button } from "@/registry/new-york/blocks/button/button";
-import type { ComponentSourceFile } from "@/types/component-source";
 
 type ComponentSection = {
   title: ComponentMeta["section"];
   components: ComponentMeta[];
 };
 
-type ComponentDocsPageProps = {
-  meta: ComponentMeta;
-  demo: React.ReactNode;
-  sections: ComponentSection[];
-  sourceFiles?: ComponentSourceFile[];
+type DemoWithSource = {
+  name: string;
+  description?: string;
+  component: React.ReactNode;
+  source?: string;
 };
 
-const pageAnchors = [
-  { id: "preview", label: "Preview" },
-  { id: "installation", label: "Installation" },
-];
+type ComponentDocsPageProps = {
+  meta: ComponentMeta;
+  mainDemo: DemoWithSource;
+  examples: DemoWithSource[];
+  sections: ComponentSection[];
+};
 
-export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }: ComponentDocsPageProps) {
+function buildPageAnchors(examples: DemoWithSource[]) {
+  const anchors = [{ id: "preview", label: "Preview" }];
+  if (examples.length > 0) {
+    anchors.push({ id: "examples", label: "Examples" });
+    for (const ex of examples) {
+      anchors.push({
+        id: `example-${ex.name.toLowerCase().replace(/\s+/g, "-")}`,
+        label: ex.name,
+      });
+    }
+  }
+  anchors.push({ id: "installation", label: "Installation" });
+  return anchors;
+}
+
+export default function ComponentDocsPage({
+  meta,
+  mainDemo,
+  examples,
+  sections,
+}: ComponentDocsPageProps) {
   const [navOpen, setNavOpen] = React.useState(false);
+  const pageAnchors = buildPageAnchors(examples);
 
   React.useEffect(() => {
     if (!navOpen) return;
@@ -88,14 +110,36 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
           <div className="flex min-w-0 flex-col gap-10">
             <section id="preview" className="px-1">
               <ComponentFrame
-                key={meta.id}
+                key={`${meta.id}-main`}
                 id={meta.id}
                 className="rounded-none border-0 bg-transparent p-0 shadow-none"
-                sourceFiles={sourceFiles}
+                source={mainDemo.source}
               >
-                {demo}
+                {mainDemo.component}
               </ComponentFrame>
             </section>
+            {examples.length > 0 && (
+              <section id="examples" className="flex flex-col gap-8 px-1">
+                <h2 className="text-xl font-medium">Examples</h2>
+                {examples.map((example) => {
+                  const anchor = `example-${example.name.toLowerCase().replace(/\s+/g, "-")}`;
+                  return (
+                    <div key={anchor} id={anchor} className="flex flex-col gap-2">
+                      {example.description && (
+                        <p className="text-sm text-muted-foreground">{example.description}</p>
+                      )}
+                      <ComponentFrame
+                        className="rounded-none border-0 bg-transparent p-0 shadow-none"
+                        source={example.source}
+                        title={example.name}
+                      >
+                        {example.component}
+                      </ComponentFrame>
+                    </div>
+                  );
+                })}
+              </section>
+            )}
             <section id="installation" className="px-1">
               <h2 className="mb-2 text-xl font-medium">Installation</h2>
               <p className="mb-3 text-sm text-muted-foreground">Install using the shadcn CLI</p>
@@ -115,7 +159,10 @@ export default function ComponentDocsPage({ meta, demo, sections, sourceFiles }:
               <a
                 key={anchor.id}
                 href={`#${anchor.id}`}
-                className="py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className={cn(
+                  "py-1 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                  anchor.id.startsWith("example-") && "ml-3 text-xs"
+                )}
               >
                 {anchor.label}
               </a>

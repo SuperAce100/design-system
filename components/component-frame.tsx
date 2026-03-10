@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "@/registry/new-york/blocks/code-block/code-block";
-import type { ComponentSourceFile } from "@/types/component-source";
 import React from "react";
 
 export default function ComponentFrame({
@@ -9,29 +8,22 @@ export default function ComponentFrame({
   className,
   id,
   source,
-  sourceFiles,
+  title,
 }: {
   children: React.ReactNode;
   id?: string;
   className?: string;
   source?: string;
-  sourceFiles?: ComponentSourceFile[];
+  title?: string;
 }) {
   const [activeTab, setActiveTab] = React.useState<"demo" | "source">("demo");
-  const [code, setCode] = React.useState<string | null>(
-    source ?? sourceFiles?.[0]?.content ?? null
-  );
-
-  React.useEffect(() => {
-    setCode(source ?? sourceFiles?.[0]?.content ?? null);
-  }, [source, sourceFiles]);
 
   const renderSource = () => {
-    if (!code) {
+    if (!source) {
       return <div className="text-sm text-muted-foreground">Source unavailable for this demo.</div>;
     }
 
-    return <CodeBlock code={code} language="tsx" className="mt-0" variant="flat" />;
+    return <CodeBlock code={source} language="tsx" className="mt-0" variant="flat" />;
   };
 
   return (
@@ -49,18 +41,20 @@ export default function ComponentFrame({
             onClick={() => setActiveTab("demo")}
             className={cn(
               "text-xl font-medium rounded-md transition-colors",
+              title ? "text-base" : "text-xl",
               activeTab === "demo"
                 ? "text-foreground"
                 : "text-muted-foreground/50 hover:text-foreground/80"
             )}
           >
-            Preview
+            {title ?? "Preview"}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("source")}
             className={cn(
-              "text-xl font-medium rounded-md transition-colors",
+              "font-medium rounded-md transition-colors",
+              title ? "text-base" : "text-xl",
               activeTab === "source"
                 ? "text-foreground"
                 : "text-muted-foreground/50 hover:text-foreground/80"
@@ -71,7 +65,7 @@ export default function ComponentFrame({
         </div>
       </div>
       {activeTab === "demo" ? (
-        <div className="flex flex-col items-center justify-center min-h-[360px] relative h-full">
+        <div className="flex flex-col items-center justify-center min-h-[200px] relative h-full">
           {children}
         </div>
       ) : (

@@ -29,11 +29,47 @@ import MorphingTextDemo from "@/components/demos/morphing-text-demo";
 import AsciiWaveDemo from "@/components/demos/ascii-wave-demo";
 import ColorPickerDemo from "@/components/demos/color-picker-demo";
 
+import ButtonMain from "@/components/demos/button-main";
+import ButtonSizes from "@/components/demos/button-sizes";
+import ButtonWithIcon from "@/components/demos/button-with-icon";
+import ButtonDisabled from "@/components/demos/button-disabled";
+import BadgeMain from "@/components/demos/badge-main";
+import BadgeColors from "@/components/demos/badge-colors";
+import BadgeWithDot from "@/components/demos/badge-with-dot";
+import CardMain from "@/components/demos/card-main";
+import InputWithLabel from "@/components/demos/input-with-label";
+import InputDisabled from "@/components/demos/input-disabled";
+import TextareaNoResize from "@/components/demos/textarea-no-resize";
+import NumberInputBounds from "@/components/demos/number-input-bounds";
+import CodeBlockMain from "@/components/demos/code-block-main";
+import MarkdownMain from "@/components/demos/markdown-main";
+import LongPressButtonMain from "@/components/demos/long-press-button-main";
+import ChatMessageMain from "@/components/demos/chat-message-main";
+import ChatToolMain from "@/components/demos/chat-tool-main";
+import InvisibleInputMain from "@/components/demos/invisible-input-main";
+import DescriptionListMain from "@/components/demos/description-list-main";
+import PageHeaderMain from "@/components/demos/page-header-main";
+import LoaderMain from "@/components/demos/loader-main";
+import LoaderShapes from "@/components/demos/loader-shapes";
+import LoaderSizes from "@/components/demos/loader-sizes";
+
 export type ComponentMeta = {
   id: string;
   name: string;
   section: "Primitives" | "AI" | "Effects";
   description: string;
+};
+
+export type DemoEntry = {
+  name: string;
+  description?: string;
+  component: React.ReactNode;
+  file: string;
+};
+
+export type ComponentDemos = {
+  main: DemoEntry;
+  examples?: DemoEntry[];
 };
 
 export const sectionOrder: ComponentMeta["section"][] = ["Primitives", "AI", "Effects"];
@@ -360,7 +396,7 @@ const demoLayoutMap: Record<string, ComponentDemoLayout> = {
   },
 };
 
-const demoMap: Record<string, React.ReactNode> = {
+const previewDemoMap: Record<string, React.ReactNode> = {
   window: <WindowDemo />,
   badge: <BadgeDemo />,
   button: <ButtonDemo />,
@@ -391,8 +427,379 @@ const demoMap: Record<string, React.ReactNode> = {
   "color-picker": <ColorPickerDemo />,
 };
 
+const componentDemosMap: Record<string, ComponentDemos> = {
+  button: {
+    main: {
+      name: "Default",
+      component: <ButtonMain />,
+      file: "components/demos/button-main.tsx",
+    },
+    examples: [
+      {
+        name: "Variants",
+        description: "All available button variants.",
+        component: <ButtonDemo />,
+        file: "components/demos/button-demo.tsx",
+      },
+      {
+        name: "Sizes",
+        description: "Buttons in different sizes.",
+        component: <ButtonSizes />,
+        file: "components/demos/button-sizes.tsx",
+      },
+      {
+        name: "With Icon",
+        description: "Buttons with leading or trailing icons.",
+        component: <ButtonWithIcon />,
+        file: "components/demos/button-with-icon.tsx",
+      },
+      {
+        name: "Disabled",
+        description: "Disabled button state.",
+        component: <ButtonDisabled />,
+        file: "components/demos/button-disabled.tsx",
+      },
+    ],
+  },
+  badge: {
+    main: {
+      name: "Default",
+      component: <BadgeMain />,
+      file: "components/demos/badge-main.tsx",
+    },
+    examples: [
+      {
+        name: "Variants",
+        description: "All badge variant styles.",
+        component: <BadgeDemo />,
+        file: "components/demos/badge-demo.tsx",
+      },
+      {
+        name: "Colors",
+        description: "Available badge color options.",
+        component: <BadgeColors />,
+        file: "components/demos/badge-colors.tsx",
+      },
+      {
+        name: "With Dot",
+        description: "Badges with a status dot indicator.",
+        component: <BadgeWithDot />,
+        file: "components/demos/badge-with-dot.tsx",
+      },
+    ],
+  },
+  card: {
+    main: {
+      name: "Default",
+      component: <CardMain />,
+      file: "components/demos/card-main.tsx",
+    },
+    examples: [
+      {
+        name: "Variants",
+        description: "All available card variants.",
+        component: <CardDemo />,
+        file: "components/demos/card-demo.tsx",
+      },
+    ],
+  },
+  input: {
+    main: {
+      name: "Default",
+      component: <InputDemo />,
+      file: "components/demos/input-demo.tsx",
+    },
+    examples: [
+      {
+        name: "With Label",
+        description: "Input paired with a label element.",
+        component: <InputWithLabel />,
+        file: "components/demos/input-with-label.tsx",
+      },
+      {
+        name: "Disabled",
+        description: "Disabled input state.",
+        component: <InputDisabled />,
+        file: "components/demos/input-disabled.tsx",
+      },
+    ],
+  },
+  select: {
+    main: {
+      name: "Default",
+      component: <SelectDemo />,
+      file: "components/demos/select-demo.tsx",
+    },
+  },
+  textarea: {
+    main: {
+      name: "Default",
+      component: <TextareaDemo />,
+      file: "components/demos/textarea-demo.tsx",
+    },
+    examples: [
+      {
+        name: "No Resize",
+        description: "Textarea without the resize handle.",
+        component: <TextareaNoResize />,
+        file: "components/demos/textarea-no-resize.tsx",
+      },
+    ],
+  },
+  "number-input": {
+    main: {
+      name: "Default",
+      component: <NumberInputDemo />,
+      file: "components/demos/number-input-demo.tsx",
+    },
+    examples: [
+      {
+        name: "With Bounds",
+        description: "Number input constrained between min and max values.",
+        component: <NumberInputBounds />,
+        file: "components/demos/number-input-bounds.tsx",
+      },
+    ],
+  },
+  "code-block": {
+    main: {
+      name: "Default",
+      component: <CodeBlockMain />,
+      file: "components/demos/code-block-main.tsx",
+    },
+    examples: [
+      {
+        name: "With Title",
+        description: "Code block with a file name title.",
+        component: <CodeBlockDemo />,
+        file: "components/demos/code-block-demo.tsx",
+      },
+    ],
+  },
+  markdown: {
+    main: {
+      name: "Default",
+      component: <MarkdownMain />,
+      file: "components/demos/markdown-main.tsx",
+    },
+    examples: [
+      {
+        name: "Full Example",
+        description: "Markdown with headings, lists, code blocks, images, and tables.",
+        component: <MarkdownDemo />,
+        file: "components/demos/markdown-demo.tsx",
+      },
+    ],
+  },
+  "long-press-button": {
+    main: {
+      name: "Default",
+      component: <LongPressButtonMain />,
+      file: "components/demos/long-press-button-main.tsx",
+    },
+    examples: [
+      {
+        name: "Styled Icons",
+        description: "Long press buttons with custom colors and icon styles.",
+        component: <LongPressButtonDemo />,
+        file: "components/demos/long-press-button-demo.tsx",
+      },
+    ],
+  },
+  "command-prompt": {
+    main: {
+      name: "Default",
+      component: <CommandPromptDemo />,
+      file: "components/demos/command-prompt-demo.tsx",
+    },
+  },
+  "invisible-input": {
+    main: {
+      name: "Default",
+      component: <InvisibleInputMain />,
+      file: "components/demos/invisible-input-main.tsx",
+    },
+    examples: [
+      {
+        name: "Styled",
+        description: "Invisible inputs with custom styling applied via className.",
+        component: <InvisibleInputDemo />,
+        file: "components/demos/invisible-input-demo.tsx",
+      },
+    ],
+  },
+  "description-list": {
+    main: {
+      name: "Default",
+      component: <DescriptionListMain />,
+      file: "components/demos/description-list-main.tsx",
+    },
+    examples: [
+      {
+        name: "Layouts",
+        description: "Stacked and default layout options.",
+        component: <DescriptionListDemo />,
+        file: "components/demos/description-list-demo.tsx",
+      },
+    ],
+  },
+  "page-header": {
+    main: {
+      name: "Default",
+      component: <PageHeaderMain />,
+      file: "components/demos/page-header-main.tsx",
+    },
+    examples: [
+      {
+        name: "With Actions",
+        description: "Page header with action buttons.",
+        component: <PageHeaderDemo />,
+        file: "components/demos/page-header-demo.tsx",
+      },
+    ],
+  },
+  window: {
+    main: {
+      name: "Default",
+      component: <WindowDemo />,
+      file: "components/demos/window-demo.tsx",
+    },
+  },
+  chat: {
+    main: {
+      name: "Default",
+      component: <ChatDemo />,
+      file: "components/demos/chat-demo.tsx",
+    },
+  },
+  "chat-input": {
+    main: {
+      name: "Default",
+      component: <ChatInputDemo />,
+      file: "components/demos/chat-input-demo.tsx",
+    },
+  },
+  "chat-message": {
+    main: {
+      name: "Default",
+      component: <ChatMessageMain />,
+      file: "components/demos/chat-message-main.tsx",
+    },
+    examples: [
+      {
+        name: "With Variant Controls",
+        description: "Interactive variant selection for user and assistant message styles.",
+        component: <ChatMessageDemo />,
+        file: "components/demos/chat-message-demo.tsx",
+      },
+    ],
+  },
+  "chat-reasoning": {
+    main: {
+      name: "Default",
+      component: <ChatReasoningDemo />,
+      file: "components/demos/chat-reasoning-demo.tsx",
+    },
+  },
+  "chat-tool": {
+    main: {
+      name: "Default",
+      component: <ChatToolMain />,
+      file: "components/demos/chat-tool-main.tsx",
+    },
+    examples: [
+      {
+        name: "All States",
+        description: "Tool call in streaming, processing, completed, and error states.",
+        component: <ChatToolDemo />,
+        file: "components/demos/chat-tool-demo.tsx",
+      },
+    ],
+  },
+  "jsx-preview": {
+    main: {
+      name: "Default",
+      component: <JSXPreviewDemo />,
+      file: "components/demos/jsx-preview-demo.tsx",
+    },
+  },
+  pointer: {
+    main: {
+      name: "Default",
+      component: <PointerDemo />,
+      file: "components/demos/pointer-demo.tsx",
+    },
+  },
+  reveal: {
+    main: {
+      name: "Default",
+      component: <RevealDemo />,
+      file: "components/demos/reveal-demo.tsx",
+    },
+  },
+  "motion-blur-text": {
+    main: {
+      name: "Default",
+      component: <MotionBlurTextDemo />,
+      file: "components/demos/motion-blur-text.tsx",
+    },
+  },
+  loader: {
+    main: {
+      name: "Default",
+      component: <LoaderMain />,
+      file: "components/demos/loader-main.tsx",
+    },
+    examples: [
+      {
+        name: "Shapes",
+        description: "All available loader shapes.",
+        component: <LoaderShapes />,
+        file: "components/demos/loader-shapes.tsx",
+      },
+      {
+        name: "Sizes",
+        description: "Loader size presets.",
+        component: <LoaderSizes />,
+        file: "components/demos/loader-sizes.tsx",
+      },
+      {
+        name: "Styles",
+        description: "All visual styles: plain, blur, and dither.",
+        component: <LoaderDemo />,
+        file: "components/demos/loader-demo.tsx",
+      },
+    ],
+  },
+  "morphing-text": {
+    main: {
+      name: "Default",
+      component: <MorphingTextDemo />,
+      file: "components/demos/morphing-text-demo.tsx",
+    },
+  },
+  "ascii-wave": {
+    main: {
+      name: "Default",
+      component: <AsciiWaveDemo />,
+      file: "components/demos/ascii-wave-demo.tsx",
+    },
+  },
+  "color-picker": {
+    main: {
+      name: "Default",
+      component: <ColorPickerDemo />,
+      file: "components/demos/color-picker-demo.tsx",
+    },
+  },
+};
+
 export function getDemoById(id: string): React.ReactNode | null {
-  return demoMap[id] ?? null;
+  return previewDemoMap[id] ?? null;
+}
+
+export function getComponentDemos(id: string): ComponentDemos | null {
+  return componentDemosMap[id] ?? null;
 }
 
 export function getDemoLayoutById(id: string): ComponentDemoLayout {
