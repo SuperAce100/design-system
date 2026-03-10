@@ -1,10 +1,6 @@
 import Link from "next/link";
 
-import {
-  getDemoById,
-  getDemoLayoutById,
-  type ComponentMeta,
-} from "@/lib/component-registry";
+import { getDemoById, getDemoLayoutById, type ComponentMeta } from "@/lib/component-registry";
 import { cn } from "@/lib/utils";
 import { Card } from "@/registry/new-york/blocks/card/card";
 
@@ -20,13 +16,13 @@ export function HomepageComponentCard({ component }: HomepageComponentCardProps)
   return (
     <Link
       href={`/${component.id}`}
-      className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 "
     >
       <Card
         variant="outline"
-        className="min-h-[19rem] gap-0 overflow-hidden bg-card/90 p-0 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/25 group-hover:shadow-lg group-hover:shadow-primary/5"
+        className="gap-0 overflow-hidden p-0 transition-all duration-300 border-none group-hover: h-full bg-card group-focus-visible:border-primary "
       >
-        <div className="relative h-48 overflow-hidden bg-muted/20">
+        <div className="relative h-48 overflow-hidden">
           {demo ? (
             <div
               aria-hidden="true"
@@ -41,14 +37,14 @@ export function HomepageComponentCard({ component }: HomepageComponentCardProps)
                 }}
               >
                 <div
-                  className="origin-center transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="origin-center transition-transform duration-300 group-hover:scale-[1.05]"
                   style={{ transform: `scale(${homepageScale})` }}
                 >
                   {layout.needsFlexColumnParent ? (
                     <div
                       className={cn(
                         "flex h-[18rem] w-[18rem] flex-col items-center justify-center",
-                        layout.homepageContainerClassName
+                        layout.homepageContainerClassName,
                       )}
                     >
                       {demo}
@@ -61,16 +57,11 @@ export function HomepageComponentCard({ component }: HomepageComponentCardProps)
             </div>
           ) : null}
 
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card via-card/80 to-transparent" />
-        </div>
-
-        <div className="flex flex-1 flex-col px-4 pb-4 pt-4">
-          <h3 className="text-lg font-medium tracking-tight text-primary transition-opacity group-hover:opacity-80">
-            {component.name}
-          </h3>
-          <p className="mt-2 line-clamp-3 text-sm leading-snug text-muted-foreground/80">
-            {component.description}
-          </p>
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t via-card/80 from-card to-transparent flex items-end justify-end px-4 pb-4">
+            <h3 className="text-2xl font-medium tracking-tight font-heading transition-opacity group-hover:opacity-80 text-right">
+              {component.name}
+            </h3>
+          </div>
         </div>
       </Card>
     </Link>
